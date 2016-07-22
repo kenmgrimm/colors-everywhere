@@ -1,28 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
- 
+
 public class GyroCamera : MonoBehaviour {
     Quaternion initialRotation;
     Quaternion gyroInitialRotation;
     bool gyroEnabled;
     public float mouseSpeed = 1.0f;
- 
-    void Start () {
-        Debug.Log("Start");
-        Input.gyro.enabled = true;
 
-        Invoke("BeginTracking", 2f);
+
+    #if UNITY_EDITOR
+      private bool HasGyro() { 
+        return UnityEditor.EditorApplication.isRemoteConnected;
+      }
+    #else
+      private bool HasGyro() { return true; }
+    #endif
+
+
+    void Start () {
+      Debug.Log("Start");
+
+      Invoke("BeginTracking", 2f);
     }
 
     void Update() {
-        // if(gyroEnabled){
-        // #if !UNITY_EDITOR
-            Quaternion offsetRotation = ConvertRotation(Quaternion.Inverse(gyroInitialRotation) * Input.gyro.attitude);
-            transform.rotation = initialRotation * offsetRotation;
-        // #else
-        //     transform.Rotate(Input.GetAxis("Mouse Y") * mouseSpeed, Input.GetAxis("Mouse X") * mouseSpeed, 0);
-        // #endif
-        // }
+      if(HasGyro()) {
+        Quaternion offsetRotation = ConvertRotation(Quaternion.Inverse(gyroInitialRotation) * Input.gyro.attitude);
+        transform.rotation = initialRotation * offsetRotation;
+      }
+      else {
+        Debug.Log("NO GYRO");
+        transform.Rotate(Input.GetAxis("Mouse Y") * mouseSpeed, Input.GetAxis("Mouse X") * mouseSpeed, 0);
+      }
     }
 
     private void BeginTracking() {
@@ -33,8 +42,8 @@ public class GyroCamera : MonoBehaviour {
 
         // transform.rotation = initialRotation = gyroInitialRotation;
     }
- 
+
     private static Quaternion ConvertRotation(Quaternion q) {
-        return new Quaternion(q.x, q.y, -q.z, -q.w);  
+        return new Quaternion(q.x, q.y, -q.z, -q.w);
     }
 }

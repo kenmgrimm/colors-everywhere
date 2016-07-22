@@ -4,13 +4,21 @@ using System.Collections;
 public class Controls : MonoBehaviour {
 	public GameObject pointer;
 
+	private Rect paintButtonRect = new Rect(35, 770, 500, 200);
+	private Rect colorButtonRect = new Rect(220, 620, 165, 108);
+	private Rect distanceButtonRect = new Rect(80, 620, 165, 108);
+
 	void OnGUI () {
-		if(GUI.Button(new Rect(20,40,80,20), "Paint")) {
+		if(GUI.Button(paintButtonRect, "Paint")) {
 			pointer.GetComponent<Pointer>().Paint();
 		}
 
-		if(GUI.Button(new Rect(20,60,80,20), "Color")) {
+		if(GUI.Button(colorButtonRect, "Color")) {
 			pointer.GetComponent<Pointer>().ChangeColor();
+		}
+
+		if(GUI.Button(colorButtonRect, "Distance")) {
+			pointer.GetComponent<Pointer>().ChangeDistance();
 		}
 	}
 	

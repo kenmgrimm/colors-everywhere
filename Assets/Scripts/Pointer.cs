@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Pointer : MonoBehaviour {
-	private float POINTER_LENGTH = 5;
+	private float distance = 0.5f;
 	private LineRenderer line;
 	private Dictionary<Vector3, bool> endPoints;
 	private Camera augmentedCamera;
@@ -12,7 +12,6 @@ public class Pointer : MonoBehaviour {
 	private Color lerpedColor;
 
 	public GameObject dot;
-	public float pointerLength;
 
 	void Start() {
 		augmentedCamera = GameObject.Find("Augmented Camera").GetComponent<Camera>();
@@ -24,8 +23,15 @@ public class Pointer : MonoBehaviour {
 	}
 
 	public void ChangeColor() {
-		lerpedColor = Color.Lerp(Color.white, Color.black, Mathf.PingPong(Time.time, 1));
+		lerpedColor = Color.Lerp(Color.white, Color.blue, Mathf.PingPong(Time.time, 0.1f));
 		rend.material.color = lerpedColor;
+	}
+
+	public void ChangeDistance() {
+		distance += 0.2f;
+		if(distance > 3) {
+			distance = 0.5f;
+		}
 	}
 
 	public void Paint() {
@@ -35,7 +41,7 @@ public class Pointer : MonoBehaviour {
 		// Vector3 pointerPos = Camera.main.ScreenToWorldPoint(Input.mousePosition + (Camera.main.transform.forward * POINTER_LENGTH));
 		// Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
 		
-		Vector3 endPoint = ray.origin + ray.direction * pointerLength;
+		Vector3 endPoint = ray.origin + ray.direction * distance;
 		
 		line.SetPosition(1, endPoint);
 

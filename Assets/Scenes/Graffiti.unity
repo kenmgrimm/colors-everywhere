@@ -154,7 +154,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 154206158}
   - 33: {fileID: 154206157}
-  - 64: {fileID: 154206156}
   - 23: {fileID: 154206155}
   m_Layer: 9
   m_Name: Video Screen
@@ -192,18 +191,6 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
---- !u!64 &154206156
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 154206154}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Convex: 0
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!33 &154206157
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -219,7 +206,7 @@ Transform:
   m_GameObject: {fileID: 154206154}
   m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: -0.5}
   m_LocalPosition: {x: 0, y: 0.1, z: 9.04}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.7, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
@@ -739,8 +726,8 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1
-    height: 1
+    width: 9
+    height: 16
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -801,7 +788,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dot: {fileID: 1799612817}
-  pointerLength: 1
 --- !u!4 &1791557021
 Transform:
   m_ObjectHideFlags: 0
