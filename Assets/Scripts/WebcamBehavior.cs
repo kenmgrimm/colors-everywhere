@@ -2,12 +2,18 @@
 using UnityEngine;
 using System.Collections.Generic;
  
+// This should probably eventually be replaced with NatCam or similar ($75)
+// Or re-implement using: 
+//  http://answers.unity3d.com/questions/773464/webcamtexture-correct-resolution-and-ratio.html
 public class WebcamBehavior : MonoBehaviour {
   public Material cameraMaterial = null;
  
   private GameObject videoScreen;
   private WebCamTexture webCamTexture = null;
   private Camera physicalCamera;
+
+  private int deviceWidth = 2000;  // (or Screen.width) but I think it clamps it
+  private int deviceHeight = 2000;  // (or Screen.height) but I think it clamps it
 
   private WebCamDevice currentDevice;
 
@@ -33,9 +39,9 @@ public class WebcamBehavior : MonoBehaviour {
   }
 
   void Update() {
-    if(!webCamTexture && webCamTexture.didUpdateThisFrame) {
-      cameraMaterial.mainTexture = webCamTexture;
-      physicalCamera.targetTexture = (RenderTexture)cameraMaterial.mainTexture;   
+    // Skip making adjustment for incorrect camera data  (width < 100)
+    if(webCamTexture.width < 100) {
+      return;
     }
   }
  
@@ -71,7 +77,8 @@ public class WebcamBehavior : MonoBehaviour {
   private void SetNewCamTexture(WebCamDevice device) {
     DestroyOldCamTexture();
 
-    webCamTexture = new WebCamTexture(device.name);
+    webCamTexture = new WebCamTexture(device.name, deviceWidth, deviceHeight, 60);
+    webCamTexture.filterMode = FilterMode.Trilinear;
     webCamTexture.Play();
 
     physicalCamera.targetTexture = (RenderTexture)cameraMaterial.mainTexture;

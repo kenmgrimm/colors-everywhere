@@ -18,7 +18,6 @@ public class GyroCamera : MonoBehaviour {
 
 
   void Start () {
-    // Not sure if necessary, doesn't appear to be
     Input.gyro.enabled = true;
 
     InvokeRepeating("InitializeGyro", 0, 1);
