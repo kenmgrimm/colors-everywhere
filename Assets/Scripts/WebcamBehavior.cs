@@ -5,12 +5,20 @@ using System.Collections.Generic;
 public class WebcamBehavior : MonoBehaviour {
   public Material cameraMaterial = null;
  
+  private GameObject videoScreen;
   private WebCamTexture webCamTexture = null;
   private Camera physicalCamera;
 
   private WebCamDevice currentDevice;
 
   void Start() {
+    videoScreen = GameObject.Find("Video Screen");
+    if(SystemInfo.deviceType == DeviceType.Handheld) {
+      Debug.Log("Device Type Handheld");
+      Vector3 scale = videoScreen.transform.localScale;
+      videoScreen.transform.localScale = new Vector3(scale.x, scale.y, -scale.z);
+    }
+
     #if UNITY_EDITOR
       if(!cameraMaterial) {
         UnityEditor.EditorApplication.isPlaying = false;
@@ -37,11 +45,11 @@ public class WebcamBehavior : MonoBehaviour {
       WebCamDevice newDevice = default(WebCamDevice);
 
       if(RearCamera().name != default(WebCamDevice).name) {
-        Debug.Log("rear");
+        Debug.Log("RearCamera");
         newDevice = RearCamera();
       }
       else if(!WebCam().Equals(default(WebCamDevice))) {
-        Debug.Log("webcam");
+        Debug.Log("WebCam");
         newDevice = WebCam();
       }
 
@@ -54,7 +62,7 @@ public class WebcamBehavior : MonoBehaviour {
     }
 
     if(currentDevice.name != "FaceTime HD Camera" && !currentDevice.isFrontFacing) {
-      Debug.Log("not front facing");
+      Debug.Log("Mobile camera found");
       Debug.Log(currentDevice.name);
       CancelInvoke("CheckForMobileCamera");
     }
@@ -110,5 +118,4 @@ public class WebcamBehavior : MonoBehaviour {
 
     return default(WebCamDevice);
   }
-
 }

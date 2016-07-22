@@ -48,6 +48,7 @@ public class Pointer : MonoBehaviour {
 		if(!endPoints.ContainsKey(endPoint)) {
 			endPoints[endPoint] = true;
 
+// START COROUTINE FOR THIS???
 			Instantiate(dot, endPoint, Quaternion.identity);
 		}
 		// if(Physics.Raycast(ray, out hit)) {
