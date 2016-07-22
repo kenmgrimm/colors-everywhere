@@ -364,7 +364,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13d92e414b9b3438a9af2e1f89356472, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraMaterial: {fileID: 2100000, guid: ee53e69ffa6914e93b60c36549969007, type: 2}
+  cameraMaterial: {fileID: 2100000, guid: ee53e69ffa6914e93b60c36549969007, type: 2}
 --- !u!1 &1022857128
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,7 +710,7 @@ AudioListener:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1757325115}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!92 &1757325117
 Behaviour:
   m_ObjectHideFlags: 0
