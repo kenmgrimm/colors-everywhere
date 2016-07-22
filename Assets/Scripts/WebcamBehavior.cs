@@ -1,4 +1,20 @@
-﻿using System;
+﻿// using System;
+// using UnityEngine;
+// using System.Collections.Generic;
+ 
+// public class WebcamBehavior : MonoBehaviour {
+//     public GameObject videoScreen;
+//     private WebCamTexture backCamera;
+    
+//     void Start () {
+//         backCamera = new WebCamTexture();
+//         videoScreen.GetComponent<Renderer>().material.mainTexture = backCamera;
+//         backCamera.Play();
+//     }
+    
+// }
+
+using System;
 using UnityEngine;
 using System.Collections.Generic;
  
@@ -111,6 +127,9 @@ public class WebcamBehavior : MonoBehaviour {
                        
                         // start playing
                         m_texture.Play();
+
+                        
+                        GameObject.Find("Physical Camera").GetComponent<Camera>().targetTexture = (RenderTexture)CameraMaterial.mainTexture;
                        
                         // assign the texture
                         CameraMaterial.mainTexture = m_texture;
@@ -131,6 +150,7 @@ public class WebcamBehavior : MonoBehaviour {
             m_texture.didUpdateThisFrame)
         {
             CameraMaterial.mainTexture = m_texture;
+            GameObject.Find("Physical Camera").GetComponent<Camera>().targetTexture = (RenderTexture)CameraMaterial.mainTexture;
         }
     }
 }
