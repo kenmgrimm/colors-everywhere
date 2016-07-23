@@ -87,9 +87,8 @@ public class WebcamBehavior : MonoBehaviour {
   }
 
   private void DestroyOldCamTexture() {
-    if(webCamTexture == null) {
-      return;
-    }
+    if(webCamTexture == null) { return; }
+    
     if(webCamTexture.isPlaying) {
       webCamTexture.Stop();
     }

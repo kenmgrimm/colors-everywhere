@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+// Smooth curve through points
+//   http://answers.unity3d.com/questions/392606/line-drawing-how-can-i-interpolate-between-points.html
 public class Pointer : MonoBehaviour {
 	private float distance = 0.5f;
 	private LineRenderer line;
@@ -18,13 +20,10 @@ public class Pointer : MonoBehaviour {
 		endPoints = new Dictionary<Vector3, bool>();
 		line = GetComponent<LineRenderer>();
 		line.SetPosition(0, Camera.main.transform.position + new Vector3(0, -0.1f, 0));
-		
-    rend = GameObject.Find("Painted Dot Yellow").GetComponent<Renderer>();
 	}
 
 	public void ChangeColor() {
-		lerpedColor = Color.Lerp(Color.white, Color.blue, Mathf.PingPong(Time.time, 0.1f));
-		rend.material.color = lerpedColor;
+		lerpedColor = Color.Lerp(Color.red, Color.blue, Mathf.PingPong(Time.time, 1f));
 	}
 
 	public void ChangeDistance() {
@@ -49,7 +48,8 @@ public class Pointer : MonoBehaviour {
 			endPoints[endPoint] = true;
 
 // START COROUTINE FOR THIS???
-			Instantiate(dot, endPoint, Quaternion.identity);
+			GameObject newDot = Instantiate(dot, endPoint, Quaternion.identity) as GameObject;
+			newDot.GetComponent<Renderer>().material.color = lerpedColor;
 		}
 		// if(Physics.Raycast(ray, out hit)) {
 		// 	Debug.Log(hit.transform.name);
