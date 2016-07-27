@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Calculating the size of area. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Calculating the size of area</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/sizeOfArea.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Drawing API</div><div class="item-row-tag">Math</div>
+</div>
+        	<div>Example of calculating the size of area.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Hold Left Shift and click on the map to add a point.<br/>Hold Control to move the points.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">CalcAreaExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/CalcAreaExample")]
+    public class CalcAreaExample : MonoBehaviour
+    {
+        public Texture2D markerTexture;
+
+        private OnlineMaps api;
+        private bool changed = false;
+        private List&lt;OnlineMapsMarker&gt; markers = new List&lt;OnlineMapsMarker&gt;();
+        private List&lt;Vector2&gt; markerPositions = new List&lt;Vector2&gt;();
+        private OnlineMapsDrawingPoly polygon;
+
+        public float borderWeight;
+
+        private float _borderWeight;
+
+        private void CheckMarkerPositions()
+        {
+            // Check the position of each marker.
+            for (int i = 0; i &lt; markers.Count; i++)
+            {
+                if (markerPositions[i] != markers[i].position)
+                {
+                    // If the position marker changed, then change the value in markerPositions. 
+                    // In the polygon value changes automatically.
+                    markerPositions[i] = markers[i].position;
+                    changed = true;
+                }
+            }
+        }
+
+        private void OnMouseUp()
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                // Get the geographical coordinates of the cursor.
+                Vector2 cursorCoords = api.control.GetCoords();
+
+                // Create a new marker at the specified coordinates.
+                OnlineMapsMarker marker = api.AddMarker(cursorCoords, markerTexture,
+                    "Marker " + (api.markers.Length + 1));
+
+                // Save marker and coordinates.
+                markerPositions.Add(cursorCoords);
+                markers.Add(marker);
+
+                // Mark that markers changed.
+                changed = true;
+            }
+        }
+
+        private void Start()
+        {
+            // Get a reference to an instance of the map.
+            api = OnlineMaps.instance;
+
+            _borderWeight = borderWeight;
+        }
+
+        private void Update()
+        {
+            if (_borderWeight != borderWeight)
+            {
+                _borderWeight = borderWeight;
+                if (polygon != null)
+                {
+                    polygon.borderWeight = borderWeight;
+                    api.Redraw();
+                }
+            }
+
+            // Check the position of the markers.
+            CheckMarkerPositions();
+
+            // If nothing happens, then return.
+            if (!changed) return;
+            changed = false;
+
+            // If the number of points is less than 3, then return.
+            if (markers.Count &lt; 3)
+            {
+                api.Redraw();
+                return;
+            }
+
+            // If the polygon is not created, then create.
+            if (polygon == null)
+            {
+                // For points, reference to markerPositions. 
+                // If you change the values ​​in markerPositions, value in the polygon will be adjusted automatically.
+                polygon = new OnlineMapsDrawingPoly(markerPositions, Color.black, borderWeight, new Color(1, 1, 1, 0.3f));
+
+                // Add an element to the map.
+                api.AddDrawingElement(polygon);
+            }
+
+            // Calculates area of ​​the polygon.
+            // Important: this algorithm works correctly only if the lines do not intersect.
+            float area = 0;
+
+            // Triangulate points.
+            int[] indexes = OnlineMapsUtils.Triangulate(markerPositions).ToArray();
+
+            // Calculate the area of each triangle.
+            for (int i = 0; i &lt; indexes.Length / 3; i++)
+            {
+                // Get the points of the triangle.
+                Vector2 p1 = markerPositions[indexes[i * 3]];
+                Vector2 p2 = markerPositions[indexes[i * 3 + 1]];
+                Vector2 p3 = markerPositions[indexes[i * 3 + 2]];
+
+                // Calculate the distance between points.
+                float d1 = OnlineMapsUtils.DistanceBetweenPoints(p1, p2).magnitude;
+                float d2 = OnlineMapsUtils.DistanceBetweenPoints(p2, p3).magnitude;
+                float d3 = OnlineMapsUtils.DistanceBetweenPoints(p3, p1).magnitude;
+
+                // Calculate the area.
+                float p = (d1 + d2 + d3) / 2;
+                area += Mathf.Sqrt(p * (p - d1) * (p - d2) * (p - d2));
+            }
+
+            Debug.Log("Area: " + area + " km^2");
+
+            api.Redraw();
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

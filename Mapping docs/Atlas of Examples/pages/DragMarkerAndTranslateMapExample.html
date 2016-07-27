@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Moving the map, at the approach of a 3D marker to the map border. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Moving the map, at the approach of a 3D marker to the map border</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/dragMarkerAndTranslateMap.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div>
+</div>
+        	<div>Example of moving the map, at the approach of a 3D marker to the map border.</div>
+            <div class="requirement"><strong>Requirement:</strong> 3D Control</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Drag the marker.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">DragMarkerAndTranslateMapExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DragMarkerAndTranslateMapExample")]
+    public class DragMarkerAndTranslateMapExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Prefab of 3D marker.
+        /// &lt;/summary&gt;
+        public GameObject prefab;
+
+        /// &lt;summary&gt;
+        /// The minimum speed of movement map.
+        /// &lt;/summary&gt;
+        public float minSpeed = 0;
+
+        /// &lt;summary&gt;
+        /// The maximum speed of movement map.
+        /// &lt;/summary&gt;
+        public float maxSpeed = 1;
+
+        /// &lt;summary&gt;
+        /// Relative edge of map (0-1).
+        /// &lt;/summary&gt;
+        public float edge = 0.1f;
+
+        private void Start()
+        {
+            // Create a new 3D marker.
+            OnlineMapsMarker3D marker = OnlineMapsControlBase3D.instance.AddMarker3D(OnlineMaps.instance.position,
+                prefab);
+
+            // Subscribe to OnDrag event.
+            marker.OnDrag += OnMarkerDrag;
+        }
+
+        private void OnMarkerDrag(OnlineMapsMarkerBase marker)
+        {
+            // Stores the coordinates of the boundaries of the map.
+            Vector2 tl = OnlineMaps.instance.topLeftPosition;
+            Vector2 br = OnlineMaps.instance.bottomRightPosition;
+
+            // Fix 180 meridian.
+            Vector2 dist = tl - br;
+            dist.x *= -1;
+            if (dist.x &lt; 0) dist.x += 360;
+
+            Vector2 scale = dist * edge;
+
+            // Calculates offset of map.
+            Vector2 offTL = marker.position - tl;
+            Vector2 offBR = marker.position - br;
+
+            offTL.y *= -1;
+            offBR.x *= -1;
+
+            if (offTL.x &lt; 0) offTL.x += 360;
+            if (offBR.x &lt; 0) offBR.x += 360;
+
+            Vector2 mapOffset = new Vector2();
+
+            if (offTL.x &lt; scale.x) mapOffset.x = -offTL.x * Mathf.Lerp(minSpeed, maxSpeed, 1 - offTL.x / scale.x);
+            if (offTL.y &lt; scale.y) mapOffset.y = offTL.y * Mathf.Lerp(minSpeed, maxSpeed, 1 - offTL.y / scale.y);
+            if (offBR.x &lt; scale.x) mapOffset.x = offBR.x * Mathf.Lerp(minSpeed, maxSpeed, 1 - offBR.x / scale.x);
+            if (offBR.y &lt; scale.y) mapOffset.y = -offBR.y * Mathf.Lerp(minSpeed, maxSpeed, 1 - offBR.y / scale.y);
+
+            // If offset not equal zero, then move the map.
+            if (mapOffset != Vector2.zero) OnlineMaps.instance.position += mapOffset;
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

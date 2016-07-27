@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Custom system of markers for NGUI. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Custom system of markers for NGUI</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/nGUIMarkerSystem.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">NGUI</div><div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        	<div>Example of custom marker system for NGUI.</div>
+            <div class="requirement"><strong>Requirement:</strong> NGUI</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Use NGUICustomMarkerSystemExample.AddMarker to create new marker.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">NGUICustomMarkerSystemExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+#if NGUI
+
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Collections;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/NGUICustomMarkerSystemExample")]
+    public class NGUICustomMarkerSystemExample : MonoBehaviour
+    {
+        private static List&lt;NGUICustomMarkerExample&gt; _markers;
+
+        private static NGUICustomMarkerSystemExample instance; 
+
+        public Transform container;
+        public GameObject prefab;
+
+        public static List&lt;NGUICustomMarkerExample&gt; markers
+        {
+            get
+            {
+                if (_markers == null) _markers = new List&lt;NGUICustomMarkerExample&gt;();
+                return _markers;
+            }
+        }
+
+        public static NGUICustomMarkerExample AddMarker(Vector2 position)
+        {
+            GameObject go = Instantiate(instance.prefab) as GameObject;
+            go.transform.parent = instance.container;
+            go.transform.localScale = Vector3.one;
+            NGUICustomMarkerExample marker = go.GetComponent&lt;NGUICustomMarkerExample&gt;();
+            marker.position = position;
+            markers.Add(marker);
+            return marker;
+        }
+
+        private void OnEnable()
+        {
+            instance = this;
+        }
+
+        private void Start()
+        {
+            Vector2 position = new Vector2(0, 0);
+            AddMarker(position);
+
+            OnlineMaps.instance.OnMapUpdated += OnMapUpdated;
+            OnMapUpdated();
+        }
+
+        private void OnMapUpdated()
+        {
+            Vector2 tl = OnlineMaps.instance.topLeftPosition;
+            Vector2 br = OnlineMaps.instance.bottomRightPosition;
+
+            Rect rect = new Rect(tl.x, br.y, br.x - tl.x, tl.y - br.y);
+            if (rect.width &lt; 0) rect.width += 360;
+
+            foreach (NGUICustomMarkerExample marker in markers)
+            {
+                Vector2 p = marker.position;
+                GameObject go = marker.gameObject;
+
+                if (!rect.Contains(p))
+                {
+                    p.x += 360;
+
+                    if (!rect.Contains(p))
+                    {
+                        if (go.activeSelf) go.SetActive(false);
+                        continue;
+                    }
+                }
+
+                if (!go.activeSelf) go.SetActive(true);
+
+                Vector2 screenPosition = OnlineMapsControlBase.instance.GetScreenPosition(p);
+                screenPosition.x -= Screen.width / 2;
+                screenPosition.y -= Screen.height / 2;
+                Vector2 buttonOffset = new Vector2(-marker.size.x / 2, 0);
+                marker.widget.SetRect(screenPosition.x + buttonOffset.x, screenPosition.y + buttonOffset.y, marker.size.x, marker.size.y);
+            }
+        }
+    }
+}
+
+#endif</code></pre>
+    </div>
+</div><div class="code-file">
+    <div class="filename">NGUICustomMarkerExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+#if NGUI
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/NGUICustomMarkerExample")]
+    public class NGUICustomMarkerExample : MonoBehaviour
+    {
+        public Vector2 position;
+        public Vector2 size = new Vector2(32, 32);
+
+        public UIWidget widget
+        {
+            get { return GetComponent&lt;UIWidget&gt;(); }
+        }
+    }
+}
+
+#endif</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

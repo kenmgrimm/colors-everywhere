@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Overlay in tileset. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Overlay in tileset</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/tilesetOverlay.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Overlay</div>
+</div>
+        	<div>Example of how to make the overlay for the tileset.</div>
+            <div class="requirement"><strong>Requirement:</strong> Tileset Control</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Select overlay texture.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">TilesetOverlayExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/TilesetOverlayExample")]
+    public class TilesetOverlayExample : MonoBehaviour
+    {
+        // Overlay texture in mercator projection
+        public Texture texture;
+
+        // Overlay transparency
+        [Range(0, 1)] public float alpha = 1;
+
+        private Mesh overlayMesh;
+        private Material material;
+        private Collider tilesetCollider;
+
+        private void Start()
+        {
+            // Create overlay container
+            GameObject overlayContainer = new GameObject("OverlayContainer");
+            overlayContainer.transform.parent = transform;
+
+            // Init overlay material
+            MeshRenderer meshRenderer = overlayContainer.AddComponent&lt;MeshRenderer&gt;();
+            MeshFilter meshFilter = overlayContainer.AddComponent&lt;MeshFilter&gt;();
+            material = new Material(Shader.Find("Transparent/Diffuse"));
+            material.mainTexture = texture;
+            meshRenderer.sharedMaterial = material;
+
+            overlayMesh = meshFilter.sharedMesh = new Mesh();
+            overlayMesh.name = "Overlay Mesh";
+            overlayMesh.MarkDynamic();
+            overlayMesh.vertices = new Vector3[4];
+
+            // Subscribe to events
+            OnlineMaps.instance.OnChangePosition += UpdateMesh;
+            OnlineMaps.instance.OnChangeZoom += UpdateMesh;
+
+            // Init mesh
+            UpdateMesh();
+        }
+
+        private void UpdateMesh()
+        {
+            OnlineMapsTileSetControl control = OnlineMapsTileSetControl.instance;
+            if (tilesetCollider == null) tilesetCollider = control.GetComponent&lt;Collider&gt;();
+            Bounds bounds = tilesetCollider.bounds;
+
+            // Clear overlay mesh
+            overlayMesh.Clear(true);
+
+            // Init verticles and normals
+            float y = bounds.max.y + 0.5f;
+            overlayMesh.vertices = new[]
+            {
+                new Vector3(bounds.min.x, y, bounds.min.z),
+                new Vector3(bounds.min.x, y, bounds.max.z),
+                new Vector3(bounds.max.x, y, bounds.max.z),
+                new Vector3(bounds.max.x, y, bounds.min.z)
+            };
+
+            overlayMesh.normals = new[]
+            {
+                Vector3.up,
+                Vector3.up,
+                Vector3.up,
+                Vector3.up
+            };
+
+            // Init overlay UV
+            OnlineMaps api = OnlineMaps.instance;
+            Vector2 topLeftPosition = api.topLeftPosition;
+            Vector2 bottomRightPosition = api.bottomRightPosition;
+
+            Vector2 topLeftTile = OnlineMapsUtils.LatLongToTilef(topLeftPosition, api.zoom);
+            Vector2 bottomRightTile = OnlineMapsUtils.LatLongToTilef(bottomRightPosition, api.zoom);
+
+            int maxTileCount = 1 &lt;&lt; api.zoom;
+
+            float uvX1 = topLeftTile.x / maxTileCount;
+            float uvX2 = bottomRightTile.x / maxTileCount;
+
+            if (uvX1 &gt; uvX2) uvX2 += 1;
+
+            float uvY1 = 1 - topLeftTile.y / maxTileCount;
+            float uvY2 = 1 - bottomRightTile.y / maxTileCount;
+
+            overlayMesh.uv = new[]
+            {
+                new Vector2(uvX2, uvY1),
+                new Vector2(uvX2, uvY2),
+                new Vector2(uvX1, uvY2),
+                new Vector2(uvX1, uvY1)
+            };
+
+            // Init triangles
+            overlayMesh.SetTriangles(new[]
+            {
+                0, 1, 2,
+                0, 2, 3
+            }, 0);
+
+            overlayMesh.RecalculateBounds();
+            overlayMesh.RecalculateNormals();
+        }
+
+        private void Update()
+        {
+            if (material.color.a != alpha)
+            {
+                Color color = material.color;
+                color.a = alpha;
+                material.color = color;
+            }
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

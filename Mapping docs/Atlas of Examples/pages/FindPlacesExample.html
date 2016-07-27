@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Searches for places near the location. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Searches for places near the location</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/findPlaces.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Math</div>
+</div>
+        	<div>Searches for places where you can eat in a radius of 5 km from the specified coordinates, creating markers for these places, showing them on the map, and displays the name and coordinates of these locations in the console.</div>
+            <div class="requirement"><strong>Requirement:</strong> Google API Key</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>In the script, specify your Google API Key.<br/>Add this script to map GameObject.<br/>In the console, you will see the name and coordinates of place locations.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">FindPlacesExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/FindPlacesExample")]
+    public class FindPlacesExample : MonoBehaviour
+    {
+        private void Start()
+        {
+            OnlineMapsFindPlaces.FindNearby(
+                new Vector2(151.1957362f, -33.8670522f),
+                5000,
+                "ADD YOUR OWN KEY HERE", // &lt;----------------------------- Google API Key
+                null,
+                null,
+                "food").OnComplete += OnComplete;
+        }
+
+        private void OnComplete(string s)
+        {
+            OnlineMapsFindPlacesResult[] results = OnlineMapsFindPlaces.GetResults(s);
+            if (results == null)
+            {
+                Debug.Log("Error");
+                Debug.Log(s);
+                return;
+            }
+
+            List&lt;OnlineMapsMarker&gt; markers = new List&lt;OnlineMapsMarker&gt;();
+
+            foreach (OnlineMapsFindPlacesResult result in results)
+            {
+                Debug.Log(result.name);
+                Debug.Log(result.location);
+
+                OnlineMapsMarker marker = OnlineMaps.instance.AddMarker(result.location, result.name);
+                markers.Add(marker);
+            }
+
+            Vector2 center;
+            int zoom;
+            OnlineMapsUtils.GetCenterPointAndZoom(markers.ToArray(), out center, out zoom);
+
+            OnlineMaps.instance.position = center;
+            OnlineMaps.instance.zoom = zoom + 1;
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scale of markers by zoom. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Scale of markers by zoom</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/scaleMarkerByZoom.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div>
+</div>
+        	<div>Example of scaling markers when changing zoom.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">MarkerScaleByZoomExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/MarkerScaleByZoomExample")]
+    public class MarkerScaleByZoomExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Zoom, when the scale = 1.
+        /// &lt;/summary&gt;
+        public int defaultZoom = 15;
+
+        /// &lt;summary&gt;
+        /// Instance of marker.
+        /// &lt;/summary&gt;
+        private OnlineMapsMarkerBase marker;
+
+        /// &lt;summary&gt;
+        /// Init.
+        /// &lt;/summary&gt;
+        private void Start()
+        {
+            // Create a new marker.
+            marker = OnlineMaps.instance.AddMarker(new Vector2(15, 15));
+
+            // Subscribe to change zoom.
+            OnlineMaps.instance.OnChangeZoom += OnChangeZoom;
+
+            // Initial rescale marker.
+            OnChangeZoom();
+        }
+
+        /// &lt;summary&gt;
+        /// On change zoom.
+        /// &lt;/summary&gt;
+        private void OnChangeZoom()
+        {
+            float originalScale = 1 &lt;&lt; defaultZoom;
+            float currentScale = 1 &lt;&lt; OnlineMaps.instance.zoom;
+
+            marker.scale = currentScale / originalScale;
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+@charset "utf-8";
+
+.title-row > div {
+	display:inline-block;
+}
+
+.title {
+	font-size:24px;
+	font-weight:bold;
+	vertical-align:middle;
+	margin-left:50px;
+	margin-right:50px;
+}
+
+.code {
+    background-color: white;
+    color: black;
+	display:table;
+	width:100%;
+}
+
+.code-col {
+	display:table-column;
+}
+
+.code-row {
+	display:table-row;
+}
+
+.code-cell {
+	display:table-cell;
+}
+
+.code p
+{
+	margin-top:0px;
+	margin-bottom:0px;
+}
+
+span.comment {
+    color: green;
+}
+
+span.keyword {
+    color: blue;
+}
+
+.lineNumber {
+    background-color: gray;
+	color:white;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.filename {
+    background-color: LightSlateGray;
+    color: white;
+    font-size: medium;
+    font-weight: bold;
+    line-height: 30px;
+    text-align: center;
+}
+
+code[class*="language-"] a[href],
+pre[class*="language-"] a[href] {
+	border-bottom: 1px dashed CornflowerBlue;
+	cursor: help;
+	color:CornflowerBlue;
+	text-decoration: none;
+}
+
+code[class*="language-"] a[href]:hover,
+pre[class*="language-"] a[href]:hover {
+	border-bottom: 1px solid CornflowerBlue;
+	cursor: help;
+}
+
+.example-info > div {
+	margin-bottom:10px;
+}

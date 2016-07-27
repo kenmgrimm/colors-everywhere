@@ -1,0 +1,827 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Online Maps. Atlas of Examples</title>
+    <link href="styles/general.css" rel="stylesheet" type="text/css">
+    <link href="styles/index.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="scripts/index.js"></script>
+</head>
+<body onLoad="OnLoaded();">
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="content">
+    <div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/MoveMarkersExample.html"><img src="images/animationMovingMarker.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/MoveMarkersExample.html">Animated moving the marker</a></div>
+        <div>Example of an animated marker moving between locations.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        <div class="button" href="pages/MoveMarkersExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/CalcAreaExample.html"><img src="images/sizeOfArea.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/CalcAreaExample.html">Calculating the size of area</a></div>
+        <div>Example of calculating the size of area.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Drawing API</div><div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/CalcAreaExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DistanceAndDirectionExample.html"><img src="images/distanceAndDirection.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DistanceAndDirectionExample.html">Calculation of the distance and angle between the locations</a></div>
+        <div>Example of calculation of the distance and angle between the locations.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/DistanceAndDirectionExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ChangeMarkerTextureExample.html"><img src="images/changeMarkerTexture.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ChangeMarkerTextureExample.html">Change texture of 2D markers</a></div>
+        <div>Example of a dynamic change texture of 2D marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div><div class="item-row-tag">Texture</div>
+</div>
+        <div class="button" href="pages/ChangeMarkerTextureExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ModifyTooltipStyleExample.html"><img src="images/changingTooltipStyle.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ModifyTooltipStyleExample.html">Changing the style of tooltip</a></div>
+        <div>Example of how to intercept preparation of style for drawing tooltips.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Tooltip</div>
+</div>
+        <div class="button" href="pages/ModifyTooltipStyleExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ChangeMapTextureExample.html"><img src="images/changeTexture.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ChangeMapTextureExample.html">Changing the texture map for GUITexture map</a></div>
+        <div>Example of a dynamic change texture, which will draw maps.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">GUITexture</div><div class="item-row-tag">Texture</div>
+</div>
+        <div class="button" href="pages/ChangeMapTextureExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/CheckIntenetConnectionExample.html"><img src="images/checkInternetConnection.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/CheckIntenetConnectionExample.html">Checking Internet connection</a></div>
+        <div>Example of how to test the connection to the Internet.</div>
+        
+        <div class="button" href="pages/CheckIntenetConnectionExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/MarkerClickExample.html"><img src="images/markerClick.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/MarkerClickExample.html">Clicking on the marker</a></div>
+        <div>Example of how to create a click event for dynamic markers and markers created by the inspector.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        <div class="button" href="pages/MarkerClickExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ControlDataTrafficExample.html"><img src="images/controlSizeOfTiles.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ControlDataTrafficExample.html">Control the size of downloaded tiles</a></div>
+        <div>Example of how to track the size of downloaded tiles.</div>
+        
+        <div class="button" href="pages/ControlDataTrafficExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ScreenToGeoExample.html"><img src="images/screenToGeo.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ScreenToGeoExample.html">Convert screen coordinates into geographic coordinates</a></div>
+        <div>Example of the conversion of screen coordinates into geographic coordinates.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/ScreenToGeoExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/Marker3D_GPS_Example.html"><img src="images/marker3d_GPS.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/Marker3D_GPS_Example.html">Creating a 3D marker in GPS location</a></div>
+        <div>Example of how to dynamically create a 3D marker in the GPS locations of user.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div><div class="item-row-tag">GPS</div><div class="item-row-tag">Location Service</div>
+</div>
+        <div class="button" href="pages/Marker3D_GPS_Example.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/Marker_GPS_Example.html"><img src="images/createMarkerGPS.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/Marker_GPS_Example.html">Creating a marker in GPS location</a></div>
+        <div>Example of how to dynamically create a 2D marker in the GPS locations of user.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div><div class="item-row-tag">GPS</div><div class="item-row-tag">Location Service</div>
+</div>
+        <div class="button" href="pages/Marker_GPS_Example.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/Marker3D_Example.html"><img src="images/marker3d.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/Marker3D_Example.html">Creating of 3D marker</a></div>
+        <div>Example of dynamic creating 3d marker, and change the position of 3D marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div>
+</div>
+        <div class="button" href="pages/Marker3D_Example.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/NGUICustomMarkerSystemExample.html"><img src="images/nGUIMarkerSystem.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/NGUICustomMarkerSystemExample.html">Custom system of markers for NGUI</a></div>
+        <div>Example of custom marker system for NGUI.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">NGUI</div><div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        <div class="button" href="pages/NGUICustomMarkerSystemExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/uGUICustomMarkerEngineExample.html"><img src="images/uGUIMarkerSystem.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/uGUICustomMarkerEngineExample.html">Custom system of markers for uGUI</a></div>
+        <div>Example of custom marker system for uGUI.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">uGUI</div><div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        <div class="button" href="pages/uGUICustomMarkerEngineExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DetectWaterByTextureExample.html"><img src="images/detectWater.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DetectWaterByTextureExample.html">Detection of water by texture</a></div>
+        <div>Detect the location on the water or on the land by additional texture.</div>
+        
+        <div class="button" href="pages/DetectWaterByTextureExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DottedLineExample.html"><img src="images/dottedLine.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DottedLineExample.html">Dotted line</a></div>
+        <div>Example how to draw a dotted line in tileset.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Drawing API</div><div class="item-row-tag">Tileset</div><div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/DottedLineExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DragMarkerByLongPressExample.html"><img src="images/dragMarkerByLongPress.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DragMarkerByLongPressExample.html">Drag the marker by long press</a></div>
+        <div>Example of how to drag the markers by long press. It is convenient for mobile devices.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        <div class="button" href="pages/DragMarkerByLongPressExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/OnDrawTooltipExample.html"><img src="images/drawBoxAroundMarker.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/OnDrawTooltipExample.html">Draw your own tooltip</a></div>
+        <div>Example of how to intercept drawing tooltips and draw them yourself. <br/>In this case, the square drawn around the marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Tooltip</div>
+</div>
+        <div class="button" href="pages/OnDrawTooltipExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/uGUICustomTooltipExample.html"><img src="images/uGUITooltips.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/uGUICustomTooltipExample.html">Drawing tooltip using uGUI</a></div>
+        <div>Example of drawing tooltips using uGUI.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">uGUI</div><div class="item-row-tag">Marker</div><div class="item-row-tag">Tooltip</div>
+</div>
+        <div class="button" href="pages/uGUICustomTooltipExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/TooltipWithoutBackgroundExample.html"><img src="images/tooltipWithoutBackground.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/TooltipWithoutBackgroundExample.html">Drawing tooltips without background</a></div>
+        <div>Example of how to draw tooltip without a background.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Tooltip</div>
+</div>
+        <div class="button" href="pages/TooltipWithoutBackgroundExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/GetElevationExample.html"><img src="images/getElevation.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/GetElevationExample.html">Get elevation by the coordinate</a></div>
+        <div>Example of get elevation value in the coordinate using Google Elevation API.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Elevation</div>
+</div>
+        <div class="button" href="pages/GetElevationExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/GroupMarkersExample.html"><img src="images/groupingMarkers.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/GroupMarkersExample.html">Grouping of markers</a></div>
+        <div>Example of grouping markers.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/GroupMarkersExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DrawingElementEventsExample.html"><img src="images/drawingElementEvents.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DrawingElementEventsExample.html">Handling events of DrawingElement</a></div>
+        <div>Example of using the events of DrawingElement.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Drawing API</div>
+</div>
+        <div class="button" href="pages/DrawingElementEventsExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/OnHoverExample.html"><img src="images/hoverMarker.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/OnHoverExample.html">Hover on the marker</a></div>
+        <div>Example of how to make the event hover on the marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div>
+</div>
+        <div class="button" href="pages/OnHoverExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/InertiaExample.html"><img src="images/inertia.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/InertiaExample.html">Inertia</a></div>
+        <div>Example of how to make the inertia, when you move the map.</div>
+        
+        <div class="button" href="pages/InertiaExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/InterceptElevationRequestExample.html"><img src="images/interceptElevationRequests.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/InterceptElevationRequestExample.html">Interception request to download elevation data</a></div>
+        <div>Example of how to intercept the request to the elevation data, and send elevation value to Online Maps.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Elevation</div><div class="item-row-tag">Tileset</div><div class="item-row-tag">Intercept Request</div>
+</div>
+        <div class="button" href="pages/InterceptElevationRequestExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/CustomDownloadTileExample.html"><img src="images/interceptRequestToTiles.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/CustomDownloadTileExample.html">Interception requests to download tiles</a></div>
+        <div>Example of interception request download to tiles.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Intercept Request</div>
+</div>
+        <div class="button" href="pages/CustomDownloadTileExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/LockPositionAndZoomExample.html"><img src="images/lockPositionAndZoom.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/LockPositionAndZoomExample.html">Limiting the position and zoom</a></div>
+        <div>Example of how to limit the position and zoom the map.</div>
+        
+        <div class="button" href="pages/LockPositionAndZoomExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/TilesetMapTilerOverlayExample.html"><img src="images/mapTilerOverlay.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/TilesetMapTilerOverlayExample.html">MapTiler Overlay</a></div>
+        <div>Example of how to make the overlay from MapTiler tiles.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Overlay</div>
+</div>
+        <div class="button" href="pages/TilesetMapTilerOverlayExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DragMarkerAndTranslateMapExample.html"><img src="images/dragMarkerAndTranslateMap.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DragMarkerAndTranslateMapExample.html">Moving the map, at the approach of a 3D marker to the map border</a></div>
+        <div>Example of moving the map, at the approach of a 3D marker to the map border.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div>
+</div>
+        <div class="button" href="pages/DragMarkerAndTranslateMapExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/OSMRequestExample.html"><img src="images/Overpass.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/OSMRequestExample.html">Open Street Map Overpass API</a></div>
+        <div>Example of how to make a request to Open Street Map Overpass API and handle the response.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Overpass API</div>
+</div>
+        <div class="button" href="pages/OSMRequestExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/TilesetMarkerDepthExample.html"><img src="images/tilesetMarkerDepths.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/TilesetMarkerDepthExample.html">Order drawing of markers in tileset.</a></div>
+        <div>Example of how to change the sort order of the markers.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Marker</div>
+</div>
+        <div class="button" href="pages/TilesetMarkerDepthExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/TilesetOverlayExample.html"><img src="images/tilesetOverlay.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/TilesetOverlayExample.html">Overlay in tileset</a></div>
+        <div>Example of how to make the overlay for the tileset.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Overlay</div>
+</div>
+        <div class="button" href="pages/TilesetOverlayExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/RealTilesetSizeExample.html"><img src="images/realWorldSize.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/RealTilesetSizeExample.html">Real world tileset size</a></div>
+        <div>Example of how to make a map that will be the real world size.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/RealTilesetSizeExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ResetCameraRotationExample.html"><img src="images/resetCameraRotation.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ResetCameraRotationExample.html">Reset camera rotation</a></div>
+        <div>Example of animated reset camera rotation.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Camera</div>
+</div>
+        <div class="button" href="pages/ResetCameraRotationExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/RoteteCameraByGPSExample.html"><img src="images/rotateCameraByGPS.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/RoteteCameraByGPSExample.html">Rotate the camera on a compass</a></div>
+        <div>Example of camera rotation using the compass of device.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Camera</div><div class="item-row-tag">GPS</div><div class="item-row-tag">Location Service</div>
+</div>
+        <div class="button" href="pages/RoteteCameraByGPSExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/RotateMapInsteadMarkerExample.html"><img src="images/rotateCameraInsteadMarker.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/RotateMapInsteadMarkerExample.html">Rotate the camera together with a marker</a></div>
+        <div>Example of rotation of the camera together with a marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Camera</div>
+</div>
+        <div class="button" href="pages/RotateMapInsteadMarkerExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/CacheTilesExample.html"><img src="images/cache.jpg"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/CacheTilesExample.html">Runtime cache tiles</a></div>
+        <div>Example of runtime cache tiles in Application.persistentDataPath, and loading of tiles from the cache.<br/><strong>Note:</strong> This example does not work in Webplayer.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Cache</div><div class="item-row-tag">Intercept Request</div>
+</div>
+        <div class="button" href="pages/CacheTilesExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/SaveMapStateExample.html"><img src="images/saveMapState.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/SaveMapStateExample.html">Save state of map</a></div>
+        <div>Example of runtime saving map state.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">XML</div>
+</div>
+        <div class="button" href="pages/SaveMapStateExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/SaveMarker3DExample.html"><img src="images/save3DMarkers.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/SaveMarker3DExample.html">Saving 3D markers to PlayerPrefs</a></div>
+        <div>Example of runtime saving 3D markers to PlayerPrefs, and loading of 3D markers from PlayerPrefs.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div><div class="item-row-tag">XML</div>
+</div>
+        <div class="button" href="pages/SaveMarker3DExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/SaveMarkersExample.html"><img src="images/save2DMarkers.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/SaveMarkersExample.html">Saving markers to PlayerPrefs</a></div>
+        <div>Example of runtime saving 2D markers to PlayerPrefs, and loading of 2D markers from PlayerPrefs.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div><div class="item-row-tag">XML</div>
+</div>
+        <div class="button" href="pages/SaveMarkersExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/MarkerScaleByZoomExample.html"><img src="images/scaleMarkerByZoom.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/MarkerScaleByZoomExample.html">Scale of markers by zoom</a></div>
+        <div>Example of scaling markers when changing zoom.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div>
+</div>
+        <div class="button" href="pages/MarkerScaleByZoomExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/FindDirectionExample.html"><img src="images/findDirection.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/FindDirectionExample.html">Search a route between two locations</a></div>
+        <div>Search a route between two locations and draws the route.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Drawing API</div>
+</div>
+        <div class="button" href="pages/FindDirectionExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/FindLocationNameExample.html"><img src="images/reverseGeocoding.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/FindLocationNameExample.html">Search the location name by the coordinate (Reverse Geocoding)</a></div>
+        <div>Example how to find the name of the location by coordinates.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div>
+</div>
+        <div class="button" href="pages/FindLocationNameExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/FindPlacesExample.html"><img src="images/findPlaces.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/FindPlacesExample.html">Searches for places near the location</a></div>
+        <div>Searches for places where you can eat in a radius of 5 km from the specified coordinates, creating markers for these places, showing them on the map, and displays the name and coordinates of these locations in the console.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/FindPlacesExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/FindLocationExample.html"><img src="images/findLocation.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/FindLocationExample.html">Searching for a location by name</a></div>
+        <div>Search for a location by name, calculates best position and zoom to show it.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Math</div><div class="item-row-tag">XML</div>
+</div>
+        <div class="button" href="pages/FindLocationExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ShowMarkerLabelsByZoomExample.html"><img src="images/showLabelsInZoomRange.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ShowMarkerLabelsByZoomExample.html">Show marker labels only in the zoom range</a></div>
+        <div>Example of how to show marker labels, only in the zoom range.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div>
+</div>
+        <div class="button" href="pages/ShowMarkerLabelsByZoomExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/MoveMarkerOnRouteExample.html"><img src="images/moveMarkerOnRoute.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/MoveMarkerOnRouteExample.html">Simulation of movement marker on the route</a></div>
+        <div>Example of simulation movement marker on the route.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Google API</div>
+</div>
+        <div class="button" href="pages/MoveMarkerOnRouteExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/SmoothMoveExample.html"><img src="images/smoothMoveToGPS.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/SmoothMoveExample.html">Smooth movement to GPS location</a></div>
+        <div>Example of a smooth movement to current GPS location.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">GPS</div><div class="item-row-tag">Location Service</div>
+</div>
+        <div class="button" href="pages/SmoothMoveExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/MarkerCustomDataExample.html"><img src="images/markerCustomData.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/MarkerCustomDataExample.html">Storing user data in the marker</a></div>
+        <div>Example of storing of XML data in the marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">XML</div>
+</div>
+        <div class="button" href="pages/MarkerCustomDataExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/GetCenterPointOfMarkersExample.html"><img src="images/centerOfMarkers.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/GetCenterPointOfMarkersExample.html">The center and the best zoom for markers</a></div>
+        <div>Calculates the center and the best  zoom for all markers on the map, and show it.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Math</div>
+</div>
+        <div class="button" href="pages/GetCenterPointOfMarkersExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/MarkerClickCountExample.html"><img src="images/numberClickOnMarker.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/MarkerClickCountExample.html">The number of clicks on the marker</a></div>
+        <div>Example of calculating the amount of clicking on the marker.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div>
+</div>
+        <div class="button" href="pages/MarkerClickCountExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/ChangePositionAndZoomEventsExample.html"><img src="images/changePositionAndZoomEvents.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/ChangePositionAndZoomEventsExample.html">Tracking changes in the position and zoom</a></div>
+        <div>Example of how to track change of the position and zoom the map.</div>
+        
+        <div class="button" href="pages/ChangePositionAndZoomEventsExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/TilesetFadeExample.html"><img src="images/tilesetFade.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/TilesetFadeExample.html">Transparency of tiles in tileset</a></div>
+        <div>Example of control transparency of tile material in tileset.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div>
+</div>
+        <div class="button" href="pages/TilesetFadeExample.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/DrawingAPI_Example.html"><img src="images/drawingAPI.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/DrawingAPI_Example.html">Using Drawing API</a></div>
+        <div>Example of use Online Maps Drawing API.</div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Drawing API</div>
+</div>
+        <div class="button" href="pages/DrawingAPI_Example.html">Read more</div>
+    </div>
+</div>
+<div class="item-row split">
+    <div class="item-row-thumb">
+        <a href="pages/FindAutocompleteExample.html"><img src="images/findAutocomplete.png"/></a>
+    </div>
+    <div class="item-row-content">
+        <div class="item-row-title"><a href="pages/FindAutocompleteExample.html">Using Google AutoComplete API</a></div>
+        <div>Example of get place predictions from Google Autocomplete API.<br/></div>
+        <div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div>
+</div>
+        <div class="button" href="pages/FindAutocompleteExample.html">Read more</div>
+    </div>
+</div>
+
+</div>
+<div id="all-tags"> 
+	<div class="split" style="font-weight:bold; padding-bottom:5px; margin-bottom:10px;">Tags:</div>
+    <div>
+    	<form>
+            <input type="radio" name="tag" checked="checked" value="*">All<br/>
+            <input type="radio" name="tag" value="Cache">Cache<br/>
+<input type="radio" name="tag" value="Camera">Camera<br/>
+<input type="radio" name="tag" value="Drawing API">Drawing API<br/>
+<input type="radio" name="tag" value="Elevation">Elevation<br/>
+<input type="radio" name="tag" value="Google API">Google API<br/>
+<input type="radio" name="tag" value="GPS">GPS<br/>
+<input type="radio" name="tag" value="GUITexture">GUITexture<br/>
+<input type="radio" name="tag" value="Intercept Request">Intercept Request<br/>
+<input type="radio" name="tag" value="Location Service">Location Service<br/>
+<input type="radio" name="tag" value="Marker">Marker<br/>
+<input type="radio" name="tag" value="Marker 2D">Marker 2D<br/>
+<input type="radio" name="tag" value="Marker 3D">Marker 3D<br/>
+<input type="radio" name="tag" value="Math">Math<br/>
+<input type="radio" name="tag" value="NGUI">NGUI<br/>
+<input type="radio" name="tag" value="Overlay">Overlay<br/>
+<input type="radio" name="tag" value="Overpass API">Overpass API<br/>
+<input type="radio" name="tag" value="Texture">Texture<br/>
+<input type="radio" name="tag" value="Tileset">Tileset<br/>
+<input type="radio" name="tag" value="Tooltip">Tooltip<br/>
+<input type="radio" name="tag" value="uGUI">uGUI<br/>
+<input type="radio" name="tag" value="XML">XML<br/>
+
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Saving 3D markers to PlayerPrefs. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Saving 3D markers to PlayerPrefs</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/save3DMarkers.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div><div class="item-row-tag">XML</div>
+</div>
+        	<div>Example of runtime saving 3D markers to PlayerPrefs, and loading of 3D markers from PlayerPrefs.</div>
+            <div class="requirement"><strong>Requirement:</strong> 3D Control</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">SaveMarker3DExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/SaveMarker3DExample")]
+    public class SaveMarker3DExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Key in PlayerPrefs
+        /// &lt;/summary&gt;
+        private static string prefsKey = "markers";
+
+        /// &lt;summary&gt;
+        /// Prefab of the marker
+        /// &lt;/summary&gt;
+        public GameObject markerPrefab;
+
+        /// &lt;summary&gt;
+        /// Scale of the markers
+        /// &lt;/summary&gt;
+        public int markerScale = 20;
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(5, 5, 100, 30), "Save markers"))
+            {
+                // Save markers to PlayerPrefs
+                SaveMarkers();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// The event, which is called when the user clicked on the map.
+        /// &lt;/summary&gt;
+        private void OnMapClick()
+        {
+            OnlineMapsControlBase3D control = OnlineMapsControlBase3D.instance;
+
+            // Create new marker
+            OnlineMapsMarker3D marker = control.AddMarker3D(control.GetCoords(), markerPrefab);
+            marker.scale = markerScale;
+        }
+
+        /// &lt;summary&gt;
+        /// Saves markers to PlayerPrefs as xml string
+        /// &lt;/summary&gt;
+        private static void SaveMarkers()
+        {
+            // Create XMLDocument and first child
+            OnlineMapsXML xml = new OnlineMapsXML("Markers");
+
+            // Appands markers
+            foreach (OnlineMapsMarker3D marker in OnlineMapsControlBase3D.instance.markers3D)
+            {
+                // Create marker node
+                xml.Create("Marker", marker.position);
+            }
+
+            // Save xml string
+            PlayerPrefs.SetString(prefsKey, xml.outerXml);
+            PlayerPrefs.Save();
+        }
+
+        /// &lt;summary&gt;
+        /// Use this for initialization
+        /// &lt;/summary&gt;
+        private void Start()
+        {
+            // Try load markers
+            TryLoadMarkers();
+
+            // Subscribe to OnMapClick event
+            OnlineMapsControlBase.instance.OnMapClick += OnMapClick;
+        }
+
+        /// &lt;summary&gt;
+        /// Try load markers from PlayerPrefs
+        /// &lt;/summary&gt;
+        private void TryLoadMarkers()
+        {
+            // If the key does not exist, returns.
+            if (!PlayerPrefs.HasKey(prefsKey)) return;
+
+            // Load xml string from PlayerPrefs
+            string xmlData = PlayerPrefs.GetString(prefsKey);
+
+            // Load xml document
+            OnlineMapsXML xml = OnlineMapsXML.Load(xmlData);
+
+            // Load markers
+            foreach (OnlineMapsXML node in xml)
+            {
+                // Gets coordinates
+                Vector2 position = node.Value&lt;Vector2&gt;();
+
+                // Create marker
+                OnlineMapsMarker3D marker = OnlineMapsControlBase3D.instance.AddMarker3D(position, markerPrefab);
+                marker.scale = markerScale;
+            }
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

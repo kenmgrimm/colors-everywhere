@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Save state of map. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Save state of map</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/saveMapState.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">XML</div>
+</div>
+        	<div>Example of runtime saving map state.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">SaveMapStateExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/SaveMapStateExample")]
+    public class SaveMapStateExample : MonoBehaviour
+    {
+        private string key = "MapSettings";
+
+        private void LoadState()
+        {
+            if (!PlayerPrefs.HasKey(key)) return;
+
+            OnlineMaps api = OnlineMaps.instance;
+
+            OnlineMapsXML prefs = OnlineMapsXML.Load(PlayerPrefs.GetString(key));
+
+            OnlineMapsXML generalSettings = prefs["General"];
+            api.position = generalSettings.Get&lt;Vector2&gt;("Coordinates");
+            api.zoom = generalSettings.Get&lt;int&gt;("Zoom");
+
+            List&lt;OnlineMapsMarker&gt; markers = new List&lt;OnlineMapsMarker&gt;();
+
+            api.markers = markers.ToArray();
+        }
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(5, 5, 150, 30), "Save State")) SaveState();
+        }
+
+        private void SaveState()
+        {
+            OnlineMaps api = OnlineMaps.instance;
+
+            OnlineMapsXML prefs = new OnlineMapsXML("Map");
+
+            // Save position and zoom
+            OnlineMapsXML generalSettings = prefs.Create("General");
+            generalSettings.Create("Coordinates", api.position);
+            generalSettings.Create("Zoom", api.zoom);
+
+            // Save 2D markers
+            api.SaveMarkers(prefs);
+
+            // Save 3D markers
+            api.GetComponent&lt;OnlineMapsControlBase3D&gt;().SaveMarkers3D(prefs);
+
+            // Save settings to PlayerPrefs
+            PlayerPrefs.SetString(key, prefs.outerXml);
+        }
+
+        private void Start()
+        {
+            LoadState();
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

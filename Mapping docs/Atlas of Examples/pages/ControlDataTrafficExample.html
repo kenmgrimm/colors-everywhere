@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Control the size of downloaded tiles. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Control the size of downloaded tiles</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/controlSizeOfTiles.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	
+        	<div>Example of how to track the size of downloaded tiles.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>The size of downloaded tiles will be shown on the screen.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">ControlDataTrafficExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ControlDataTrafficExample")]
+    public class ControlDataTrafficExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Counter of downloaded data.
+        /// &lt;/summary&gt;
+        private int totalTileTraffic;
+
+        private void OnGUI()
+        {
+            // Showing the counter of downloaded data.
+            GUI.Label(new Rect(5, 5, Screen.width - 10, 30),
+                "Total downloaded tiles: " + totalTileTraffic.ToString("N0") + " bytes");
+        }
+
+        private void Start()
+        {
+            // Subscribe to the event of success download tile.
+            OnlineMapsTile.OnTileDownloaded += OnTileDownloaded;
+        }
+
+        /// &lt;summary&gt;
+        /// This method is called when tile is success downloaded.
+        /// &lt;/summary&gt;
+        /// &lt;param name="tile"&gt;Reference to tile.&lt;/param&gt;
+        private void OnTileDownloaded(OnlineMapsTile tile)
+        {
+            // Increases counter of downloaded data.
+            totalTileTraffic += tile.www.bytesDownloaded;
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

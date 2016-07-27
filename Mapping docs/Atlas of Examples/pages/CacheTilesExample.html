@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Runtime cache tiles. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Runtime cache tiles</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/cache.jpg"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Cache</div><div class="item-row-tag">Intercept Request</div>
+</div>
+        	<div>Example of runtime cache tiles in Application.persistentDataPath, and loading of tiles from the cache.<br/><strong>Note:</strong> This example does not work in Webplayer.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">CacheTilesExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+#if !UNITY_WEBPLAYER
+
+using System;
+using System.IO;
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/CacheTilesExample")]
+    public class CacheTilesExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Gets the local path for tile.
+        /// &lt;/summary&gt;
+        /// &lt;param name="tile"&gt;Reference to tile&lt;/param&gt;
+        /// &lt;returns&gt;Local path for tile&lt;/returns&gt;
+        private static string GetTilePath(OnlineMapsTile tile)
+        {
+            string[] parts =
+            {
+            Application.persistentDataPath,
+            "OnlineMapsTileCache",
+            Enum.GetName(typeof(OnlineMapsProviderEnum), tile.provider),
+            OnlineMaps.instance.type.ToString(),
+            tile.zoom.ToString(),
+            tile.x.ToString(),
+            tile.y + ".png"
+        };
+            return string.Join("/", parts);
+        }
+
+        /// &lt;summary&gt;
+        /// This method is called when loading the tile.
+        /// &lt;/summary&gt;
+        /// &lt;param name="tile"&gt;Reference to tile&lt;/param&gt;
+        private void OnStartDownloadTile(OnlineMapsTile tile)
+        {
+            // Get local path.
+            string path = GetTilePath(tile);
+
+            // If the tile is cached.
+            if (File.Exists(path))
+            {
+                // Load tile texture from cache.
+                Texture2D tileTexture = new Texture2D(256, 256);
+                tileTexture.LoadImage(File.ReadAllBytes(path));
+                tileTexture.wrapMode = TextureWrapMode.Clamp;
+
+                // Send texture to map.
+                if (OnlineMaps.instance.target == OnlineMapsTarget.texture)
+                {
+                    tile.ApplyTexture(tileTexture);
+                    OnlineMaps.instance.buffer.ApplyTile(tile);
+                }
+                else
+                {
+                    tile.texture = tileTexture;
+                    tile.status = OnlineMapsTileStatus.loaded;
+                }
+
+                // Redraw map.
+                OnlineMaps.instance.Redraw();
+            }
+            else
+            {
+                // If the tile is not cached, download tile with a standard loader.
+                OnlineMaps.instance.StartDownloadTile(tile);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// This method is called when tile is success downloaded.
+        /// &lt;/summary&gt;
+        /// &lt;param name="tile"&gt;Reference to tile.&lt;/param&gt;
+        private void OnTileDownloaded(OnlineMapsTile tile)
+        {
+            // Get local path.
+            string path = GetTilePath(tile);
+
+            // Cache tile.
+            FileInfo fileInfo = new FileInfo(path);
+            DirectoryInfo directory = fileInfo.Directory;
+            if (!directory.Exists) directory.Create();
+
+            File.WriteAllBytes(path, tile.www.bytes);
+        }
+
+        private void Start()
+        {
+            // Subscribe to the event of success download tile.
+            OnlineMapsTile.OnTileDownloaded += OnTileDownloaded;
+
+            // Intercepts requests to the download of the tile.
+            OnlineMaps.instance.OnStartDownloadTile += OnStartDownloadTile;
+        }
+    }
+}
+
+#endif</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

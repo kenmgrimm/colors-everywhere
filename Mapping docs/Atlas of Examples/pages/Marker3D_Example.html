@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Creating of 3D marker. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Creating of 3D marker</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/marker3d.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 3D</div>
+</div>
+        	<div>Example of dynamic creating 3d marker, and change the position of 3D marker.</div>
+            <div class="requirement"><strong>Requirement:</strong> 3D Control</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Click «Move Left», to increase longitude by 0.1 degrees.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">Marker3D_Example.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/Marker3D_Example")]
+    public class Marker3D_Example : MonoBehaviour
+    {
+        public GameObject markerPrefab;
+
+        private OnlineMapsMarker3D marker3D;
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(5, 5, 100, 20), "Move Left"))
+            {
+                // Change the marker coordinates.
+                Vector2 mPos = marker3D.position;
+                mPos.x += 0.1f;
+                marker3D.position = mPos;
+            }
+        }
+
+        private void Start()
+        {
+            // Get instance of OnlineMapsControlBase3D (Texture or Tileset)
+            OnlineMapsControlBase3D control = GetComponent&lt;OnlineMapsControlBase3D&gt;();
+
+            if (control == null)
+            {
+                Debug.LogError("You must use the 3D control (Texture or Tileset).");
+                return;
+            }
+
+            // Marker position. Geographic coordinates.
+            Vector2 markerPosition = new Vector2(0, 0);
+
+            // Create 3D marker
+            marker3D = control.AddMarker3D(markerPosition, markerPrefab);
+
+            // Specifies that marker should be shown only when zoom from 1 to 10.
+            marker3D.range = new OnlineMapsRange(1, 10);
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

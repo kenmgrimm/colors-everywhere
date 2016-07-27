@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reset camera rotation. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Reset camera rotation</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/resetCameraRotation.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Tileset</div><div class="item-row-tag">Camera</div>
+</div>
+        	<div>Example of animated reset camera rotation.</div>
+            <div class="requirement"><strong>Requirement:</strong> Tileset Control<br/>Allow Camera Control - ON</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">ResetCameraRotationExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ResetCameraRotationExample")]
+    public class ResetCameraRotationExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Time of animation (sec).
+        /// &lt;/summary&gt;
+        public float animationTime = 3;
+
+        /// &lt;summary&gt;
+        /// Animation Curve.
+        /// &lt;/summary&gt;
+        public AnimationCurve animationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
+        private float time;
+        private bool isReset;
+        private float camX;
+        private float camY;
+        private OnlineMapsTileSetControl control;
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(5, 5, 100, 30), "Reset") && !isReset)
+            {
+                camX = control.cameraRotation.x;
+                camY = control.cameraRotation.y;
+                isReset = true;
+            }
+        }
+
+        private void Start()
+        {
+            control = OnlineMapsTileSetControl.instance;
+        }
+
+        private void Update()
+        {
+            if (!isReset) return;
+
+            time += Time.deltaTime;
+            float t = time / animationTime;
+            if (t &gt;= 1)
+            {
+                time = 0;
+                isReset = false;
+                t = 1;
+            }
+            float f = animationCurve.Evaluate(t);
+            control.cameraRotation.x = Mathf.Lerp(camX, 0, f);
+            control.cameraRotation.y = Mathf.Lerp(camY, 0, f);
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

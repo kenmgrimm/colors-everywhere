@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Inertia. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Inertia</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/inertia.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	
+        	<div>Example of how to make the inertia, when you move the map.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">InertiaExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/InertiaExample")]
+    public class InertiaExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Deceleration rate (0 - 1).
+        /// &lt;/summary&gt;
+        public float friction = 0.9f;
+
+        private bool isInteract;
+        private List&lt;double&gt; speedX;
+        private List&lt;double&gt; speedY;
+        private double rsX;
+        private double rsY;
+        private double lng;
+        private double lat;
+        private const int maxSamples = 5;
+
+        private void FixedUpdate()
+        {
+            if (isInteract)
+            {
+                double nlng, nlat;
+                OnlineMaps.instance.GetPosition(out nlng, out nlat);
+                double cSpeedX = (nlng - lng);
+                double cSpeedY = (nlat - lat);
+
+                speedX.Add(cSpeedX);
+                speedY.Add(cSpeedY);
+
+                while (speedX.Count &gt; maxSamples) speedX.RemoveAt(0);
+                while (speedY.Count &gt; maxSamples) speedY.RemoveAt(0);
+
+                lng = nlng;
+                lat = nlat;
+            }
+            else
+            {
+                double clng, clat;
+                OnlineMaps.instance.GetPosition(out clng, out clat);
+                clng += rsX;
+                clat += rsY;
+                OnlineMaps.instance.SetPosition(clng, clat);
+
+                rsX *= friction;
+                rsY *= friction;
+            }
+        }
+
+        private void OnMapPress()
+        {
+            OnlineMaps.instance.GetPosition(out lng, out lat);
+            isInteract = true;
+        }
+
+        private void OnMapRelease()
+        {
+            isInteract = false;
+
+            if (speedX.Count &gt; 0) rsX = speedX.Average();
+            else rsX = 0;
+
+            if (speedY.Count &gt; 0) rsY = speedY.Average();
+            else rsY = 0;
+
+            speedX.Clear();
+            speedY.Clear();
+        }
+
+        private void Start()
+        {
+            OnlineMapsControlBase.instance.OnMapPress += OnMapPress;
+            OnlineMapsControlBase.instance.OnMapRelease += OnMapRelease;
+            speedX = new List&lt;double&gt;();
+            speedY = new List&lt;double&gt;();
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

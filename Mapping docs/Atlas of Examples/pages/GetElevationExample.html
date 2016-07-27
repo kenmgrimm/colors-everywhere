@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Get elevation by the coordinate. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Get elevation by the coordinate</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/getElevation.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Elevation</div>
+</div>
+        	<div>Example of get elevation value in the coordinate using Google Elevation API.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Click on the map and in console will be shown elevation value.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">GetElevationExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/GetElevationExample")]
+    public class GetElevationExample : MonoBehaviour
+    {
+        private void Start()
+        {
+            // Subscribe to click on map event.
+            OnlineMapsControlBase.instance.OnMapClick += OnMapClick;
+        }
+
+        private void OnMapClick()
+        {
+            // Get elevation on click point
+            OnlineMapsGoogleAPIQuery elevationRequest =
+                OnlineMapsGetElevation.Find(OnlineMapsControlBase.instance.GetCoords());
+            elevationRequest.OnComplete += OnComplete;
+        }
+
+        private void OnComplete(string response)
+        {
+            // Get results from response string
+            OnlineMapsGetElevationResult[] results = OnlineMapsGetElevation.GetResults(response);
+
+            if (results == null)
+            {
+                // If results is null log message
+                Debug.Log("Null result");
+            }
+            else
+            {
+                // Shows first result elevation
+                Debug.Log(results[0].elevation);
+            }
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Searching for a location by name. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Searching for a location by name</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/findLocation.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Google API</div><div class="item-row-tag">Math</div><div class="item-row-tag">XML</div>
+</div>
+        	<div>Search for a location by name, calculates best position and zoom to show it.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">FindLocationExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/FindLocationExample")]
+    public class FindLocationExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Add marker at first found location.
+        /// &lt;/summary&gt;
+        public bool addMarker = true;
+
+        /// &lt;summary&gt;
+        /// Log Google Geocode API response.
+        /// &lt;/summary&gt;
+        public bool logResponse = true;
+
+        /// &lt;summary&gt;
+        /// Set map position at first found location.
+        /// &lt;/summary&gt;
+        public bool setPosition = true;
+
+        /// &lt;summary&gt;
+        /// Set best zoom at first found location.
+        /// &lt;/summary&gt;
+        public bool setZoom = true;
+
+        private void Start()
+        {
+            // Start search Chicago.
+            OnlineMapsGoogleAPIQuery query = OnlineMapsFindLocation.Find("Chicago");
+
+            // Specifies that search results should be sent to OnFindLocationComplete.
+            query.OnComplete += OnFindLocationComplete;
+        }
+
+        private void OnFindLocationComplete(string result)
+        {
+            // Log Google Geocode API response.
+            if (logResponse) Debug.Log(result);
+
+            // Get the coordinates of the first found location.
+            Vector2 position = OnlineMapsFindLocation.GetCoordinatesFromResult(result);
+
+            if (position != Vector2.zero)
+            {
+                // Create a new marker at the position of Chicago.
+                if (addMarker) OnlineMaps.instance.AddMarker(position, "Chicago");
+
+                // Set best zoom
+                if (setZoom)
+                {
+                    // Load response XML
+                    OnlineMapsXML xml = OnlineMapsXML.Load(result);
+
+                    // Get bounds node
+                    OnlineMapsXML bounds = xml.Find("//geometry/viewport");
+                    if (!bounds.isNull)
+                    {
+                        // Get corners nodes
+                        OnlineMapsXML southwest = bounds["southwest"];
+                        OnlineMapsXML northeast = bounds["northeast"];
+
+                        // Get coordinates from nodes
+                        Vector2 sw = OnlineMapsFindLocation.GetVector2FromNode(southwest);
+                        Vector2 ne = OnlineMapsFindLocation.GetVector2FromNode(northeast);
+
+                        // Get best zoom
+                        Vector2 center;
+                        int zoom;
+                        OnlineMapsUtils.GetCenterPointAndZoom(new[] {sw, ne}, out center, out zoom);
+
+                        // Set map zoom
+                        OnlineMaps.instance.zoom = zoom;
+                    }
+                }
+
+                // Set map position
+                if (setPosition) OnlineMaps.instance.position = position;
+            }
+            else
+            {
+                Debug.Log("Oops... Something is wrong.");
+            }
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

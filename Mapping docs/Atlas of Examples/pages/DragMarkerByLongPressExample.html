@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Drag the marker by long press. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Drag the marker by long press</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/dragMarkerByLongPress.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Marker 2D</div>
+</div>
+        	<div>Example of how to drag the markers by long press. It is convenient for mobile devices.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Long press on the marker to drag it.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">DragMarkerByLongPressExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DragMarkerByLongPressExample")]
+    public class DragMarkerByLongPressExample : MonoBehaviour
+    {
+        private void Start()
+        {
+            // Create a new marker.
+            OnlineMapsMarker marker = OnlineMaps.instance.AddMarker(OnlineMaps.instance.position, "My Marker");
+
+            // Subscribe to OnLongPress event.
+            marker.OnLongPress += OnMarkerLongPress;
+        }
+
+        private void OnMarkerLongPress(OnlineMapsMarkerBase marker)
+        {
+            // Starts moving the marker.
+            OnlineMapsControlBase.instance.dragMarker = marker;
+            OnlineMapsControlBase.instance.isMapDrag = false;
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

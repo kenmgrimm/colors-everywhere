@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Changing the texture map for GUITexture map. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Changing the texture map for GUITexture map</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/changeTexture.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">GUITexture</div><div class="item-row-tag">Texture</div>
+</div>
+        	<div>Example of a dynamic change texture, which will draw maps.</div>
+            <div class="requirement"><strong>Requirement:</strong> GUITexture Control</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Click «Change texture».</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">ChangeMapTextureExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ChangeMapTextureExample")]
+    public class ChangeMapTextureExample : MonoBehaviour
+    {
+        // Original texture
+        private Texture2D texture1;
+
+        // Dynamic texture
+        private Texture2D texture2;
+
+        private void ChangeMapTexture()
+        {
+            // Change display texture
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+            GUITexture gt = guiTexture;
+#else
+            GUITexture gt = GetComponent&lt;GUITexture&gt;();
+#endif
+            Texture2D activeTexture = (gt.texture == texture1) ? texture2 : texture1;
+            gt.texture = activeTexture;
+            gt.pixelInset = new Rect(activeTexture.width / -2, activeTexture.height / -2, activeTexture.width,
+                activeTexture.height);
+
+            // Change map texture
+            OnlineMaps.instance.SetTexture(activeTexture);
+        }
+
+        private void OnGUI()
+        {
+            // Change texture on button press
+            if (GUI.Button(new Rect(5, 5, 100, 20), "Change texture"))
+            {
+                ChangeMapTexture();
+            }
+        }
+
+        private void Start()
+        {
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+            GUITexture gt = guiTexture;
+#else
+            GUITexture gt = GetComponent&lt;GUITexture&gt;();
+#endif
+
+            // Get original texture
+            texture1 = (Texture2D) gt.texture;
+
+            // Create new dynamic texture
+            texture2 = new Texture2D(512, 256, TextureFormat.RGB24, false);
+
+            // Add double click on map event
+            OnlineMapsGUITextureControl.instance.OnMapDoubleClick += ChangeMapTexture;
+
+            gt.pixelInset = new Rect(texture1.width / -2, texture1.height / -2, texture1.width, texture1.height);
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

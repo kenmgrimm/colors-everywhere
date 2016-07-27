@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Drawing tooltip using uGUI. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Drawing tooltip using uGUI</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/uGUITooltips.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">uGUI</div><div class="item-row-tag">Marker</div><div class="item-row-tag">Tooltip</div>
+</div>
+        	<div>Example of drawing tooltips using uGUI.</div>
+            <div class="requirement"><strong>Requirement:</strong> Unity v4.6+</div>
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.<br/>Add prefab of tooltip.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">uGUICustomTooltipExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+#if !UNITY_4_3 && !UNITY_4_5
+
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/uGUICustomTooltipExample")]
+    public class uGUICustomTooltipExample : MonoBehaviour
+    {
+        public GameObject tooltipPrefab;
+        public Canvas container;
+
+        private OnlineMapsMarker marker;
+        private GameObject tooltip;
+
+
+	    // Use this for initialization
+	    private void Start ()
+        {
+            marker = OnlineMaps.instance.AddMarker(Vector2.zero, "Hello World");
+            marker.OnDrawTooltip = delegate {  };
+
+            OnlineMaps.instance.OnUpdateLate += OnUpdateLate;
+        }
+
+        private void OnUpdateLate()
+        {
+            OnlineMapsMarkerBase tooltipMarker = OnlineMaps.instance.tooltipMarker;
+            if (tooltipMarker == marker)
+            {
+                if (tooltip == null)
+                {
+                    tooltip = Instantiate(tooltipPrefab);
+                    (tooltip.transform as RectTransform).SetParent(container.transform);
+                }
+                Rect rect = marker.screenRect;
+                Vector2 pos = new Vector2(rect.center.x, rect.yMin + 30);
+                Vector2 point;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(container.transform as RectTransform, pos, null, out point);
+                (tooltip.transform as RectTransform).localPosition = point;
+                tooltip.GetComponentInChildren&lt;Text&gt;().text = marker.label;
+
+            }
+            else if (tooltip != null)
+            {
+                DestroyImmediate(tooltip);
+                tooltip = null;
+            }
+        }
+    }
+}
+
+#endif</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>

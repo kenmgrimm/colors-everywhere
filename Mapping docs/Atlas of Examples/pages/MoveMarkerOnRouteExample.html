@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Simulation of movement marker on the route. Online Maps. Atlas of Examples</title>
+    <link href="../styles/general.css" rel="stylesheet" type="text/css">
+    <link href="../styles/page.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="../styles/prism.css" data-noprefix />
+</head>
+<body>
+<div class="logo split">Online Maps. Atlas of Examples</div>
+<div class="title-row split" align="center">
+	<div><a class="button back" href="../index.html">Back</a></div>
+	<div class="title">Simulation of movement marker on the route</div>
+</div>
+<div class="content">
+	<div style="display:table; padding-top:10px; margin-bottom: 10px;">
+	    <div style="display:table-cell"><img src="../images/moveMarkerOnRoute.png"/></div>
+        <div class="example-info" style="display:table-cell; vertical-align:top; padding-left:20px; width:100%;">
+        	<div class="item-row-tags">
+    <div style="font-weight:bold">Tags: </div>
+    <div class="item-row-tag">Marker</div><div class="item-row-tag">Google API</div>
+</div>
+        	<div>Example of simulation movement marker on the route.</div>
+            
+            <div class="instructions"><strong>Usage instructions:</strong><br/>Add this script to map GameObject.</div>
+        </div>
+    </div>
+    <div class="code-file">
+    <div class="filename">MoveMarkerOnRouteExample.cs</div>
+    <div class="code">
+	<div class="code-col"></div>
+        <div class="code-col"></div>
+       <pre><code class="language-csharp line-numbers">/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace InfinityCode.OnlineMapsExamples
+{
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/MoveMarkerOnRouteExample")]
+    public class MoveMarkerOnRouteExample : MonoBehaviour
+    {
+        /// &lt;summary&gt;
+        /// Start location name
+        /// &lt;/summary&gt;
+        public string fromPlace = "Los Angeles";
+
+        /// &lt;summary&gt;
+        /// End location name
+        /// &lt;/summary&gt;
+        public string toPlace = "Hollywood";
+
+        /// &lt;summary&gt;
+        /// Speed of movement (km/h).
+        /// &lt;/summary&gt;
+        public float speed = 60;
+
+        /// &lt;summary&gt;
+        /// Move map to marker position
+        /// &lt;/summary&gt;
+        public bool lookToMarker = false;
+
+        /// &lt;summary&gt;
+        /// Orient marker on next point.
+        /// &lt;/summary&gt;
+        public bool orientMarkerOnNextPoint = false;
+
+        /// &lt;summary&gt;
+        /// Reference to marker
+        /// &lt;/summary&gt;
+        private OnlineMapsMarker marker;
+
+        /// &lt;summary&gt;
+        /// Array of route points
+        /// &lt;/summary&gt;
+        private List&lt;Vector2&gt; points;
+
+        /// &lt;summary&gt;
+        /// Current point index
+        /// &lt;/summary&gt;
+        private int pointIndex = -1;
+
+        /// &lt;summary&gt;
+        /// Current step progress
+        /// &lt;/summary&gt;
+        private float progress;
+
+        private void Start()
+        {
+            // Looking for a route between locations.
+            OnlineMapsFindDirection.Find(fromPlace, toPlace).OnComplete += OnComplete;
+        }
+
+        private void OnComplete(string response)
+        {
+            Debug.Log("OnComplete");
+            List&lt;OnlineMapsDirectionStep&gt; steps = OnlineMapsDirectionStep.TryParse(response);
+            if (steps == null)
+            {
+                Debug.Log("Something wrong");
+                Debug.Log(response);
+                return;
+            }
+
+            // Create a new marker in first point.
+            marker = OnlineMaps.instance.AddMarker(steps[0].start, "Car");
+
+            // Gets points of route.
+            points = OnlineMapsDirectionStep.GetPoints(steps);
+
+            // Draw the route.
+            OnlineMapsDrawingLine route = new OnlineMapsDrawingLine(points, Color.red, 3);
+            OnlineMaps.instance.AddDrawingElement(route);
+
+            pointIndex = 0;
+        }
+
+        private void Update()
+        {
+            if (pointIndex == -1) return;
+
+            // Start point
+            Vector3 p1 = points[pointIndex];
+
+            // End point
+            Vector3 p2 = points[pointIndex + 1];
+
+            // Total step distance
+            float stepDistance = OnlineMapsUtils.DistanceBetweenPoints(p1, p2).magnitude;
+
+            // Total step time
+            float totalTime = stepDistance / speed * 3600;
+
+            // Current step progress
+            progress += Time.deltaTime / totalTime;
+
+            if (progress &lt; 1)
+            {
+                marker.position = Vector2.Lerp(p1, p2, progress);
+
+                // Orient marker
+                if (orientMarkerOnNextPoint) marker.rotation = 1.25f - OnlineMapsUtils.Angle2D((Vector2)p1, (Vector2)p2) / 360f;
+            }
+            else
+            {
+                marker.position = p2;
+                pointIndex++;
+                progress = 0;
+                if (pointIndex &gt;= points.Count - 1)
+                {
+                    Debug.Log("Finish");
+                    pointIndex = -1;
+                }
+                else
+                {
+                    // Orient marker
+                    if (orientMarkerOnNextPoint) marker.rotation = 1.25f - OnlineMapsUtils.Angle2D((Vector2)p2, (Vector2)points[pointIndex + 1]) / 360;
+                }
+            }
+
+            if (lookToMarker) OnlineMaps.instance.position = marker.position;
+            if (OnlineMaps.instance.target != OnlineMapsTarget.tileset) OnlineMaps.instance.Redraw();
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+</div>
+<script src="../scripts/prism.js"></script>
+<script src="../scripts/page.js"></script>
+</body>
+</html>
