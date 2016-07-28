@@ -284,6 +284,7 @@ GameObject:
   - 114: {fileID: 766484829}
   - 114: {fileID: 766484831}
   - 114: {fileID: 766484832}
+  - 114: {fileID: 766484833}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -339,6 +340,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   augmentedCamera: {fileID: 1022857128}
+--- !u!114 &766484833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 766484828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c69498b6d43449acacc6454eb0ad510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentPainting: {fileID: 972582187}
 --- !u!1 &972582186
 GameObject:
   m_ObjectHideFlags: 0
