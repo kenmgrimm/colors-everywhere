@@ -6,7 +6,7 @@ using System.Collections.Generic;
 //   http://answers.unity3d.com/questions/392606/line-drawing-how-can-i-interpolate-between-points.html
 public class Pointer : MonoBehaviour {
 	private float distance = 0.2f;
-	private LineRenderer line;
+	// private LineRenderer line;
 	private Dictionary<Vector3, bool> endPoints;
 	private Camera augmentedCamera;
 
@@ -21,10 +21,10 @@ public class Pointer : MonoBehaviour {
 
 	void Start() {
 		parentPainting = GameObject.Find("Painting").transform;
-		augmentedCamera = GameObject.Find("Augmented Camera").GetComponent<Camera>();
+		augmentedCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 		endPoints = new Dictionary<Vector3, bool>();
-		line = GetComponent<LineRenderer>();
-		line.SetPosition(0, Camera.main.transform.position + new Vector3(0, -0.1f, 0));
+		// line = GetComponent<LineRenderer>();
+		// line.SetPosition(0, Camera.main.transform.position + new Vector3(0, -0.1f, 0));
 
 		ChangeColor();
 	}
@@ -52,7 +52,7 @@ public class Pointer : MonoBehaviour {
 		
 		Vector3 endPoint = ray.origin + ray.direction * distance;
 		
-		line.SetPosition(1, endPoint);
+		// line.SetPosition(1, endPoint);
 
 		if(!endPoints.ContainsKey(endPoint)) {
 			endPoints[endPoint] = true;
