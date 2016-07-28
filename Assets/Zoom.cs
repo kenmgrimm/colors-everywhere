@@ -29,6 +29,4 @@ public class Zoom : MonoBehaviour {
 		Vector3 pos = augmentedCamera.transform.localPosition;
 		augmentedCamera.transform.localPosition = new Vector3(pos.x, pos.y, pos.z + 0.02f);
 	}
-
-
 }

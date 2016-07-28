@@ -5,17 +5,22 @@ using System.Collections.Generic;
 // Smooth curve through points
 //   http://answers.unity3d.com/questions/392606/line-drawing-how-can-i-interpolate-between-points.html
 public class Pointer : MonoBehaviour {
-	private float distance = 0.1f;
+	private float distance = 0.2f;
 	private LineRenderer line;
 	private Dictionary<Vector3, bool> endPoints;
 	private Camera augmentedCamera;
 
+	private Transform parentPainting;
+
 	private Renderer rend;
 	private Color lerpedColor;
+	private float transitionRate = 0.1f;
+	private float transition = 0f;
 
 	public GameObject dot;
 
 	void Start() {
+		parentPainting = GameObject.Find("Painting").transform;
 		augmentedCamera = GameObject.Find("Augmented Camera").GetComponent<Camera>();
 		endPoints = new Dictionary<Vector3, bool>();
 		line = GetComponent<LineRenderer>();
@@ -24,14 +29,17 @@ public class Pointer : MonoBehaviour {
 		ChangeColor();
 	}
 
-	public void ChangeColor() {
-		lerpedColor = Color.Lerp(Color.red, Color.blue, Mathf.PingPong(Time.time, 1f));
+	public void ChangeColor() {;
+		lerpedColor = Color.Lerp(Color.red, Color.blue, transition += transitionRate);
+		if (transition > 1) { transition = 0; }
+
+		Debug.Log(lerpedColor);
 	}
 
 	public void ChangeDistance() {
-		distance += 0.5f;
-		if(distance > 3) {
-			distance = 0.1f;
+		distance += 0.2f;
+		if(distance > 1) {
+			distance = 0.2f;
 		}
 	}
 
@@ -50,7 +58,7 @@ public class Pointer : MonoBehaviour {
 			endPoints[endPoint] = true;
 
 // START COROUTINE FOR THIS???
-			GameObject newDot = Instantiate(dot, endPoint, Quaternion.identity) as GameObject;
+			GameObject newDot = Instantiate(dot, endPoint, Quaternion.identity, parentPainting) as GameObject;
 			newDot.GetComponent<Renderer>().material.color = lerpedColor;
 		}
 		// if(Physics.Raycast(ray, out hit)) {

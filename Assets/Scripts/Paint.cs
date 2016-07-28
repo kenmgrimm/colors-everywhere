@@ -15,7 +15,7 @@ public class Paint : MonoBehaviour {
 		EasyTouch.On_TouchDown -= On_TouchDown;
 	}
 	void On_TouchDown(Gesture gesture) {
-		Debug.Log(gesture.pickedObject);
+		Debug.Log("Paint.cs Picked: " + gesture.pickedObject);
 		if(gesture.pickedObject == gameObject) {
 			pointer.GetComponent<Pointer>().Paint();
 		}
