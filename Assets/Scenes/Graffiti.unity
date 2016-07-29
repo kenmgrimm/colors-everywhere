@@ -603,7 +603,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 766484828}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6e6d22b45b5d417b9b47e39a331f003, type: 3}
   m_Name: 
@@ -745,7 +745,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.03
   far clip plane: 1000
   field of view: 17
   orthographic: 0
@@ -771,6 +771,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 972582187}
+  - 114: {fileID: 972582188}
   m_Layer: 0
   m_Name: Painting
   m_TagString: Untagged
@@ -791,6 +792,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
+--- !u!114 &972582188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 972582186}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a15387e5f4fc34b40ab196cad596f5b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showLocalOrientation: 1
+  showGlobalOrientation: 1
+  showLocalCenter: 0
+  showGlobalCenter: 1
 --- !u!1 &1022857128
 GameObject:
   m_ObjectHideFlags: 0

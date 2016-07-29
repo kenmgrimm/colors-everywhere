@@ -25,7 +25,9 @@ public class RotatePainting : MonoBehaviour {
 		if(gesture.pickedObject == null) {
       Vector2 swipeVector = gesture.swipeVector / sensitivity;
 
-      parentPainting.Rotate(new Vector3(swipeVector.y, -swipeVector.x, 0), Space.World);
+      // parentPainting.Rotate(new Vector3(swipeVector.y, -swipeVector.x, 0));
+			// Should be rotating around orientation of the Physical Camera, pivot of painting
+			parentPainting.RotateAround(new Vector3(), Vector3.up, 0);
 		}
 	}
 }
