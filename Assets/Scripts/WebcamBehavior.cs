@@ -21,6 +21,8 @@ public class WebcamBehavior : MonoBehaviour {
     videoScreen = GameObject.Find("Video Screen");
     if(SystemInfo.deviceType == DeviceType.Handheld) {
       Debug.Log("Device Type Handheld");
+
+      // When on mobile we were flipping scale but may not be necessary
       Vector3 scale = videoScreen.transform.localScale;
       videoScreen.transform.localScale = new Vector3(scale.x, scale.y, -scale.z);
     }

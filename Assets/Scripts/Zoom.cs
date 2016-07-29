@@ -4,14 +4,22 @@ using UnityEngine.UI;
 
 public class Zoom : MonoBehaviour {
 	public GameObject paintingCamera;
+	
 	private static Slider slider;
+	private float lastZoomLevel;
 
 	void Start() {
 		slider = GetComponent<Slider>();
+		lastZoomLevel = slider.value;
 	}
 
-	void OnGUI() {
-		Vector3 pos = paintingCamera.transform.localPosition;
-		paintingCamera.transform.localPosition = new Vector3(pos.x, pos.y, slider.value);
+	void Update() {
+		Vector3 pos = paintingCamera.transform.position;
+		if(slider.value != lastZoomLevel) {
+			float deltaZoom = slider.value - lastZoomLevel;
+			paintingCamera.transform.position = paintingCamera.transform.position + paintingCamera.transform.forward * deltaZoom; 
+
+			lastZoomLevel = slider.value;
+		}
 	}
 }

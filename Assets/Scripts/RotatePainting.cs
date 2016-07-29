@@ -25,7 +25,7 @@ public class RotatePainting : MonoBehaviour {
 		if(gesture.pickedObject == null) {
       Vector2 swipeVector = gesture.swipeVector / sensitivity;
 
-      parentPainting.Rotate(new Vector3(swipeVector.y, -swipeVector.x, 0));
+      parentPainting.Rotate(new Vector3(swipeVector.y, -swipeVector.x, 0), Space.World);
 		}
 	}
 }
