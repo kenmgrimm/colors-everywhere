@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using HedgehogTeam.EasyTouch;
 
-public class RotatePainting : MonoBehaviour {
+public class RotatePaintCamera : MonoBehaviour {
   private float sensitivity = 4f;
 	// GameObject paintingCamera;
 
