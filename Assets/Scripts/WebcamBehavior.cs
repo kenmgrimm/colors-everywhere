@@ -42,9 +42,9 @@ public class WebcamBehavior : MonoBehaviour {
 
   void Update() {
     // Skip making adjustment for incorrect camera data  (width < 100)
-    if(webCamTexture.width < 100) {
-      return;
-    }
+    // if(webCamTexture.width < 100) {
+    //   return;
+    // }
   }
  
   private void CheckForMobileCamera() {

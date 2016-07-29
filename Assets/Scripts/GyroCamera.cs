@@ -4,6 +4,8 @@ using System.Collections;
 public class GyroCamera : MonoBehaviour {
   Quaternion initialRotation;
   Quaternion gyroInitialRotation;
+  // Quaternion lastRotation;
+  Quaternion lastGyroRotation;
 
   private bool gyroInitialized = false;
   public float mouseSpeed = 1.0f;
@@ -28,6 +30,9 @@ public class GyroCamera : MonoBehaviour {
       gyroInitialRotation = Input.gyro.attitude;
       initialRotation = transform.rotation;
 
+      lastGyroRotation = gyroInitialRotation;
+      // lastRotation = initialRotation;
+
       gyroInitialized = true;
       CancelInvoke("InitializeGyro");
     }
@@ -35,8 +40,11 @@ public class GyroCamera : MonoBehaviour {
 
   void Update() {
     if(HasGyro() && gyroInitialized) {
-      Quaternion offsetRotation = ConvertRotation(Quaternion.Inverse(gyroInitialRotation) * Input.gyro.attitude);
-      transform.rotation = initialRotation * offsetRotation;
+      Quaternion offsetRotation = ConvertRotation(Quaternion.Inverse(lastGyroRotation) * Input.gyro.attitude);
+      transform.rotation = transform.rotation * offsetRotation;
+
+      lastGyroRotation = Input.gyro.attitude;
+      // lastRotation = transform.rotation;
     }
     else {
       transform.Rotate(Input.GetAxis("Mouse Y") * mouseSpeed, Input.GetAxis("Mouse X") * mouseSpeed, 0);

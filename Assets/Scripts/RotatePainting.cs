@@ -3,12 +3,12 @@ using System.Collections;
 using HedgehogTeam.EasyTouch;
 
 public class RotatePainting : MonoBehaviour {
-	public Transform parentPainting;
   private float sensitivity = 4f;
+	// GameObject paintingCamera;
 
-  void Start() {
-		parentPainting = GameObject.Find("Painting").transform;
-  }
+  void Start() { 
+		// paintingCamera = GameObject.Find("Painting Camera");
+	}
 
 	void OnEnable() {
 		EasyTouch.On_Swipe += On_Swipe;
@@ -25,9 +25,9 @@ public class RotatePainting : MonoBehaviour {
 		if(gesture.pickedObject == null) {
       Vector2 swipeVector = gesture.swipeVector / sensitivity;
 
-      // parentPainting.Rotate(new Vector3(swipeVector.y, -swipeVector.x, 0));
+      transform.Rotate(new Vector3(swipeVector.y, -swipeVector.x, 0));
 			// Should be rotating around orientation of the Physical Camera, pivot of painting
-			parentPainting.RotateAround(new Vector3(), Vector3.up, 0);
+			// transform.RotateAround(transform.position, paintingCamera.transform.rotation, 0);
 		}
 	}
 }
