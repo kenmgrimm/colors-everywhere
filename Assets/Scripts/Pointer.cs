@@ -5,7 +5,7 @@ using System.Collections.Generic;
 // Smooth curve through points
 //   http://answers.unity3d.com/questions/392606/line-drawing-how-can-i-interpolate-between-points.html
 public class Pointer : MonoBehaviour {
-	private float distance = 0.2f;
+	private float distance = 0.1f;
 	// private LineRenderer line;
 	private Dictionary<Vector3, bool> endPoints;
 	private Camera augmentedCamera;
@@ -37,10 +37,10 @@ public class Pointer : MonoBehaviour {
 	}
 
 	public void ChangeDistance() {
-		distance += 0.2f;
-		if(distance > 1) {
-			distance = 0.2f;
-		}
+		// distance += 0.1f;
+		// if(distance > 1) {
+		// 	distance = 0.1f;
+		// }
 	}
 
 	public void Paint() {
