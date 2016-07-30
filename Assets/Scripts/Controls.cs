@@ -17,9 +17,9 @@ public class Controls : MonoBehaviour {
 			pointer.GetComponent<Pointer>().ChangeColor();
 		}
 
-		if(GUI.Button(distanceButtonRect, "Distance")) {
-			pointer.GetComponent<Pointer>().ChangeDistance();
-		}
+		// if(GUI.Button(distanceButtonRect, "Distance")) {
+		// 	pointer.GetComponent<Pointer>().ChangeDistance();
+		// }
 	}
 	
 }

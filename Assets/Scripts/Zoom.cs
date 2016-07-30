@@ -17,7 +17,7 @@ public class Zoom : MonoBehaviour {
 		Vector3 pos = paintingCamera.transform.position;
 		if(slider.value != lastZoomLevel) {
 			float deltaZoom = slider.value - lastZoomLevel;
-			paintingCamera.transform.position = paintingCamera.transform.position + paintingCamera.transform.forward * deltaZoom; 
+			paintingCamera.transform.localPosition = paintingCamera.transform.localPosition + Vector3.forward * deltaZoom; 
 
 			lastZoomLevel = slider.value;
 		}
