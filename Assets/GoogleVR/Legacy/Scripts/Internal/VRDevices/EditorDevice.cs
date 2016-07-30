@@ -50,7 +50,7 @@ namespace Gvr.Internal {
 
     private Quaternion initialRotation = Quaternion.identity;
 
-    private bool remoteCommunicating = false;
+    private bool remoteCommunicating = true;
     private bool RemoteCommunicating {
       get {
         if (!remoteCommunicating) {
