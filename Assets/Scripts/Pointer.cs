@@ -19,7 +19,14 @@ public class Pointer : MonoBehaviour {
 
 	public GameObject dot;
 
+
+	private LineRenderer lineWave;
+	private List<Vector3> wavePoints;
+
 	void Start() {
+		lineWave = GameObject.Find("Line Wave Auto").GetComponent<LineRenderer>();
+		wavePoints = new List<Vector3>();
+
 		parentPainting = GameObject.Find("Painting").transform;
 		augmentedCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 		endPoints = new Dictionary<Vector3, bool>();
@@ -51,8 +58,6 @@ public class Pointer : MonoBehaviour {
 		// Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
 		
 		Vector3 endPoint = ray.origin + ray.direction * distance;
-		
-		// line.SetPosition(1, endPoint);
 
 		if(!endPoints.ContainsKey(endPoint)) {
 			endPoints[endPoint] = true;
@@ -60,11 +65,11 @@ public class Pointer : MonoBehaviour {
 // START COROUTINE FOR THIS???
 			GameObject newDot = Instantiate(dot, endPoint, Quaternion.identity, parentPainting) as GameObject;
 			newDot.GetComponent<Renderer>().material.color = lerpedColor;
-		}
-		// if(Physics.Raycast(ray, out hit)) {
-		// 	Debug.Log(hit.transform.name);
-		// }
 
+			wavePoints.Add(newDot.transform.position);
+			lineWave.SetVertexCount(wavePoints.Count);
+			lineWave.SetPositions(wavePoints.ToArray());
+		}
 	}
 
 	void Update () {}
