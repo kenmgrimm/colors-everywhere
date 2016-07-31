@@ -4,9 +4,9 @@ using System.Collections;
 public class Controls : MonoBehaviour {
 	public GameObject pointer;
 
-	public Rect paintButtonRect = new Rect(35, 770, 500, 200);
-	public Rect colorButtonRect = new Rect(80, 520, 165, 108);
-	public Rect distanceButtonRect = new Rect(80, 620, 165, 108);
+	// public Rect paintButtonRect = new Rect(35, 770, 500, 200);
+	private Rect colorButtonRect = new Rect(22, 22, 70, 63);
+	// public Rect distanceButtonRect = new Rect(80, 620, 165, 108);
 
 	void OnGUI () {
 		// if(GUI.Button(paintButtonRect, "Paint")) {
