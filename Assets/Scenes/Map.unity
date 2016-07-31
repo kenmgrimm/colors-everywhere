@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 1
+  m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 768, y: 1024}
@@ -219,7 +219,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 1
+  m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -481,6 +481,9 @@ GameObject:
   - 131: {fileID: 2098974913}
   - 114: {fileID: 2098974912}
   - 114: {fileID: 2098974911}
+  - 114: {fileID: 2098974916}
+  - 114: {fileID: 2098974917}
+  - 114: {fileID: 2098974918}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -500,14 +503,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoStopUpdateOnInput: 1
-  createMarkerInUserPosition: 0
+  createMarkerInUserPosition: 1
   desiredAccuracy: 1
   emulatorCompass: 0
   emulatorPosition: {x: -104.9245, y: 39.54657}
   markerTooltip: 
   markerType: 0
   marker2DAlign: 4
-  marker2DTexture: {fileID: 0}
+  marker2DTexture: {fileID: 2800000, guid: c6e9f16850e354484a3280c42f7baea3, type: 3}
   marker3DPrefab: {fileID: 0}
   maxPositionCount: 3
   position: {x: 0, y: 0}
@@ -546,10 +549,10 @@ GUITexture:
   m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   m_PixelInset:
     serializedVersion: 2
-    x: -1024
-    y: -1024
-    width: 2048
-    height: 2048
+    x: 0
+    y: 0
+    width: 1800
+    height: 1100
   m_LeftBorder: 0
   m_RightBorder: 0
   m_TopBorder: 0
@@ -607,7 +610,7 @@ MonoBehaviour:
       min: 0
     scale: 1
   traffic: 0
-  type: 0
+  type: 1
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
   useSmartTexture: 1
@@ -619,20 +622,58 @@ MonoBehaviour:
   latitude: 39.54656982421875
   longitude: -104.92449951171875
   _position: {x: 0, y: 0}
-  _zoom: 18
+  _zoom: 19
 --- !u!4 &2098974915
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2098974910}
-  m_LocalRotation: {x: -0.058086652, y: 0, z: 0, w: 0.9983116}
-  m_LocalPosition: {x: 0.5, y: 0.32, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
-  m_LocalEulerAnglesHint: {x: -6.66, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!114 &2098974916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2098974910}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e1471cccd5b86a4ab6d52c3776cfb7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2098974917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2098974910}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adcc985175b8f0b409a706d7ae2a6eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 0}
+--- !u!114 &2098974918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2098974910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c41933bd764f942a69946e8caf69b0f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  markers:
+  - {x: -104.9245, y: 39.54657}
+  - {x: -104.9244, y: 39.54656}
+  - {x: -104.9243, y: 39.54655}
 --- !u!1 &2121536679
 GameObject:
   m_ObjectHideFlags: 0
@@ -657,7 +698,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2121536679}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b344ba78304b47638548bbfb6ddc468, type: 3}
+  m_Script: {fileID: 11500000, guid: a5c5136273cf54c44960a34b46c1cd65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &2121536681
