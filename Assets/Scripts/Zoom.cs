@@ -12,7 +12,7 @@ public class Zoom : MonoBehaviour {
 		lastZoomLevel = slider.value;
 	}
 
-	// Need to move all this to an EventTrigger
+	// Need to move all this to an EventTrigger?
 	void Update() {
 		if(slider.value != lastZoomLevel) {
 			float deltaZoom = slider.value - lastZoomLevel;
