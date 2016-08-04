@@ -101,6 +101,7 @@ GameObject:
   - 222: {fileID: 59718023}
   - 114: {fileID: 59718022}
   - 114: {fileID: 59718021}
+  - 114: {fileID: 59718024}
   m_Layer: 5
   m_Name: Map Button
   m_TagString: Untagged
@@ -200,6 +201,19 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 59718019}
+--- !u!114 &59718024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 59718019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22824dc2c7dcb4a239f669068926e827, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+  delegates: []
 --- !u!1 &62071144
 GameObject:
   m_ObjectHideFlags: 0
@@ -3262,7 +3276,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 912a5c7b84c4744edb4c87da1937006e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointer: {fileID: 206273696}
 --- !u!4 &1757182250
 Transform:
   m_ObjectHideFlags: 0

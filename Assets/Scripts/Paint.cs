@@ -3,11 +3,11 @@
 public class Paint : MonoBehaviour {
 	public GameObject pointer;
 
-	private float frequency = 0.1f;
+	private static float FREQUENCY = 0.1f;
 	private bool shouldPaint = false;
 
 	void Start() {
-		InvokeRepeating("DrawPaint", 0, 0.1f);
+		InvokeRepeating("DrawPaint", 0, FREQUENCY);
 	}
 
 	void DrawPaint() {
