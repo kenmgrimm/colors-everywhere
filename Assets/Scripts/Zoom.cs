@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
 public class Zoom : MonoBehaviour {
@@ -13,6 +12,7 @@ public class Zoom : MonoBehaviour {
 		lastZoomLevel = slider.value;
 	}
 
+	// Need to move all this to an EventTrigger
 	void Update() {
 		if(slider.value != lastZoomLevel) {
 			float deltaZoom = slider.value - lastZoomLevel;

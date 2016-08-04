@@ -32,7 +32,7 @@ public class Pointer : MonoBehaviour {
 		endPoints = new Dictionary<Vector3, bool>();
 		// line = GetComponent<LineRenderer>();
 		// line.SetPosition(0, Camera.main.transform.position + new Vector3(0, -0.1f, 0));
-
+    
 		ChangeColor();
 	}
 
