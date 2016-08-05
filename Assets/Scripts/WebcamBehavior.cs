@@ -84,7 +84,7 @@ public class WebcamBehavior : MonoBehaviour {
     webCamTexture.Play();
 
     physicalCamera.targetTexture = (RenderTexture)cameraMaterial.mainTexture;
-            
+    
     cameraMaterial.mainTexture = webCamTexture; 
   }
 

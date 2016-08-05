@@ -3,7 +3,7 @@
 public class Paint : MonoBehaviour {
 	public GameObject pointer;
 
-	private static float FREQUENCY = 0.1f;
+	private static float FREQUENCY = 0.05f;
 	private bool shouldPaint = false;
 
 	void Start() {
@@ -13,11 +13,14 @@ public class Paint : MonoBehaviour {
 	void DrawPaint() {
 		if(shouldPaint) {
 			pointer.GetComponent<Pointer>().Paint();
-			shouldPaint = false;
 		}
 	}
 
 	public void StartPainting() {
 		shouldPaint = true;
+	}
+
+	public void StopPainting() {
+		shouldPaint = false;
 	}
 }

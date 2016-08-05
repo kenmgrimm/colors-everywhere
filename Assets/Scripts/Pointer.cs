@@ -63,12 +63,13 @@ public class Pointer : MonoBehaviour {
 			endPoints[endPoint] = true;
 
 // START COROUTINE FOR THIS???
-			GameObject newDot = Instantiate(dot, endPoint, Quaternion.identity, parentPainting) as GameObject;
-			newDot.GetComponent<Renderer>().material.color = lerpedColor;
+			// GameObject newDot = Instantiate(dot, endPoint, Quaternion.identity, parentPainting) as GameObject;
+			// newDot.GetComponent<Renderer>().material.color = lerpedColor;
 
-			wavePoints.Add(newDot.transform.position);
+			wavePoints.Add(endPoint);
+			
 			lineWave.SetVertexCount(wavePoints.Count);
-			lineWave.SetPositions(wavePoints.ToArray());
+			lineWave.SetPosition(wavePoints.Count - 1, endPoint);
 		}
 	}
 
