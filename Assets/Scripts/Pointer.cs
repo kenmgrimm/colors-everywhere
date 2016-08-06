@@ -5,7 +5,7 @@ using System.Collections.Generic;
 // Smooth curve through points
 //   http://answers.unity3d.com/questions/392606/line-drawing-how-can-i-interpolate-between-points.html
 public class Pointer : MonoBehaviour {
-	private float distance = 0.1f;
+	private float pointerLength;
 	// private LineRenderer line;
 	private Dictionary<Vector3, bool> endPoints;
 	private Camera augmentedCamera;
@@ -19,11 +19,14 @@ public class Pointer : MonoBehaviour {
 
 	public GameObject dot;
 
-
 	private LineRenderer lineWave;
 	private List<Vector3> wavePoints;
 
 	void Start() {
+		// Need to set starting pointerLength using extension slider.  Refactor and de-couple some of this stuff
+		Slider extensionSlider = GameObject.Find("Extension Slider").GetComponent<Slider>().value;
+		// pointerLength = 
+		
 		lineWave = GameObject.Find("Line Wave Auto").GetComponent<LineRenderer>();
 		wavePoints = new List<Vector3>();
 
@@ -43,11 +46,8 @@ public class Pointer : MonoBehaviour {
 		Debug.Log(lerpedColor);
 	}
 
-	public void ChangeDistance() {
-		// distance += 0.1f;
-		// if(distance > 1) {
-		// 	distance = 0.1f;
-		// }
+	public void Extend(float distance) {
+		pointerLength += distance;
 	}
 
 	public void Paint() {
@@ -57,7 +57,7 @@ public class Pointer : MonoBehaviour {
 		// Vector3 pointerPos = Camera.main.ScreenToWorldPoint(Input.mousePosition + (Camera.main.transform.forward * POINTER_LENGTH));
 		// Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
 		
-		Vector3 endPoint = ray.origin + ray.direction * distance;
+		Vector3 endPoint = ray.origin + ray.direction * pointerLength;
 
 		if(!endPoints.ContainsKey(endPoint)) {
 			endPoints[endPoint] = true;
