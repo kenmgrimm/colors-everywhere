@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+
 
 // Smooth curve through points
 //   http://answers.unity3d.com/questions/392606/line-drawing-how-can-i-interpolate-between-points.html
 public class Pointer : MonoBehaviour {
+	private static float MIN_EXTENSION = 0.01f;  // I think should be >= near clipping plane 
+	private static float EXTENSION_FACTOR = 3f;
+
 	private float pointerLength;
 	// private LineRenderer line;
 	private Dictionary<Vector3, bool> endPoints;
@@ -24,8 +29,9 @@ public class Pointer : MonoBehaviour {
 
 	void Start() {
 		// Need to set starting pointerLength using extension slider.  Refactor and de-couple some of this stuff
-		Slider extensionSlider = GameObject.Find("Extension Slider").GetComponent<Slider>().value;
-		// pointerLength = 
+		// DE-COUPLE
+		float sliderValue = GameObject.Find("Extension Slider").GetComponent<Slider>().value;
+		Extend(sliderValue);
 		
 		lineWave = GameObject.Find("Line Wave Auto").GetComponent<LineRenderer>();
 		wavePoints = new List<Vector3>();
@@ -47,7 +53,8 @@ public class Pointer : MonoBehaviour {
 	}
 
 	public void Extend(float distance) {
-		pointerLength += distance;
+		float newLength = distance * EXTENSION_FACTOR;
+		pointerLength = newLength > MIN_EXTENSION ? newLength : MIN_EXTENSION;
 	}
 
 	public void Paint() {
