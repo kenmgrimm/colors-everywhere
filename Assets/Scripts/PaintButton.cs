@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 public class PaintButton : EventTrigger {
 	void Start () {}
