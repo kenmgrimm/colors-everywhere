@@ -9,8 +9,8 @@ using UnityEngine.UI;
 public class Pointer : MonoBehaviour {
 	private static float MIN_EXTENSION = 0.01f;  // I think should be >= near clipping plane 
 	private static float EXTENSION_FACTOR = 0.5f;
-	private static int MIN_TRAIL_LENGTH = 20;
-	private static int MAX_TRAIL_LENGTH = 45;
+	private static int MIN_TRAIL_LENGTH = 5;
+	private static int MAX_TRAIL_LENGTH = 10;
 
 	private float pointerLength;
 	private Dictionary<Vector3, bool> endPoints;
@@ -76,7 +76,8 @@ public class Pointer : MonoBehaviour {
 		Vector3 location = Location();
 
 		// Pointer Trail
-		if(!pointerTrailDict.ContainsKey(location) && pointerTrailPoints.Count < MAX_TRAIL_LENGTH) {
+		// if(!pointerTrailDict.ContainsKey(location) && pointerTrailPoints.Count < MAX_TRAIL_LENGTH) {
+		if(pointerTrailPoints.Count < MAX_TRAIL_LENGTH) {
 			pointerTrailDict[location] = true;
 			pointerTrailPoints.Enqueue(location);
 		}

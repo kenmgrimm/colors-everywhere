@@ -2,23 +2,30 @@
 using UnityEngine.UI;
 
 public class Zoom : MonoBehaviour {
+	// This should probably match or be close to the Extension factor
+	private static float ZOOM_FACTOR = 0.5f;
 	public GameObject paintingCamera;
 	
 	private static Slider slider;
-	private float lastZoomLevel;
+	private Vector3 basePosition;
+	private float lastZoom;
 
 	void Start() {
+		basePosition = paintingCamera.transform.localPosition;
 		slider = GetComponent<Slider>();
-		lastZoomLevel = slider.value;
+		lastZoom = slider.value;
+	}
+
+	private void ZoomTo(float zoom) {
+		paintingCamera.transform.localPosition = basePosition + Vector3.forward * ZOOM_FACTOR * zoom;
 	}
 
 	// Need to move all this to an EventTrigger?
 	void Update() {
-		if(slider.value != lastZoomLevel) {
-			float deltaZoom = slider.value - lastZoomLevel;
-			paintingCamera.transform.localPosition = paintingCamera.transform.localPosition + Vector3.forward * deltaZoom; 
+		if(slider.value != lastZoom) {
+			ZoomTo(slider.value);
 
-			lastZoomLevel = slider.value;
+			lastZoom = slider.value;
 		}
 	}
 }

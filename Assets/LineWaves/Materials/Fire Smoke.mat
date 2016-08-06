@@ -30,14 +30,14 @@ Material:
     m_Floats:
     - first:
         name: _InvFade
-      second: 1
+      second: 1.12
     m_Colors:
     - first:
         name: _EmisColor
-      second: {r: 0, g: 0, b: 0, a: 0}
+      second: {r: 1, g: 1, b: 1, a: 0}
     - first:
         name: _TintColor
-      second: {r: 1, g: 1, b: 1, a: 1}
+      second: {r: 0.1102941, g: 0.1102941, b: 0.1102941, a: 1}
     - first:
         name: _color
       second: {r: 0.5, g: 0, b: 0, a: 1}
