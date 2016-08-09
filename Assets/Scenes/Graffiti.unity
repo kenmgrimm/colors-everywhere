@@ -2172,6 +2172,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 972582187}
   - 114: {fileID: 972582188}
+  - 114: {fileID: 972582189}
   m_Layer: 0
   m_Name: Painting
   m_TagString: Untagged
@@ -2207,6 +2208,22 @@ MonoBehaviour:
   showGlobalOrientation: 1
   showLocalCenter: 0
   showGlobalCenter: 1
+--- !u!114 &972582189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 972582186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdaa93836cdf74a60810fe20606f89cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  painting:
+    latitude: 0
+    longitude: 0
+    direction_degrees: 0
+    strokes: []
 --- !u!1 &1009418584
 GameObject:
   m_ObjectHideFlags: 0

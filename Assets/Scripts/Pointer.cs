@@ -32,11 +32,17 @@ public class Pointer : MonoBehaviour {
 	private Queue<Vector3> pointerTrailPoints;
 	private LineRenderer pointerTrailRend;
 
+	private Stroke stroke;
+
+	private Painting painting;
+
 	void Start() {
 		// Need to set starting pointerLength using extension slider.  Refactor and de-couple some of this stuff
 		// DE-COUPLE
 		float sliderValue = GameObject.Find("Extension Slider").GetComponent<Slider>().value;
 		Extend(sliderValue);
+
+		painting = new Painting(1.7654321f, 1.1234567f, 20);
 		
 		lineWave = GameObject.Find("Line Wave Auto").GetComponent<LineRenderer>();
 		wavePoints = new List<Vector3>();
@@ -51,6 +57,9 @@ public class Pointer : MonoBehaviour {
 		parentPainting = GameObject.Find("Painting").transform;
 		augmentedCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 
+
+		stroke = new Stroke(1, "#AAAAAAAA");
+		painting.AddStroke(stroke);
 		ChangeColor();
 	}
 
@@ -104,6 +113,7 @@ public class Pointer : MonoBehaviour {
 			// newDot.GetComponent<Renderer>().material.color = lerpedColor;
 
 			wavePoints.Add(location);
+			painting.AddPoint(location);
 			
 			lineWave.SetVertexCount(wavePoints.Count);
 			lineWave.SetPosition(wavePoints.Count - 1, location);
