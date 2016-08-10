@@ -5,7 +5,7 @@ using System.Text;
 // API for communication with Server
 
 [System.Serializable]
-public class Painting {
+public class PaintingData {
   private static Encoding encoding;
   
   private int id;
@@ -13,32 +13,39 @@ public class Painting {
   [SerializeField] private float longitude;
   [SerializeField] private float direction_degrees;
 
-  [SerializeField] public List<Stroke> strokes;
+  [SerializeField] public List<StrokeData> strokes;
   
 
-  public Painting(float latitude, float longitude, float directionDegrees) {
+  public PaintingData(float latitude, float longitude, float directionDegrees) {
     encoding = new System.Text.UTF8Encoding();
     this.latitude = latitude;
     this.longitude = longitude;
     this.direction_degrees = directionDegrees;
 
-    strokes = new List<Stroke>();
+    strokes = new List<StrokeData>();
   }
 
-  public void AddStroke(Stroke stroke) {
-    strokes.Add(stroke);
-    Debug.Log("Add(Stroke): ");
-    Debug.Log(this.strokes.Count);
+  public void StartStroke(Stroke stroke) {
+    strokes.Add(stroke.StrokeData());
+    Debug.Log("Start(Stroke): ");
+    Debug.Log(stroke);
+    Debug.Log(stroke.StrokeData());
+    Debug.Log(strokes.Count);
+    Debug.Log(strokes[0]);
   }
 
   public void AddPoint(Vector3 point) {
     Debug.Log("AddPoint2: ");
     Debug.Log(point);
-    strokes[0].AddPoint(point);
-    Debug.Log(strokes[0].points[0].x);
+    
+    CurrentStroke().AddPoint(point);
   }
 
   public string ToJsonStr() {
     return JsonUtility.ToJson(this);
+  }
+
+  private StrokeData CurrentStroke() {
+    return strokes[strokes.Count - 1];
   }
 }

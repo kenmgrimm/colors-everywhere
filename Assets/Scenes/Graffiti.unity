@@ -586,7 +586,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a03af800d71054f1583c92b89b6035c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointer: {fileID: 1791557019}
 --- !u!1 &271271021
 GameObject:
   m_ObjectHideFlags: 0
@@ -2173,6 +2172,8 @@ GameObject:
   - 4: {fileID: 972582187}
   - 114: {fileID: 972582188}
   - 114: {fileID: 972582189}
+  - 114: {fileID: 972582191}
+  - 114: {fileID: 972582190}
   m_Layer: 0
   m_Name: Painting
   m_TagString: Untagged
@@ -2219,7 +2220,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdaa93836cdf74a60810fe20606f89cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  painting:
+--- !u!114 &972582190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 972582186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6c834d2c8004a1b983d86ea107fce5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &972582191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 972582186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64fec2df5221f4ed48a6cfb234f8b25d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintingData:
     latitude: 0
     longitude: 0
     direction_degrees: 0
@@ -4483,7 +4506,7 @@ GameObject:
   - 120: {fileID: 1791557022}
   - 114: {fileID: 1791557020}
   m_Layer: 0
-  m_Name: Pointer
+  m_Name: Brush
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

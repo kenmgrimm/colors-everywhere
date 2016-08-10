@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Collections;
 
 public class PersistenceManager : MonoBehaviour {
-	[SerializeField]
 	private Painting painting;
 
 	// Needs auth
@@ -11,20 +10,7 @@ public class PersistenceManager : MonoBehaviour {
 	void Start () {
 		Debug.Log("Starting PM");
 
-
-// Unmock
-
-
-
-
-
-
-
-
-
-
-
-		painting = new Painting(2.1f, 2.1f, 10);
+		painting = GameObject.Find("Painting").GetComponent<Painting>();
 		
 		Invoke("CreatePainting", 5);
 	}
@@ -44,8 +30,8 @@ public class PersistenceManager : MonoBehaviour {
 		form.AddField("painting", paintingJsonStr);
 
 		Debug.Log("Strokes: ");
-		Debug.Log(painting.strokes.Count);
-		Debug.Log(painting.strokes[0]);
+		Debug.Log(painting.paintingData.strokes.Count);
+		Debug.Log(painting.paintingData.strokes[0]);
 
 		Debug.Log("Posting: " + paintingJsonStr);
 		WWW request = new WWW("http://localhost:3000/paintings.json", form);

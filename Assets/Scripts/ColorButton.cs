@@ -2,14 +2,14 @@
 using UnityEngine.EventSystems;
 
 public class ColorButton : EventTrigger {
-	private GameObject pointer;
+	private GameObject brush;
 
 	void Start () {
-		pointer = GameObject.Find("Paint Button");
+		brush = GameObject.Find("Brush");
 	}
 
 	public override void OnPointerClick( PointerEventData data ) {
-		pointer.GetComponent<Pointer>().ChangeColor();
+		brush.GetComponent<BrushPointer>().ChangeColor();
 	}
 }
 

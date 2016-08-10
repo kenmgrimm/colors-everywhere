@@ -2,13 +2,13 @@
 using UnityEngine.UI;
 
 public class Extension : MonoBehaviour {
-	private Pointer pointer;
+	private BrushPointer pointer;
 
 	private static Slider slider;
 	private float lastValue;
 
 	void Start() {
-		pointer = GameObject.Find("Painting Camera/Pointer").GetComponent<Pointer>();
+		pointer = GameObject.Find("Painting Camera/Brush").GetComponent<BrushPointer>();
 
 		slider = GetComponent<Slider>();
 		lastValue = slider.value;
