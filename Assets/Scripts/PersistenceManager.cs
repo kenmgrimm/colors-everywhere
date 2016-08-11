@@ -1,6 +1,8 @@
-﻿
+﻿using System;
 using UnityEngine;
 using System.Collections;
+
+using BestHTTP;
 
 public class PersistenceManager : MonoBehaviour {
 	private Painting painting;
@@ -12,7 +14,19 @@ public class PersistenceManager : MonoBehaviour {
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
 		
+		LoadPainting();
+
 		Invoke("CreatePainting", 5);
+	}
+
+	private void OnRequestFinished(HTTPRequest request, HTTPResponse response) {
+		Debug.Log("Request Finished! Text received: " + response.DataAsText);
+	}
+
+	private void LoadPainting() {
+		HTTPRequest request = new HTTPRequest(new Uri("https://google.com"), OnRequestFinished); request.Send();
+
+		// WWW request = new WWW("http://localhost:3000/paintings.json");
 	}
 
 	private void CreatePainting() {

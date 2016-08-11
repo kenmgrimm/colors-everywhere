@@ -8,21 +8,20 @@ public class Painting : MonoBehaviour {
 
 	void Start () {
 		paintingRenderer = GetComponent<PaintingRenderer>();
-		paintingData = new PaintingData(2.1f, 2.1f, 10);
+
+
+		
+		
+		// lat, long, direction hard-coded
+		paintingData = new PaintingData(latitude: 2.1f, longitude: 2.1f, directionDegrees: 10);
 
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 	}
 	void Update () {}
 
 	public void StartStroke(string color, int brushType, float brushWidth) {
-		
-		// MonoBehaviours
-		
 		Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
 		stroke.Initialize(color, brushType, brushWidth);
-
-		Debug.Log("*###*#*");
-		Debug.Log(stroke.StrokeData().color);
 
 		paintingRenderer.StartStroke(stroke);
 		paintingData.StartStroke(stroke);
