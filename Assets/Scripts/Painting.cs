@@ -5,7 +5,7 @@ public class Painting : MonoBehaviour {
 	private static string STROKE_PREFAB = "Stroke";
 
 	private List<Stroke> strokes;
-	
+
 	public PaintingData paintingData;
 
 	private GameObject strokePrefab;
@@ -18,6 +18,7 @@ public class Painting : MonoBehaviour {
 
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 	}
+	
 	void Update () {}
 
 	public void StartStroke(string color, int brushType, float brushWidth) {
