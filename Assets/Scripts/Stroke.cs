@@ -2,19 +2,27 @@ using UnityEngine;
 
 public class Stroke : MonoBehaviour {
   private StrokeData strokeData;
-  private StrokeRenderer strokeRenderer;
 
 	void Start () {}
 
   public void Initialize(string color, int brushType, float brushWidth) {
-    strokeRenderer = GetComponent<StrokeRenderer>();
     strokeData = new StrokeData(color, brushType, brushWidth);
+  }
 
-    strokeRenderer.StartStroke();
+  public void Initialize(StrokeData strokeData) {
+    this.strokeData = strokeData;
+
+    foreach(Vector3 point in strokeData.points) {
+      StrokeRenderer().AddPoint(point);
+    }
+  }
+
+  private StrokeRenderer StrokeRenderer() {
+    return GetComponent<StrokeRenderer>();
   }
 
 	public void AddPoint(Vector3 point) {
-    strokeRenderer.AddPoint(point);
+    StrokeRenderer().AddPoint(point);
     strokeData.AddPoint(point);
 	}
 

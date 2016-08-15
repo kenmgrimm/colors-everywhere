@@ -13,7 +13,7 @@ public class StrokeRenderer : MonoBehaviour {
 	private Queue<Vector3> pointerTrailPoints;
 	private LineRenderer pointerTrailRend;
 
-	void Start () {
+	void Awake () {
 		lineWave = GameObject.Find("Line Wave Auto").GetComponent<LineRenderer>();
 		wavePoints = new List<Vector3>();
 
@@ -25,9 +25,7 @@ public class StrokeRenderer : MonoBehaviour {
 	}
 	
 	void Update () {}
-
-	public void StartStroke() {}
-
+	
   public void AddPoint(Vector3 point) {
 		if(pointerTrailPoints.Count < MAX_TRAIL_LENGTH) {
 			pointerTrailDict[point] = true;

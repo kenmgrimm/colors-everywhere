@@ -503,7 +503,6 @@ GameObject:
   - 222: {fileID: 206273699}
   - 114: {fileID: 206273698}
   - 114: {fileID: 206273700}
-  - 114: {fileID: 206273702}
   m_Layer: 5
   m_Name: Paint Button
   m_TagString: Untagged
@@ -526,7 +525,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 114, y: 137}
+  m_AnchoredPosition: {x: 134, y: 130}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &206273698
@@ -548,7 +547,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: ea9cca33d294149f79741947dc2df639, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cb45ac75b75b44c86b53da08542f6a73, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -575,17 +574,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
---- !u!114 &206273702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 206273696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a03af800d71054f1583c92b89b6035c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &271271021
 GameObject:
   m_ObjectHideFlags: 0
@@ -2243,6 +2231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paintingData:
+    id: 0
     latitude: 0
     longitude: 0
     direction_degrees: 0

@@ -1,17 +1,18 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class Painting : MonoBehaviour {
 	private static string STROKE_PREFAB = "Stroke";
+
+	private List<Stroke> strokes;
+	
 	public PaintingData paintingData;
-	private PaintingRenderer paintingRenderer;
+
 	private GameObject strokePrefab;
 
 	void Start () {
-		paintingRenderer = GetComponent<PaintingRenderer>();
+		strokes = new List<Stroke>();
 
-
-		
-		
 		// lat, long, direction hard-coded
 		paintingData = new PaintingData(latitude: 2.1f, longitude: 2.1f, directionDegrees: 10);
 
@@ -21,15 +22,33 @@ public class Painting : MonoBehaviour {
 
 	public void StartStroke(string color, int brushType, float brushWidth) {
 		Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
-		stroke.Initialize(color, brushType, brushWidth);
+		stroke.transform.parent = transform;
 
-		paintingRenderer.StartStroke(stroke);
+		stroke.Initialize(color, brushType, brushWidth);
+		strokes.Add(stroke);
+
 		paintingData.StartStroke(stroke);
 	}
 
+	public Stroke CurrentStroke() {
+		return strokes[strokes.Count - 1];
+	}
+
+	public void Load(string jsonData) {
+		strokes.Clear();
+		paintingData.Load(jsonData);
+
+		foreach(StrokeData data in paintingData.strokeDatas) {
+			Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
+			stroke.transform.parent = transform;
+			
+			stroke.Initialize(data);
+			strokes.Add(stroke);
+		}
+	}
+
 	public void AddPoint(Vector3 point) {
-		paintingRenderer.AddPoint(point);
-		paintingData.AddPoint(point);
+		CurrentStroke().AddPoint(point);
 	}
 
 	public PaintingData PaintingData() {
@@ -38,5 +57,13 @@ public class Painting : MonoBehaviour {
 
 	public string ToJsonStr() {
 		return paintingData.ToJsonStr();
+	}
+
+	public bool IsNew() {
+		return paintingData.IsNew();
+	}
+
+	public int Id() {
+		return paintingData.Id();
 	}
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class StrokeData {
-  private int id;
+  [SerializeField] private int id;
   [SerializeField] private int brush_type;
   [SerializeField] public string color;
   [SerializeField] public float brush_width;
@@ -19,8 +19,6 @@ public class StrokeData {
   }
 
   public void AddPoint(Vector3 point) {
-    Debug.Log("AddPoint: " + point);
     points.Add(point);
-    Debug.Log(points[0].x);
   }
 }

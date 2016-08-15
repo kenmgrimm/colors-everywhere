@@ -1,51 +1,52 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Text;
 
 // API for communication with Server
 
 [System.Serializable]
 public class PaintingData {
-  private static Encoding encoding;
-  
-  private int id;
+  [SerializeField] private int id = -1;
   [SerializeField] private float latitude;
   [SerializeField] private float longitude;
   [SerializeField] private float direction_degrees;
 
-  [SerializeField] public List<StrokeData> strokes;
+  [SerializeField] public List<StrokeData> strokeDatas;
   
-
   public PaintingData(float latitude, float longitude, float directionDegrees) {
-    encoding = new System.Text.UTF8Encoding();
     this.latitude = latitude;
     this.longitude = longitude;
     this.direction_degrees = directionDegrees;
 
-    strokes = new List<StrokeData>();
+    strokeDatas = new List<StrokeData>();
   }
 
   public void StartStroke(Stroke stroke) {
-    strokes.Add(stroke.StrokeData());
-    Debug.Log("Start(Stroke): ");
-    Debug.Log(stroke);
-    Debug.Log(stroke.StrokeData());
-    Debug.Log(strokes.Count);
-    Debug.Log(strokes[0]);
+    strokeDatas.Add(stroke.StrokeData());
   }
 
   public void AddPoint(Vector3 point) {
-    Debug.Log("AddPoint2: ");
-    Debug.Log(point);
-    
-    CurrentStroke().AddPoint(point);
+    CurrentStrokeData().AddPoint(point);
+  }
+
+  public void Load(string jsonData) {
+    strokeDatas = null;
+    JsonUtility.FromJsonOverwrite(jsonData, this);
+		Debug.Log(strokeDatas[0].color);
   }
 
   public string ToJsonStr() {
     return JsonUtility.ToJson(this);
   }
 
-  private StrokeData CurrentStroke() {
-    return strokes[strokes.Count - 1];
+  private StrokeData CurrentStrokeData() {
+    return strokeDatas[strokeDatas.Count - 1];
+  }
+
+  public bool IsNew() {
+    return id >= 0;
+  }
+
+  public int Id() {
+    return id;
   }
 }

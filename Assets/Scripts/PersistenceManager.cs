@@ -3,8 +3,11 @@ using UnityEngine;
 using System.Collections;
 
 using BestHTTP;
+// using JsonData;
 
 public class PersistenceManager : MonoBehaviour {
+	private static string ROUTE = "http://localhost:3000/paintings";
+
 	private Painting painting;
 
 	// Needs auth
@@ -13,41 +16,56 @@ public class PersistenceManager : MonoBehaviour {
 		Debug.Log("Starting PM");
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
+
+		LoadPaintingData(4);
+
+		// Invoke("CreatePainting", 3);
+
+		Invoke("UpdatePainting", 5);
+	}
+
+	private void OnLoadRequestFinished(HTTPRequest request, HTTPResponse response) {
+		Debug.Log("Load Request Finished! Text received: " + response.DataAsText);
+
+		painting.Load(response.DataAsText);
+		Debug.Log(painting.paintingData);
+		Debug.Log(painting.paintingData.Id());
+	}
+
+	private void LoadPaintingData(int paintingId) {
+		HTTPRequest request = 
+			new HTTPRequest(new Uri(ROUTE + "/" + paintingId + ".json"), OnLoadRequestFinished);
+		request.Send();
+	}
+
+	private void OnUpdateRequestFinished(HTTPRequest request, HTTPResponse response) {
+		Debug.Log("Update Request Finished! Text received: ");
+		Debug.Log(response.DataAsText);
+
+		painting.Load(response.DataAsText);
+	}
+
+	private void SavePainting(bool isNew) {
+		string updateRoute = isNew ? ROUTE : ROUTE + "/" + painting.Id();
 		
-		LoadPainting();
-
-		Invoke("CreatePainting", 5);
-	}
-
-	private void OnRequestFinished(HTTPRequest request, HTTPResponse response) {
-		Debug.Log("Request Finished! Text received: " + response.DataAsText);
-	}
-
-	private void LoadPainting() {
-		HTTPRequest request = new HTTPRequest(new Uri("https://google.com"), OnRequestFinished); request.Send();
-
-		// WWW request = new WWW("http://localhost:3000/paintings.json");
-	}
-
-	private void CreatePainting() {
 		Hashtable postHeader = new Hashtable();
 		
 		string paintingJsonStr = painting.ToJsonStr();
-		
-		// string jsonString = "{\"painting\":{\"latitude\":1.2345,\"longitude\":1.2345,\"direction_degrees\":12,\"strokes_attributes\":[{\"brush_type\":3,\"color\":\"80ff3ed9\",\"points_attributes\":[{\"position_x\":0.01,\"position_y\":0.02,\"position_z\":0.03},{\"position_x\":0.11,\"position_y\":0.12,\"position_z\":0.13},{\"position_x\":0.21,\"position_y\":0.22,\"position_z\":0.23}]}]}}";
-		// string jsonString = "{\"latitude\":1.2345,\"longitude\":1.2345,\"direction_degrees\":15,\"strokes_attributes\":[{\"brush_type\":3,\"color\":\"80ff3ed9\",\"points_attributes\":[{\"position_x\":0.01,\"position_y\":0.02,\"position_z\":0.03},{\"position_x\":0.11,\"position_y\":0.12,\"position_z\":0.13},{\"position_x\":0.21,\"position_y\":0.22,\"position_z\":0.23}]}]}";
 
 		postHeader.Add("Content-Type", "text/json");
-		// postHeader.Add("Content-Length", jsonString.Length + "");
 		WWWForm form = new WWWForm();
-
 		form.AddField("painting", paintingJsonStr);
+Debug.Log("SavePainting");
+Debug.Log(updateRoute);
+Debug.Log(paintingJsonStr);
+		WWW request = new WWW(updateRoute, form);
+	}
 
-		Debug.Log("Strokes: ");
-		Debug.Log(painting.paintingData.strokes.Count);
-		Debug.Log(painting.paintingData.strokes[0]);
+	private void UpdatePainting() {
+		SavePainting(isNew: false);
+	}
 
-		Debug.Log("Posting: " + paintingJsonStr);
-		WWW request = new WWW("http://localhost:3000/paintings.json", form);
+	private void CreatePainting() {
+		SavePainting(isNew: true);
 	}
 }
