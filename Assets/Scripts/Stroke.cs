@@ -12,7 +12,7 @@ public class Stroke : MonoBehaviour {
   public void Initialize(StrokeData strokeData) {
     this.strokeData = strokeData;
 
-    foreach(Vector3 point in strokeData.points) {
+    foreach(Vector3 point in strokeData.Points()) {
       StrokeRenderer().AddPoint(point);
     }
   }

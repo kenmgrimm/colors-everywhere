@@ -15,7 +15,7 @@ public class PersistenceManager : MonoBehaviour {
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
 
-		LoadPaintingData(4);
+		LoadPaintingData(32);
 	}
 
 	public void OnDestroy() {
@@ -44,11 +44,13 @@ public class PersistenceManager : MonoBehaviour {
 	}
 
 	private void SavePainting() {
+Debug.Log(painting.Id());
+Debug.Log(painting.paintingData.Id());
 		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id());
 
 		string paintingJsonStr = painting.ToJsonStr();
 
-		HTTPRequest request = new HTTPRequest(new Uri(ROUTE), HTTPMethods.Post, OnUpdateRequestFinished);
+		HTTPRequest request = new HTTPRequest(updateRoute, HTTPMethods.Post, OnUpdateRequestFinished);
 
 		//  See:  https://github.com/rack/rack/commit/ff0cac57254dd1d4799a673c9393acb016b136c3
 		// Had to modify Rack parser to prevent utf-8 encoding error:
