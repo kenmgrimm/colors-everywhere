@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class Painting : MonoBehaviour {
 	private static string STROKE_PREFAB = "Stroke";
+	
+	public bool Dirty { get; set; }
 
 	private List<Stroke> strokes;
 
@@ -19,8 +21,6 @@ public class Painting : MonoBehaviour {
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 	}
 	
-	void Update () {}
-
 	public void StartStroke(string color, int brushType, float brushWidth) {
 		Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
 		stroke.transform.parent = transform;
@@ -29,6 +29,8 @@ public class Painting : MonoBehaviour {
 		strokes.Add(stroke);
 
 		paintingData.StartStroke(stroke);
+
+		Dirty = true;
 	}
 
 	public Stroke CurrentStroke() {
@@ -50,6 +52,7 @@ public class Painting : MonoBehaviour {
 
 	public void AddPoint(Vector3 point) {
 		CurrentStroke().AddPoint(point);
+		Dirty = true;
 	}
 
 	public PaintingData PaintingData() {

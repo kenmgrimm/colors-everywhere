@@ -1,9 +1,7 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
 
 using BestHTTP;
-// using JsonData;
 
 public class PersistenceManager : MonoBehaviour {
 	private static string ROUTE = "http://localhost:3000/paintings";
@@ -18,10 +16,12 @@ public class PersistenceManager : MonoBehaviour {
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
 
 		LoadPaintingData(4);
+	}
 
-		// Invoke("CreatePainting", 3);
-
-		Invoke("UpdatePainting", 5);
+	public void OnDestroy() {
+		if(painting.Dirty) {
+			SavePainting();
+		}
 	}
 
 	private void OnLoadRequestFinished(HTTPRequest request, HTTPResponse response) {
@@ -41,31 +41,27 @@ public class PersistenceManager : MonoBehaviour {
 	private void OnUpdateRequestFinished(HTTPRequest request, HTTPResponse response) {
 		Debug.Log("Update Request Finished! Text received: ");
 		Debug.Log(response.DataAsText);
-
-		painting.Load(response.DataAsText);
 	}
 
-	private void SavePainting(bool isNew) {
-		string updateRoute = isNew ? ROUTE : ROUTE + "/" + painting.Id();
-		
-		Hashtable postHeader = new Hashtable();
-		
+	private void SavePainting() {
+		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id());
+
 		string paintingJsonStr = painting.ToJsonStr();
 
-		postHeader.Add("Content-Type", "text/json");
-		WWWForm form = new WWWForm();
-		form.AddField("painting", paintingJsonStr);
-Debug.Log("SavePainting");
-Debug.Log(updateRoute);
-Debug.Log(paintingJsonStr);
-		WWW request = new WWW(updateRoute, form);
+		HTTPRequest request = new HTTPRequest(new Uri(ROUTE), HTTPMethods.Post, OnUpdateRequestFinished);
+
+		//  See:  https://github.com/rack/rack/commit/ff0cac57254dd1d4799a673c9393acb016b136c3
+		// Had to modify Rack parser to prevent utf-8 encoding error:
+		//   ArgumentError (unknown encoding name - "utf-8"):
+		//             v = v[1..-2] if v[0] == '"' && v[-1] == '"'
+		// ~/.gem/ruby/2.2.2/gems/rack-1.6.4/lib/rack/multipart/parser.rb
+		
+		request.AddField("painting", paintingJsonStr);
+
+		request.Send();
 	}
 
-	private void UpdatePainting() {
-		SavePainting(isNew: false);
-	}
-
-	private void CreatePainting() {
-		SavePainting(isNew: true);
+	private bool IsNew() {
+		return painting.Id() < 0;
 	}
 }

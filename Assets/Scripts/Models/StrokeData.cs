@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class StrokeData {
-  [SerializeField] private int id;
   [SerializeField] private int brush_type;
   [SerializeField] public string color;
   [SerializeField] public float brush_width;
