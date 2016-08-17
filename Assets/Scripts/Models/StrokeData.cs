@@ -14,14 +14,14 @@ public class StrokeData : ISerializationCallbackReceiver {
 
   [Serializable]
   public struct CondensedVector3 {
-    public float x;
-    public float y;
-    public float z;
+    public string x;
+    public string y;
+    public string z;
 
     public CondensedVector3(float x, float y, float z) {
-      this.x = (float)Math.Round((Decimal)x, 3);
-      this.y = (float)Math.Round((Decimal)y, 3);
-      this.z = (float)Math.Round((Decimal)z, 3);
+      this.x = Math.Round((Decimal)x, 3).ToString();
+      this.y = Math.Round((Decimal)y, 3).ToString();
+      this.z = Math.Round((Decimal)z, 3).ToString();
     }
   }
 
@@ -44,7 +44,7 @@ public class StrokeData : ISerializationCallbackReceiver {
 
     for(int i = 0; i < serializedPoints.Length; i++) {
       CondensedVector3 point = serializedPoints[i];
-      points.Add(new Vector3(point.x, point.y, point.z));
+      points.Add(new Vector3(float.Parse(point.x), float.Parse(point.y), float.Parse(point.z)));
     }
   }
 
