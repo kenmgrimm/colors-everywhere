@@ -240,7 +240,7 @@ RectTransform:
   m_Children:
   - {fileID: 1094857381}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -381,7 +381,198 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 4
+--- !u!1 &1369516166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1369516169}
+  - 114: {fileID: 1369516168}
+  - 114: {fileID: 1369516167}
+  - 114: {fileID: 1369516171}
+  - 114: {fileID: 1369516170}
+  m_Layer: 0
+  m_Name: Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1369516167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1369516166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a535bd26274b9da4a85dcb372148ce3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeTexture: {fileID: 0}
+  allowAddMarkerByM: 1
+  allowZoom: 1
+  allowUserControl: 1
+  isMapDrag: 0
+  invertTouchZoom: 0
+  zoomInOnDoubleClick: 1
+  activeCamera: {fileID: 1603501961}
+  allowAddMarker3DByN: 1
+  allowDefaultMarkerEvents: 1
+  allowCameraControl: 1
+  cameraDistance: 1000
+  cameraRotation: {x: 0, y: 0}
+  cameraSpeed: {x: 1, y: 1}
+  marker2DMode: 0
+  marker2DSize: 100
+  markers3D: []
+  marker3DScale: 1
+  bingAPI: 
+  checkMarker2DVisibility: 0
+  colliderType: 1
+  drawingsGameObject: {fileID: 0}
+  drawingShader: {fileID: 4800000, guid: 07fd051d8972c7a4bac96bfa8038d08b, type: 3}
+  elevationZoomRange:
+    max: 20
+    min: 11
+  elevationScale: 1
+  markerMaterial: {fileID: 0}
+  markerShader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
+  smoothZoom: 0
+  smoothZoomMinScale: -3.4028235e+38
+  smoothZoomMaxScale: 3.4028235e+38
+  smoothZoomStarted: 0
+  originalPosition: {x: 0, y: 0, z: 0}
+  smoothZoomMode: 0
+  tileMaterial: {fileID: 0}
+  tilesetShader: {fileID: 4800000, guid: f65580aa9bbbd7e42b05adab01e1ca2d, type: 3}
+  useElevation: 0
+--- !u!114 &1369516168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1369516166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf484bb098da8c48973c6e0076a9e35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allowRedraw: 1
+  control: {fileID: 0}
+  customProviderURL: http://localhost/{zoom}/{y}/{x}
+  defaultMarkerAlign: 7
+  defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
+    type: 3}
+  defaultTileTexture: {fileID: 0}
+  dispatchEvents: 1
+  drawingElements: []
+  emptyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  height: 0
+  labels: 0
+  language: en
+  lockRedraw: 0
+  markers: []
+  needGC: 0
+  needRedraw: 1
+  notInteractUnderGUI: 1
+  provider: 0
+  redrawOnPlay: 0
+  renderInThread: 1
+  resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
+  showMarkerTooltip: 0
+  skin: {fileID: 0}
+  smartTexture: {fileID: 0}
+  source: 0
+  target: 1
+  texture: {fileID: 0}
+  tilesetWidth: 1024
+  tilesetHeight: 1024
+  tilesetSize: {x: 1024, y: 1024}
+  tooltip: 
+  tooltipDrawingElement:
+    tooltip: 
+  tooltipMarker:
+    label: 
+    position: {x: 0, y: 0}
+    range:
+      max: 0
+      min: 0
+    scale: 1
+  traffic: 0
+  type: 0
+  useCurrentZoomTiles: 0
+  useSoftwareJPEGDecoder: 0
+  useSmartTexture: 1
+  webplayerProxyURL: http://service.infinity-code.com/redirect.php?
+  width: 0
+  zoomRange:
+    max: 2147483647
+    min: -2147483648
+  latitude: 39.54656982421875
+  longitude: -104.92449951171875
+  _position: {x: 0, y: 0}
+  _zoom: 19
+--- !u!4 &1369516169
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1369516166}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -534, y: -76.5, z: 1902}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
   m_RootOrder: 5
+--- !u!114 &1369516170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1369516166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c41933bd764f942a69946e8caf69b0f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  markers:
+  - {x: -104.9245, y: 39.54656}
+  - {x: -104.9245, y: 39.54657}
+  - {x: -104.9245, y: 39.54658}
+--- !u!114 &1369516171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1369516166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23cad15691a9de6478a78e8f68ae6ad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoStopUpdateOnInput: 1
+  createMarkerInUserPosition: 0
+  desiredAccuracy: 10
+  emulatorCompass: 0
+  emulatorPosition: {x: 0, y: 0}
+  markerTooltip: 
+  markerType: 0
+  marker2DAlign: 4
+  marker2DTexture: {fileID: 0}
+  marker3DPrefab: {fileID: 0}
+  maxPositionCount: 3
+  position: {x: 0, y: 0}
+  restoreAfter: 10
+  trueHeading: 0
+  updateDistance: 10
+  updatePosition: 1
+  useCompassForMarker: 0
+  useGPSEmulator: 0
 --- !u!1 &1603501957
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,7 +621,7 @@ Camera:
   m_GameObject: {fileID: 1603501957}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -439,7 +630,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1096.7749
+  far clip plane: 10000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -462,218 +653,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1603501957}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0, y: 0.83388585, z: -0.5519369, w: 0}
+  m_LocalPosition: {x: -1063, y: 823, z: 2895}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 67, y: 180, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!1 &2098974910
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 2098974915}
-  - 114: {fileID: 2098974914}
-  - 131: {fileID: 2098974913}
-  - 114: {fileID: 2098974912}
-  - 114: {fileID: 2098974911}
-  - 114: {fileID: 2098974916}
-  - 114: {fileID: 2098974917}
-  - 114: {fileID: 2098974918}
-  m_Layer: 0
-  m_Name: Map
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2098974911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23cad15691a9de6478a78e8f68ae6ad3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoStopUpdateOnInput: 1
-  createMarkerInUserPosition: 1
-  desiredAccuracy: 1
-  emulatorCompass: 0
-  emulatorPosition: {x: -104.9245, y: 39.54657}
-  markerTooltip: 
-  markerType: 0
-  marker2DAlign: 4
-  marker2DTexture: {fileID: 2800000, guid: c6e9f16850e354484a3280c42f7baea3, type: 3}
-  marker3DPrefab: {fileID: 0}
-  maxPositionCount: 3
-  position: {x: 0, y: 0}
-  restoreAfter: 10
-  trueHeading: 0
-  updateDistance: 1
-  updatePosition: 1
-  useCompassForMarker: 0
-  useGPSEmulator: 1
---- !u!114 &2098974912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0dfbbf8248794154588682986cae87e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activeTexture: {fileID: 0}
-  allowAddMarkerByM: 0
-  allowZoom: 1
-  allowUserControl: 1
-  isMapDrag: 0
-  invertTouchZoom: 0
-  zoomInOnDoubleClick: 1
---- !u!131 &2098974913
-GUITexture:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 1
-  m_Texture: {fileID: 2800000, guid: ae56e609458424abd903c1b92e276e74, type: 3}
-  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
-  m_PixelInset:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1334
-    height: 750
-  m_LeftBorder: 0
-  m_RightBorder: 0
-  m_TopBorder: 0
-  m_BottomBorder: 0
---- !u!114 &2098974914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cf484bb098da8c48973c6e0076a9e35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allowRedraw: 1
-  control: {fileID: 0}
-  customProviderURL: http://localhost/{zoom}/{y}/{x}
-  defaultMarkerAlign: 7
-  defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
-    type: 3}
-  defaultTileTexture: {fileID: 0}
-  dispatchEvents: 1
-  drawingElements: []
-  emptyColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
-  height: 0
-  labels: 0
-  language: en
-  lockRedraw: 0
-  markers: []
-  needGC: 0
-  needRedraw: 1
-  notInteractUnderGUI: 1
-  provider: 0
-  redrawOnPlay: 1
-  renderInThread: 1
-  resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
-  showMarkerTooltip: 0
-  skin: {fileID: 11400000, guid: 4ced77c4c4467874e8782601a87210c2, type: 2}
-  smartTexture: {fileID: 0}
-  source: 2
-  target: 0
-  texture: {fileID: 2800000, guid: ae56e609458424abd903c1b92e276e74, type: 3}
-  tilesetWidth: 2048
-  tilesetHeight: 2048
-  tilesetSize: {x: 2048, y: 2048}
-  tooltip: 
-  tooltipDrawingElement:
-    tooltip: 
-  tooltipMarker:
-    label: 
-    position: {x: 0, y: 0}
-    range:
-      max: 0
-      min: 0
-    scale: 1
-  traffic: 0
-  type: 1
-  useCurrentZoomTiles: 0
-  useSoftwareJPEGDecoder: 0
-  useSmartTexture: 1
-  webplayerProxyURL: http://service.infinity-code.com/redirect.php?
-  width: 0
-  zoomRange:
-    max: 2147483647
-    min: -2147483648
-  latitude: 39.54656982421875
-  longitude: -104.92449951171875
-  _position: {x: 0, y: 0}
-  _zoom: 17
---- !u!4 &2098974915
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
---- !u!114 &2098974916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e1471cccd5b86a4ab6d52c3776cfb7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2098974917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adcc985175b8f0b409a706d7ae2a6eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
---- !u!114 &2098974918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2098974910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c41933bd764f942a69946e8caf69b0f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  markers:
-  - {x: -104.9245, y: 39.54657}
-  - {x: -104.9244, y: 39.54656}
-  - {x: -104.9243, y: 39.54655}
 --- !u!1 &2121536679
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,4 +699,4 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
