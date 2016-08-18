@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -10,12 +9,13 @@ public class BrushPointer : MonoBehaviour {
 	private static float MIN_EXTENSION = 0.01f;  // I think should be >= near clipping plane 
 	private static float EXTENSION_FACTOR = 0.5f;
   private const int TRAIL_LENGTH = 10;
+	public float FADE_FREQUENCY = 0.07f;
+	public float DRAW_FREQUENCY = 0.05f;
 
 	private float pointerLength;
-	private Dictionary<Vector3, bool> endPoints;
 	public Queue<Vector3> pointerTrailPoints;
+	private Vector3 lastPoint;
 
-	
 	private string color = "FFFFDD00";
 	private int brushType = 3;
 	private float brushWidth = 2.5f;
@@ -26,7 +26,6 @@ public class BrushPointer : MonoBehaviour {
 	private float transition = 0f;
 
 	LineRenderer pointerTrail;
-	public GameObject dot;
 
 	private Painting painting;
 
@@ -41,13 +40,15 @@ public class BrushPointer : MonoBehaviour {
 		
 		paintingCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 
-		pointerTrail = GameObject.Find("Pointer Trail").GetComponent<LineRenderer>();
+		pointerTrail = Util.LoadAndCreatePrefab("Pointer Trail", painting.transform).GetComponent<LineRenderer>();
 
-		pointerTrail.SetVertexCount(TRAIL_LENGTH);
+		pointerTrail.SetVertexCount(0);
 
-		pointerTrailPoints = new Queue<Vector3>(TRAIL_LENGTH);
+		pointerTrailPoints = new Queue<Vector3>();
 
-		InvokeRepeating("UpdatePointerTrail", 0, 0.05f);
+		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
+
+		InvokeRepeating("FadeTrail", 0, FADE_FREQUENCY);
 
 		ChangeColor();
 	}
@@ -55,29 +56,32 @@ public class BrushPointer : MonoBehaviour {
 	public void UpdatePointerTrail() {
 		Vector3 point = Location();
 
-		if(pointerTrailPoints.Count <= TRAIL_LENGTH) {
+		if(lastPoint == null || pointerTrailPoints.Count < 5) {
+			pointerTrailPoints.Clear();
+
 			pointerTrailPoints.Enqueue(point);
+			pointerTrailPoints.Enqueue(point + new Vector3(0.001f, 0.001f, 0.0f));
+			pointerTrailPoints.Enqueue(point + new Vector3(-0.002f, -0.003f, -0.001f));
+			pointerTrailPoints.Enqueue(point + new Vector3(0.001f, 0.001f, 0.002f));
+			pointerTrailPoints.Enqueue(point + new Vector3(0.002f, -0.001f, -0.002f));
+
+			lastPoint = point;
 		}
-		
-		if(pointerTrailPoints.Count > TRAIL_LENGTH) {
-			pointerTrailPoints.Dequeue();
+
+		// only queue if cursor moved
+		if(lastPoint != point) {
+			pointerTrailPoints.Enqueue(point);
+			lastPoint = point;
 		}
 
-		Vector3[] trail = new Vector3[pointerTrailPoints.Count];
-		Array.Copy(pointerTrailPoints.ToArray(), 0, trail, 2, trail.Length - 2);
-
-		Vector3 pointA = Location();
-
-		trail[0] = trail[1] = pointA;
-		
-		pointerTrail.SetVertexCount(trail.Length);
-		pointerTrail.SetPositions(trail);
+		pointerTrail.SetVertexCount(pointerTrailPoints.Count);
+		pointerTrail.SetPositions(pointerTrailPoints.ToArray());
 	}
 
-	private void DrawPoint() {
-		Vector3 point = Location();
-
-
+	private void FadeTrail() {
+		if(pointerTrailPoints.Count > 4) {
+			pointerTrailPoints.Dequeue();
+		}
 	}
 
 	public void ChangeColor() {
