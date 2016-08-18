@@ -4,7 +4,8 @@ using UnityEngine;
 using BestHTTP;
 
 public class PersistenceManager : MonoBehaviour {
-	private static string ROUTE = "http://localhost:3000/paintings";
+	// private static string ROUTE = "http://localhost:3000/paintings";
+	private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
 
 	private Painting painting;
 
@@ -15,7 +16,7 @@ public class PersistenceManager : MonoBehaviour {
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
 
-		LoadPaintingData(32);
+		LoadPaintingData(1);
 	}
 
 	public void OnDestroy() {
@@ -51,13 +52,6 @@ Debug.Log(painting.paintingData.Id());
 		string paintingJsonStr = painting.ToJsonStr();
 
 		HTTPRequest request = new HTTPRequest(updateRoute, HTTPMethods.Post, OnUpdateRequestFinished);
-
-		//  See:  https://github.com/rack/rack/commit/ff0cac57254dd1d4799a673c9393acb016b136c3
-		// Had to modify Rack parser to prevent utf-8 encoding error:
-		//   ArgumentError (unknown encoding name - "utf-8"):
-		//             v = v[1..-2] if v[0] == '"' && v[-1] == '"'
-		// ~/.gem/ruby/2.2.2/gems/rack-1.6.4/lib/rack/multipart/parser.rb
-		
 		request.AddField("painting", paintingJsonStr);
 
 		request.Send();

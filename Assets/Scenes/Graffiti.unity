@@ -100,7 +100,6 @@ GameObject:
   - 224: {fileID: 59718020}
   - 222: {fileID: 59718023}
   - 114: {fileID: 59718022}
-  - 114: {fileID: 59718021}
   - 114: {fileID: 59718024}
   m_Layer: 5
   m_Name: Map Button
@@ -127,47 +126,6 @@ RectTransform:
   m_AnchoredPosition: {x: 858, y: -72}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &59718021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 59718019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 59718022}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &59718022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,7 +204,7 @@ Transform:
   - {fileID: 271271022}
   - {fileID: 853513813}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
 --- !u!1 &112881421
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,7 +351,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 90, y: -180, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!1 &158665622
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,7 +1373,6 @@ Transform:
   - {fileID: 1530285420}
   - {fileID: 1313941765}
   - {fileID: 654807475}
-  - {fileID: 1255473102}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!1 &654807474
@@ -1979,7 +1936,7 @@ Transform:
   - {fileID: 456367222}
   - {fileID: 1448617475}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
 --- !u!1 &853513812
 GameObject:
   m_ObjectHideFlags: 0
@@ -2180,7 +2137,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
 --- !u!114 &972582188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2519,8 +2476,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
-  m_Father: {fileID: 636739703}
-  m_RootOrder: 7
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
 --- !u!120 &1255473104
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -3820,7 +3777,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.523
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4645,7 +4602,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
 --- !u!1 &1838597411
 GameObject:
   m_ObjectHideFlags: 0
@@ -4690,7 +4647,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1838597411}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 395335f430b384408bec4e034a5e6f44, type: 3}
+  m_Script: {fileID: 11500000, guid: 371d051ba9b484a8e83688b2eb85d276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates: []
