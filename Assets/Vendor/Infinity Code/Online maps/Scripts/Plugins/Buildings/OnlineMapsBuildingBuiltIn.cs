@@ -13,15 +13,9 @@ using Random = UnityEngine.Random;
 [AddComponentMenu("")]
 public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
 {
-    private OnlineMapsOSMWay way;
-
-    private static void AddHouseWallVerticle(List<Vector3> vertices, Vector3 p, float topPoint)
-    {
-        Vector3 tv = new Vector3(p.x, topPoint, p.z);
-
-        vertices.Add(p);
-        vertices.Add(tv);
-    }
+    //private OnlineMapsOSMWay way;
+    public static List<int> roofIndices;
+    public static List<OnlineMapsOSMNode> usedNodes;
 
     private static void AnalizeHouseRoofType(OnlineMapsOSMWay way, ref float baseHeight, ref OnlineMapsBuildingRoofType roofType, ref float roofHeight)
     {
@@ -55,11 +49,29 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
     private static void AnalizeHouseTags(OnlineMapsOSMWay way, ref Material wallMaterial, ref Material roofMaterial, ref float baseHeight)
     {
         string heightStr = way.GetTagValue("height");
-        string levelsStr = way.GetTagValue("building:levels");
-        GetHeightFromString(heightStr, ref baseHeight);
-        if (String.IsNullOrEmpty(heightStr) && !String.IsNullOrEmpty(levelsStr))
-            baseHeight = float.Parse(levelsStr) * OnlineMapsBuildings.instance.levelHeight;
-        else baseHeight = Random.Range(OnlineMapsBuildings.instance.levelsRange.min, OnlineMapsBuildings.instance.levelsRange.max) * OnlineMapsBuildings.instance.levelHeight;
+        bool hasHeight = false;
+
+        if (!string.IsNullOrEmpty(heightStr)) hasHeight = GetHeightFromString(heightStr, ref baseHeight);
+
+        if (!hasHeight)
+        {
+            string levelsStr = way.GetTagValue("building:levels");
+            if (!String.IsNullOrEmpty(levelsStr))
+            {
+                float countLevels = 0;
+                if (float.TryParse(levelsStr, out countLevels))
+                {
+                    baseHeight = countLevels * OnlineMapsBuildings.instance.levelHeight;
+                    hasHeight = true;
+                }
+            }
+        }
+
+        if (!hasHeight)
+        {
+            if (OnlineMapsBuildings.instance.OnGenerateBuildingHeight != null) baseHeight = OnlineMapsBuildings.instance.OnGenerateBuildingHeight(way);
+            else baseHeight = Random.Range(OnlineMapsBuildings.instance.levelsRange.min, OnlineMapsBuildings.instance.levelsRange.max) * OnlineMapsBuildings.instance.levelHeight;
+        }
 
         if (baseHeight < OnlineMapsBuildings.instance.minHeight) baseHeight = OnlineMapsBuildings.instance.minHeight;
 
@@ -78,7 +90,8 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
     {
         if (CheckIgnoredBuildings(way)) return null;
 
-        List<OnlineMapsOSMNode> usedNodes = way.GetNodes(nodes);
+        if (usedNodes == null) usedNodes = new List<OnlineMapsOSMNode>(30);
+        way.GetNodes(nodes, usedNodes);
         List<Vector3> points = GetLocalPoints(usedNodes);
 
         if (points.Count < 3) return null;
@@ -113,8 +126,10 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             if (point.x > cp.z) cp.z = point.x;
             if (point.z > cp.w) cp.w = point.z;
         }
-        //centerPoint = points.Aggregate(centerPoint, (current, point) => current + point) / points.Count;
-        Vector3 centerPoint = new Vector3((cp.z + cp.x) / 2, points.Min(p => p.y), (cp.y + cp.w) / 2);
+        
+        Vector3 centerPoint = new Vector3((cp.z + cp.x) / 2, 0, (cp.y + cp.w) / 2);
+
+        for (int i = 0; i < points.Count; i++) points[i] -= centerPoint;
 
         bool generateWall = true;
 
@@ -128,22 +143,26 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         float roofHeight = 0;
 
         OnlineMapsBuildingMaterial material = GetRandomMaterial(container);
+        Material wallMaterial;
+        Material roofMaterial;
+        Vector2 scale = Vector2.one;
 
-        Material defWallMaterial = (material != null)? material.wall: null;
-        Material defRoofMaterial = (material != null) ? material.roof : null;
-        Vector2 scale = (material != null) ? material.scale : Vector2.one;
-
-        if (defWallMaterial == null) defWallMaterial = new Material(Shader.Find("Diffuse"));
-        if (defRoofMaterial == null) defRoofMaterial = new Material(Shader.Find("Diffuse"));
-
-        Material wallMaterial = new Material(defWallMaterial);
-        Material roofMaterial = new Material(defRoofMaterial);
+        if (material != null)
+        {
+            wallMaterial = new Material(material.wall);
+            roofMaterial = new Material(material.roof);
+            scale = material.scale;
+        }
+        else
+        {
+            Shader shader = Shader.Find("Diffuse");
+            wallMaterial = new Material(shader);
+            roofMaterial = new Material(shader);
+        }
 
         OnlineMapsBuildingRoofType roofType = OnlineMapsBuildingRoofType.flat;
         AnalizeHouseTags(way, ref wallMaterial, ref roofMaterial, ref baseHeight);
         AnalizeHouseRoofType(way, ref baseHeight, ref roofType, ref roofHeight);
-
-        Vector3[] baseVerticles = points.Select(p => p - centerPoint).ToArray();
 
         GameObject houseGO = CreateGameObject(way.id);
         MeshRenderer renderer = houseGO.AddComponent<MeshRenderer>();
@@ -180,17 +199,22 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         building.centerCoordinates = new Vector2((maxCX + minCX) / 2, (maxCY + minCY) / 2);
         building.boundsCoords = new Bounds(building.centerCoordinates, new Vector3(maxCX - minCX, maxCY - minCY));
 
-        List<Vector3> vertices = new List<Vector3>();
-        List<Vector2> uvs = new List<Vector2>();
-        List<int> wallTriangles = new List<int>();
+        int wallVerticesCount = (points.Count + 1) * 2;
+        int roofVerticesCount = points.Count;
+        int verticesCount = wallVerticesCount + roofVerticesCount;
+        int countTriangles = wallVerticesCount * 3;
+
+        List<Vector3> vertices = new List<Vector3>(verticesCount);
+        List<Vector2> uvs = new List<Vector2>(verticesCount);
+        List<int> wallTriangles = new List<int>(countTriangles);
         List<int> roofTriangles = new List<int>();
 
-        if (generateWall) building.CreateHouseWall(baseVerticles, baseHeight, wallMaterial, scale, ref vertices, ref uvs, ref wallTriangles);
-        building.CreateHouseRoof(baseVerticles, baseHeight, roofHeight, roofType, ref vertices, ref uvs, ref roofTriangles);
+        if (generateWall) building.CreateHouseWall(points, baseHeight, wallMaterial, scale, ref vertices, ref uvs, ref wallTriangles);
+        building.CreateHouseRoof(points, baseHeight, roofHeight, roofType, ref vertices, ref uvs, ref roofTriangles);
 
         if (building.hasErrors)
         {
-            DestroyImmediate(building.gameObject);
+            OnlineMapsUtils.DestroyImmediate(building.gameObject);
             return null;
         }
 
@@ -209,15 +233,15 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         return building;
     }
 
-    private void CreateHouseRoof(Vector3[] baseVerticles, float baseHeight, float roofHeight, OnlineMapsBuildingRoofType roofType, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
+    private void CreateHouseRoof(List<Vector3> baseVerticles, float baseHeight, float roofHeight, OnlineMapsBuildingRoofType roofType, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
     {
-        List<Vector2> roofPoints = new List<Vector2>();
-        List<Vector3> roofVertices = new List<Vector3>();
+        float[] roofPoints = new float[baseVerticles.Count * 2];
+        List<Vector3> roofVertices = new List<Vector3>(baseVerticles.Count);
 
         try
         {
-            CreateHouseRoofVerticles(baseVerticles, roofVertices, roofPoints, baseHeight);
-            CreateHouseRoofTriangles(roofVertices, roofType, roofPoints, baseHeight, roofHeight, ref triangles);
+            int countVertices = CreateHouseRoofVerticles(baseVerticles, roofVertices, roofPoints, baseHeight);
+            CreateHouseRoofTriangles(countVertices, roofVertices, roofType, roofPoints, baseHeight, roofHeight, ref triangles);
 
             if (triangles.Count == 0)
             {
@@ -248,7 +272,9 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             float offX = maxX - minX;
             float offZ = maxZ - minZ;
 
-            uvs.AddRange(roofVertices.Select(v => new Vector2((v.x - minX) / offX, (v.z - minZ) / offZ)));
+            foreach (Vector3 v in roofVertices) uvs.Add(new Vector2((v.x - minX) / offX, (v.z - minZ) / offZ));
+            
+            //uvs.AddRange(roofVertices.Select(v => new Vector2((v.x - minX) / offX, (v.z - minZ) / offZ)));
 
             int triangleOffset = vertices.Count;
             for (int i = 0; i < triangles.Count; i++) triangles[i] += triangleOffset;
@@ -261,8 +287,6 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             hasErrors = true;
             throw;
         }
-
-        
     }
 
     private static void CreateHouseRoofDome(float height, List<Vector3> vertices, List<int> triangles)
@@ -284,28 +308,54 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         vertices.Add(roofTopPoint);
     }
 
-    private static void CreateHouseRoofTriangles(List<Vector3> vertices, OnlineMapsBuildingRoofType roofType, List<Vector2> roofPoints, float baseHeight, float roofHeight, ref List<int> triangles)
+    private static void CreateHouseRoofTriangles(int countVertices, List<Vector3> vertices, OnlineMapsBuildingRoofType roofType, float[] roofPoints, float baseHeight, float roofHeight, ref List<int> triangles)
     {
         if (roofType == OnlineMapsBuildingRoofType.flat)
-            triangles.AddRange(OnlineMapsUtils.Triangulate(roofPoints).Select(index => index));
-        else if (roofType == OnlineMapsBuildingRoofType.dome)
-            CreateHouseRoofDome(baseHeight + roofHeight, vertices, triangles);
+        {
+            if (roofIndices == null) roofIndices = new List<int>(60);
+            triangles.AddRange(OnlineMapsUtils.Triangulate(roofPoints, countVertices, roofIndices));
+        }
+        else if (roofType == OnlineMapsBuildingRoofType.dome) CreateHouseRoofDome(baseHeight + roofHeight, vertices, triangles);
     }
 
-    private static void CreateHouseRoofVerticles(Vector3[] baseVerticles, List<Vector3> verticles, List<Vector2> roofPoints, float baseHeight)
+    private static int CreateHouseRoofVerticles(List<Vector3> baseVerticles, List<Vector3> verticles, float[] roofPoints, float baseHeight)
     {
         float topPoint = baseHeight * OnlineMapsBuildings.instance.heightScale;
-        foreach (Vector3 p in baseVerticles)
-        {
-            Vector3 tv = new Vector3(p.x, topPoint, p.z);
-            Vector2 rp = new Vector2(p.x, p.z);
+        int countVertices = 0;
 
-            if (!verticles.Contains(tv)) verticles.Add(tv);
-            if (!roofPoints.Contains(rp)) roofPoints.Add(rp);
+        for (int i = 0; i < baseVerticles.Count; i++)
+        {
+            Vector3 p = baseVerticles[i];
+            float px = p.x;
+            float pz = p.z;
+
+            bool hasVerticle = false;
+
+            for (int j = 0; j < countVertices * 2; j += 2)
+            {
+                if (roofPoints[j] == px && roofPoints[j + 1] == pz)
+                {
+                    hasVerticle = true;
+                    break;
+                }
+            }
+
+            if (!hasVerticle)
+            {
+                int cv2 = countVertices * 2;
+
+                roofPoints[cv2] = px;
+                roofPoints[cv2 + 1] = pz;
+                verticles.Add(new Vector3(px, topPoint, pz));
+
+                countVertices++;
+            }
         }
+
+        return countVertices;
     }
 
-    private void CreateHouseWall(Vector3[] baseVerticles, float baseHeight, Material material, Vector2 materialScale, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
+    private void CreateHouseWall(List<Vector3> baseVerticles, float baseHeight, Material material, Vector2 materialScale, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
     {
         CreateHouseWallMesh(baseVerticles, baseHeight, false, ref vertices, ref uvs, ref triangles);
 
@@ -315,7 +365,7 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         material.mainTextureScale = scale;
     }
 
-    private void CreateHouseWallMesh(Vector3[] baseVerticles, float baseHeight, bool inverted, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
+    private void CreateHouseWallMesh(List<Vector3> baseVerticles, float baseHeight, bool inverted, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
     {
         bool reversed = CreateHouseWallVerticles(baseHeight, baseVerticles, vertices, uvs);
         if (inverted) reversed = !reversed;
@@ -324,43 +374,85 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
 
     private static void CreateHouseWallTriangles(List<Vector3> vertices, bool reversed, ref List<int> triangles)
     {
-        for (int i = 0; i < vertices.Count / 2 - 1; i++)
-            triangles.AddRange(GetHouseWallTriangle(vertices.Count, reversed, i));
+        int countVertices = vertices.Count;
+        for (int i = 0; i < countVertices / 2 - 1; i++)
+        {
+            int p1 = i * 2;
+            int p2 = p1 + 2;
+            int p3 = p2 + 1;
+            int p4 = p1 + 1;
+
+            if (p2 >= countVertices) p2 -= countVertices;
+            if (p3 >= countVertices) p3 -= countVertices;
+
+            if (reversed)
+            {
+                triangles.Add(p1);
+                triangles.Add(p4);
+                triangles.Add(p3);
+                triangles.Add(p1);
+                triangles.Add(p3);
+                triangles.Add(p2);
+            }
+            else
+            {
+                triangles.Add(p2);
+                triangles.Add(p3);
+                triangles.Add(p1);
+                triangles.Add(p3);
+                triangles.Add(p4);
+                triangles.Add(p1);
+            }
+        }
     }
 
-    private bool CreateHouseWallVerticles(float baseHeight, Vector3[] baseVerticles, List<Vector3> vertices, List<Vector2> uvs)
+    private bool CreateHouseWallVerticles(float baseHeight, List<Vector3> baseVerticles, List<Vector3> vertices, List<Vector2> uvs)
     {
         float topPoint = baseHeight * OnlineMapsBuildings.instance.heightScale;
 
-        foreach (Vector3 p in baseVerticles) AddHouseWallVerticle(vertices, p, topPoint);
-        AddHouseWallVerticle(vertices, baseVerticles[0], topPoint);
-
-        perimeter = 0;
-
-        for (int i = 0; i <= vertices.Count / 2; i++)
+        int baseVerticesCount = baseVerticles.Count;
+        for (int i = 0; i <= baseVerticesCount; i++)
         {
-            int i1 = Mathf.RoundToInt(Mathf.Repeat(i * 2, vertices.Count));
-            int i2 = Mathf.RoundToInt(Mathf.Repeat((i + 1) * 2, vertices.Count));
-            perimeter += (vertices[i1] - vertices[i2]).magnitude;
+            int j = i;
+            if (j >= baseVerticesCount) j -= baseVerticesCount;
+
+            Vector3 p = baseVerticles[j];
+            Vector3 tv = new Vector3(p.x, topPoint, p.z);
+
+            vertices.Add(p);
+            vertices.Add(tv);
         }
 
         float currentDistance = 0;
+        int countVertices = vertices.Count;
+        int halfVerticesCount = countVertices / 2;
+        perimeter = 0;
 
-        for (int i = 0; i < vertices.Count / 2; i++)
+        for (int i = 0; i <= halfVerticesCount; i++)
         {
-            int i1 = Mathf.RoundToInt(Mathf.Repeat(i * 2, vertices.Count));
-            int i2 = Mathf.RoundToInt(Mathf.Repeat((i + 1) * 2, vertices.Count));
-            float curU = currentDistance / perimeter;
-            uvs.Add(new Vector2(curU, 0));
-            uvs.Add(new Vector2(curU, 1));
+            int i1 = i * 2;
+            int i2 = i * 2 + 2;
+            
+            while (i1 >= countVertices) i1 -= countVertices;
+            while (i2 >= countVertices) i2 -= countVertices;
 
-            currentDistance += (vertices[i1] - vertices[i2]).magnitude;
+            float magnitude = (vertices[i1] - vertices[i2]).magnitude;
+            perimeter += magnitude;
+
+            if (i < halfVerticesCount)
+            {
+                float curU = currentDistance / perimeter;
+                uvs.Add(new Vector2(curU, 0));
+                uvs.Add(new Vector2(curU, 1));
+
+                currentDistance += magnitude;
+            }
         }
 
         int southIndex = -1;
         float southZ = float.MaxValue;
 
-        for (int i = 0; i < baseVerticles.Length; i++)
+        for (int i = 0; i < baseVerticesCount; i++)
         {
             if (baseVerticles[i].z < southZ)
             {
@@ -370,10 +462,10 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         }
 
         int prevIndex = southIndex - 1;
-        if (prevIndex < 0) prevIndex = baseVerticles.Length - 1;
+        if (prevIndex < 0) prevIndex = baseVerticesCount - 1;
 
         int nextIndex = southIndex + 1;
-        if (nextIndex >= baseVerticles.Length) nextIndex = 0;
+        if (nextIndex >= baseVerticesCount) nextIndex = 0;
 
         float angle1 = OnlineMapsUtils.Angle2D(baseVerticles[southIndex], baseVerticles[nextIndex]);
         float angle2 = OnlineMapsUtils.Angle2D(baseVerticles[southIndex], baseVerticles[prevIndex]);
@@ -381,21 +473,7 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         return angle1 < angle2;
     }
 
-    private static int[] GetHouseWallTriangle(int countVertices, bool reversed, int i)
-    {
-        int p1 = i * 2;
-        int p2 = (i + 1) * 2;
-        int p3 = (i + 1) * 2 + 1;
-        int p4 = i * 2 + 1;
-
-        if (p2 >= countVertices) p2 -= countVertices;
-        if (p3 >= countVertices) p3 -= countVertices;
-
-        if (reversed) return new[] { p1, p4, p3, p1, p3, p2 };
-        return new[] { p2, p3, p1, p3, p4, p1 };
-    }
-
-    private static void GetHeightFromString(string str, ref float height)
+    private static bool GetHeightFromString(string str, ref float height)
     {
         if (!String.IsNullOrEmpty(str))
         {
@@ -403,13 +481,19 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             {
                 if (str.Substring(str.Length - 2, 2) == "cm")
                 {
-                    float.TryParse(str.Substring(0, str.Length - 2), out height);
-                    height /= 10;
+                    if (float.TryParse(str.Substring(0, str.Length - 2), out height))
+                    {
+                        height /= 10;
+                        return true;
+                    }
                 }
                 else if (str.Substring(str.Length - 1, 1) == "m")
-                    float.TryParse(str.Substring(0, str.Length - 1), out height);
+                {
+                    return float.TryParse(str.Substring(0, str.Length - 1), out height);
+                }
             }
         }
+        return false;
     }
 
     private static OnlineMapsBuildingMaterial GetRandomMaterial(OnlineMapsBuildings container)

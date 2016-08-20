@@ -1,6 +1,12 @@
 /*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#define UNITY_5_2L
+#else 
+#define UNITY_5_3P
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +17,10 @@ using UnityEngine;
 using System.Threading;
 #endif
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 /// <summary>
 /// The main class. With it you can control the map.
 /// </summary>
@@ -18,11 +28,11 @@ using System.Threading;
 [Serializable]
 public class OnlineMaps : MonoBehaviour
 {
-    #region Variables
+#region Variables
     /// <summary>
     /// The current version of Online Maps
     /// </summary>
-    public const string version = "2.3.0.18";
+    public const string version = "2.4.0.62";
 
     /// <summary>
     /// The maximum number simultaneously downloading tiles.
@@ -33,7 +43,14 @@ public class OnlineMaps : MonoBehaviour
     /// Allows you to customize the appearance of the tooltip.
     /// </summary>
     /// <param name="style">The reference to the style.</param>
-    public delegate void OnPrepareTooltipStyleHandler(ref GUIStyle style);
+    public delegate void OnPrepareTooltipStyleDelegate(ref GUIStyle style);
+
+    /// <summary>
+    /// Intercepts creates a marker.\n
+    /// Return null to create marker using built-in manager.\n
+    /// Return instance of marker to prevent using built-in manager.
+    /// </summary>
+    public Func<double, double, Texture2D, string, OnlineMapsMarker> OnAddMarker;
 
     /// <summary>
     /// Event caused when the user change map position.
@@ -46,9 +63,10 @@ public class OnlineMaps : MonoBehaviour
     public Action OnChangeZoom;
 
     /// <summary>
-    /// Event caused after received and processed a request to search for a location.
+    /// The event which is caused by garbage collection.\n
+    /// This allows you to manage the work of the garbage collector.
     /// </summary>
-    public Action OnFindLocationAfter;
+    public Action OnGCCollect;
 
     /// <summary>
     /// Event which is called after the redrawing of the map.
@@ -58,12 +76,26 @@ public class OnlineMaps : MonoBehaviour
     /// <summary>
     /// Event caused when preparing tooltip style.
     /// </summary>
-    public OnPrepareTooltipStyleHandler OnPrepareTooltipStyle;
+    public OnPrepareTooltipStyleDelegate OnPrepareTooltipStyle;
 
     /// <summary>
     /// An event that occurs when loading the tile. Allows you to intercept of loading tile, and load it yourself.
     /// </summary>
     public Action<OnlineMapsTile> OnStartDownloadTile;
+
+    /// <summary>
+    /// Intercepts removes a marker.\n
+    /// Return FALSE to remove marker using built-in manager.\n
+    /// Return TRUE to prevent using built-in manager.
+    /// </summary>
+    public Predicate<OnlineMapsMarker> OnRemoveMarker;
+
+    /// <summary>
+    /// Intercepts removes a marker.\n
+    /// Return FALSE to remove marker using built-in manager.\n
+    /// Return TRUE to prevent using built-in manager.
+    /// </summary>
+    public Predicate<int> OnRemoveMarkerAt;
 
     /// <summary>
     /// Event is called before Update.
@@ -189,7 +221,13 @@ public class OnlineMaps : MonoBehaviour
     /// <summary>
     /// Map provider.
     /// </summary>
+    [Obsolete("Use OnlineMapsProvider class")]
     public OnlineMapsProviderEnum provider = OnlineMapsProviderEnum.nokia;
+
+    /// <summary>
+    /// ID of current map type.
+    /// </summary>
+    public string mapType;
 
     /// <summary>
     /// A flag that indicates whether to redraw the map at startup.
@@ -213,11 +251,6 @@ public class OnlineMaps : MonoBehaviour
     public OnlineMapsShowMarkerTooltip showMarkerTooltip = OnlineMapsShowMarkerTooltip.onHover;
 
     /// <summary>
-    /// Skin for the tooltip.
-    /// </summary>
-    public GUISkin skin;
-
-    /// <summary>
     /// Reduced texture that is displayed when the user move map.
     /// </summary>
     public Texture2D smartTexture;
@@ -226,6 +259,11 @@ public class OnlineMaps : MonoBehaviour
     /// Specifies from where the tiles should be loaded (Online, Resources, Online and Resources).
     /// </summary>
     public OnlineMapsSource source = OnlineMapsSource.Online;
+
+    /// <summary>
+    /// Indicates that Unity need to stop playing when compiling scripts.
+    /// </summary>
+    public bool stopPlayingWhenScriptsCompile = true;
 
     /// <summary>
     /// Specifies where the map should be drawn (Texture or Tileset).
@@ -269,6 +307,11 @@ public class OnlineMaps : MonoBehaviour
     public OnlineMapsMarkerBase tooltipMarker;
 
     /// <summary>
+    /// Background texture of tooltip.
+    /// </summary>
+    public Texture2D tooltipBackgroundTexture;
+
+    /// <summary>
     /// Specifies whether to draw traffic.
     /// </summary>
     public bool traffic = false;
@@ -276,6 +319,7 @@ public class OnlineMaps : MonoBehaviour
     /// <summary>
     /// Map type.
     /// </summary>
+    [Obsolete("Use OnlineMapsProvider class")]
     public int type;
 
     /// <summary>
@@ -295,6 +339,11 @@ public class OnlineMaps : MonoBehaviour
     public bool useSmartTexture = true;
 
     /// <summary>
+    /// Use a proxy server for Webplayer and WebGL?
+    /// </summary>
+    public bool useWebplayerProxy = true;
+
+    /// <summary>
     /// URL of the proxy server used for Webplayer platform.
     /// </summary>
     public string webplayerProxyURL = "http://service.infinity-code.com/redirect.php?";
@@ -307,6 +356,7 @@ public class OnlineMaps : MonoBehaviour
     /// <summary>
     /// Specifies the valid range of map zoom.
     /// </summary>
+    [NonSerialized]
     public OnlineMapsRange zoomRange;
 
     [SerializeField]
@@ -315,47 +365,46 @@ public class OnlineMaps : MonoBehaviour
     [SerializeField]
     private double longitude;
 
-    public Vector2 _position;
+    [SerializeField]
+    private Vector2 _position;
 
-    public int _zoom;
+    [SerializeField]
+    private int _zoom;
+
+    [NonSerialized]
+    private OnlineMapsProvider.MapType _activeType;
 
     private OnlineMapsBuffer _buffer;
     private List<OnlineMapsGoogleAPIQuery> _googleQueries;
     private bool _labels;
     private string _language;
-    private OnlineMapsProviderEnum _provider;
+    private string _mapType;
     private bool _traffic;
-    private int _type;
     
     private Texture2D activeTexture;
     private Action<bool> checkConnectioCallback;
-    private WWW checkConnectionWWW;
+    private OnlineMapsWWW checkConnectionWWW;
     private Color[] defaultColors;
     private OnlineMapsTile downloads;
     private long lastGC;
     private OnlineMapsRedrawType redrawType = OnlineMapsRedrawType.none;
+    private OnlineMapsMarker rolledMarker;
+    private GUIStyle tooltipStyle;
 
-#if !UNITY_WEBGL
+#if NETFX_CORE
+    private OnlineMapsThreadWINRT renderThread;
+#elif !UNITY_WEBGL
     private Thread renderThread;
 #endif
 
-    private OnlineMapsMarker rolledMarker;
-
-    [NonSerialized]
     private double bottomRightLatitude;
-    
-    [NonSerialized]
     private double bottomRightLongitude;
-
-    [NonSerialized]
     private double topLeftLatitude;
-
-    [NonSerialized]
     private double topLeftLongitude;
 
-    #endregion
+#endregion
 
-    #region Properties
+#region Properties
 
     /// <summary>
     /// Singleton instance of map.
@@ -366,62 +415,23 @@ public class OnlineMaps : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets whether the selected provider labels.
+    /// Active type of map.
     /// </summary>
-    /// <value>
-    /// true if available labels, false if not.
-    /// </value>
-    public bool availableLabels
+    public OnlineMapsProvider.MapType activeType
     {
         get
         {
-            if (provider == OnlineMapsProviderEnum.google && type == 0) return true;
-            if (provider == OnlineMapsProviderEnum.nokia && type == 0) return true;
-            if (provider == OnlineMapsProviderEnum.virtualEarth && type == 0) return true;
-            return false;
+            if (_activeType == null || _activeType.fullID != mapType) _activeType = OnlineMapsProvider.FindMapType(mapType);
+            return _activeType;
         }
-    }
-
-    /// <summary>
-    /// Gets a list of available map types on selected provider.
-    /// </summary>
-    /// <value>
-    /// A list of available map types.
-    /// </value>
-    public string[] availableTypes
-    {
-        get
+        set
         {
-            string[] types = {"Satellite", "Relief", "Terrain", "Map"};
-            if (provider == OnlineMapsProviderEnum.aMap) return new[] { types[0], types[2] };
-            if (provider == OnlineMapsProviderEnum.arcGis) return new[] {types[0], types[2]};
-            if (provider == OnlineMapsProviderEnum.custom) return null;
-            if (provider == OnlineMapsProviderEnum.google) return new[] {types[0], types[1], types[2]};
-            if (provider == OnlineMapsProviderEnum.mapQuest) return new[] {types[0], types[2]};
-            if (provider == OnlineMapsProviderEnum.nokia) return new[] {types[0], types[2], types[3]};
-            if (provider == OnlineMapsProviderEnum.openStreetMap) return null;
-            if (provider == OnlineMapsProviderEnum.sputnik) return null;
-            if (provider == OnlineMapsProviderEnum.virtualEarth) return new[] {types[0], types[2]};
-            return types;
-        }
-    }
+            if (_activeType == value) return;
 
-    /// <summary>
-    /// Gets whether the selected provider label language.
-    /// </summary>
-    /// <value>
-    /// true if language available, false if not.
-    /// </value>
-    public bool availableLanguage
-    {
-        get
-        {
-            if (provider == OnlineMapsProviderEnum.aMap) return false;
-            if (provider == OnlineMapsProviderEnum.arcGis) return false;
-            if (provider == OnlineMapsProviderEnum.mapQuest) return false;
-            if (provider == OnlineMapsProviderEnum.openStreetMap) return false;
-            if (provider == OnlineMapsProviderEnum.sputnik) return false;
-            return true;
+            _activeType = value;
+            mapType = value.fullID;
+
+            if (Application.isPlaying) RedrawImmediately();
         }
     }
 
@@ -460,27 +470,13 @@ public class OnlineMaps : MonoBehaviour
         get { return buffer.status; }
     }
 
-    /// <summary>
-    /// Checks whether the current settings display label.
-    /// </summary>
-    public bool enabledLabels
+    private List<OnlineMapsGoogleAPIQuery> googleQueries
     {
         get
         {
-            if (provider == OnlineMapsProviderEnum.arcGis && type == 1) return true;
-            if (provider == OnlineMapsProviderEnum.google) return true;
-            if (provider == OnlineMapsProviderEnum.mapQuest && type == 1) return true;
-            if (provider == OnlineMapsProviderEnum.nokia) return true;
-            if (provider == OnlineMapsProviderEnum.virtualEarth) return true;
-            if (provider == OnlineMapsProviderEnum.sputnik) return true;
-            if (provider == OnlineMapsProviderEnum.aMap && type == 1) return true;
-            return false;
+            if (_googleQueries == null) _googleQueries = new List<OnlineMapsGoogleAPIQuery>();
+            return _googleQueries;
         }
-    }
-
-    private List<OnlineMapsGoogleAPIQuery> googleQueries
-    {
-        get { return _googleQueries ?? (_googleQueries = new List<OnlineMapsGoogleAPIQuery>()); }
     }
 
     /// <summary>
@@ -492,6 +488,17 @@ public class OnlineMaps : MonoBehaviour
         set
         {
             SetPosition(value.x, value.y);
+        }
+    }
+
+    /// <summary>
+    /// Projection of active provider.
+    /// </summary>
+    public OnlineMapsProjection projection
+    {
+        get
+        {
+            return activeType.provider.projection;
         }
     }
 
@@ -534,9 +541,9 @@ public class OnlineMaps : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Methods
+#region Methods
 
     /// <summary>
     /// Adds a drawing element.
@@ -570,12 +577,10 @@ public class OnlineMaps : MonoBehaviour
     /// </returns>
     public OnlineMapsMarker AddMarker(OnlineMapsMarker marker)
     {
-        List<OnlineMapsMarker> ms = markers.ToList();
         marker.Init();
-        ms.Add(marker);
-        markers = ms.ToArray();
         needRedraw = allowRedraw = true;
-        return marker;
+        Array.Resize(ref markers, markers.Length + 1);
+        return markers[markers.Length - 1] = marker;
     }
 
     /// <summary>
@@ -586,7 +591,19 @@ public class OnlineMaps : MonoBehaviour
     /// <returns>Marker instance.</returns>
     public OnlineMapsMarker AddMarker(Vector2 markerPosition, string label)
     {
-        return AddMarker(markerPosition, null, label);
+        return AddMarker(markerPosition.x, markerPosition.y, null, label);
+    }
+
+    /// <summary>
+    /// Adds a new 2D marker on the map.
+    /// </summary>
+    /// <param name="markerLng">Marker longitude.</param>
+    /// <param name="markerLat">Marker latitude.</param>
+    /// <param name="label">The text that will be displayed when you hover a marker.</param>
+    /// <returns>Marker instance.</returns>
+    public OnlineMapsMarker AddMarker(double markerLng, double markerLat, string label)
+    {
+        return AddMarker(markerLng, markerLat, null, label);
     }
 
     /// <summary>
@@ -605,19 +622,45 @@ public class OnlineMaps : MonoBehaviour
     /// <returns>Marker instance.</returns>
     public OnlineMapsMarker AddMarker(Vector2 markerPosition, Texture2D markerTexture = null, string label = "")
     {
+        return AddMarker(markerPosition.x, markerPosition.y, markerTexture, label);
+    }
+
+    /// <summary>
+    /// Adds a new 2D marker on the map.
+    /// </summary>
+    /// <param name="markerLng">Marker longitude.</param>
+    /// <param name="markerLat">Marker latitude.</param>
+    /// <param name="markerTexture"><strong>Optional</strong><br/>
+    /// Marker texture. <br/>
+    /// In import settings must be enabled "Read / Write enabled". <br/>
+    /// Texture format: ARGB32. <br/>
+    /// If not specified, the will be used default marker texture.</param>
+    /// <param name="label">
+    /// <strong>Optional</strong><br/>
+    /// The text that will be displayed when you hover a marker.</param>
+    /// <returns>Marker instance.</returns>
+    public OnlineMapsMarker AddMarker(double markerLng, double markerLat, Texture2D markerTexture = null, string label = "")
+    {
         if (markerTexture == null) markerTexture = defaultMarkerTexture;
 
-        List<OnlineMapsMarker> ms = markers.ToList();
-        OnlineMapsMarker marker = new OnlineMapsMarker
+        OnlineMapsMarker marker;
+
+        if (OnAddMarker != null)
         {
-            position = markerPosition,
+            marker = OnAddMarker(markerLng, markerLat, markerTexture, label);
+            if (marker != null) return marker;
+        }
+
+        marker = new OnlineMapsMarker
+        {
             texture = markerTexture,
             label = label,
             align = defaultMarkerAlign
         };
+        marker.SetPosition(markerLng, markerLat);
         marker.Init();
-        ms.Add(marker);
-        markers = ms.ToArray();
+        Array.Resize(ref markers, markers.Length + 1);
+        markers[markers.Length - 1] = marker;
         needRedraw = allowRedraw = true;
         return marker;
     }
@@ -630,17 +673,21 @@ public class OnlineMaps : MonoBehaviour
     /// </param>
     public void AddMarkers(OnlineMapsMarker[] newMarkers)
     {
-        List<OnlineMapsMarker> ms = markers.ToList();
-        foreach (OnlineMapsMarker marker in newMarkers)
+        int markersCount = markers.Length;
+        int newCount = markersCount + newMarkers.Length;
+
+        Array.Resize(ref markers, newCount);
+
+        for (int i = 0; i < newMarkers.Length; i++)
         {
+            OnlineMapsMarker marker = newMarkers[i];
             marker.Init();
-            ms.Add(marker);
+            markers[i + markersCount] = marker;
         }
-        markers = ms.ToArray();
+
         needRedraw = allowRedraw = true;
     }
 
-// ReSharper disable once UnusedMember.Global
     public void Awake()
     {
         _instance = this;
@@ -667,10 +714,10 @@ public class OnlineMaps : MonoBehaviour
 
             if (defaultTileTexture == null)
             {
-                OnlineMapsTile.defaultColors = new Color[OnlineMapsUtils.sqrTileSize];
+                OnlineMapsTile.defaultColors = new Color32[OnlineMapsUtils.sqrTileSize];
                 for (int i = 0; i < OnlineMapsUtils.sqrTileSize; i++) OnlineMapsTile.defaultColors[i] = emptyColor;
             }
-            else OnlineMapsTile.defaultColors = defaultTileTexture.GetPixels();
+            else OnlineMapsTile.defaultColors = defaultTileTexture.GetPixels32();
         }
 
         foreach (OnlineMapsMarker marker in markers) marker.Init();
@@ -678,42 +725,30 @@ public class OnlineMaps : MonoBehaviour
         if (target == OnlineMapsTarget.texture && useSmartTexture && smartTexture == null)
         {
             smartTexture = new Texture2D(texture.width / 2, texture.height / 2, TextureFormat.RGB24, false);
+            smartTexture.wrapMode = TextureWrapMode.Clamp;
         }
     }
 
     private void CheckBaseProps()
     {
-        if (provider != _provider || type != _type || _language != language || _labels != labels)
+        if (mapType != _mapType || _language != language || _labels != labels)
         {
             _labels = labels;
             _language = language;
-            _provider = provider;
-            _type = type;
+            _mapType = mapType;
+            activeType = OnlineMapsProvider.FindMapType(mapType);
 
+            if (_buffer != null)
+            {
+                _buffer.Dispose();
+                _buffer = null;
+#if NETFX_CORE
+                if (renderThread != null) renderThread.Dispose();
+#endif
 #if !UNITY_WEBGL
-            int maxCount = 50;
-
-            while (buffer.status == OnlineMapsBufferStatus.working && maxCount > 0)
-            {
-                Thread.Sleep(1);
-                maxCount--;
-            }
-
-#if !UNITY_WEBPLAYER
-            if (renderThread != null)
-            {
-#if UNITY_IOS
-                renderThread.Interrupt();
-#else
-                renderThread.Abort();
+                renderThread = null;
 #endif
             }
-#endif
-            renderThread = null;
-#endif
-
-            buffer.Dispose();
-            buffer.status = OnlineMapsBufferStatus.wait;
 
             GCCollect();
             
@@ -751,19 +786,22 @@ public class OnlineMaps : MonoBehaviour
     private void CheckBufferComplete()
     {
         if (buffer.status != OnlineMapsBufferStatus.complete) return;
+
+        OnlineMapsTile.UnloadUnusedTiles();
+
         if (allowRedraw)
         {
             if (target == OnlineMapsTarget.texture)
             {
                 if (!useSmartTexture || !buffer.generateSmartBuffer)
                 {
-                    texture.SetPixels(buffer.frontBuffer);
+                    texture.SetPixels32(buffer.frontBuffer);
                     texture.Apply(false);
                     if (control.activeTexture != texture) control.SetTexture(texture);
                 }
                 else
                 {
-                    smartTexture.SetPixels(buffer.smartBuffer);
+                    smartTexture.SetPixels32(buffer.smartBuffer);
                     smartTexture.Apply(false);
                     if (control.activeTexture != smartTexture) control.SetTexture(smartTexture);
 
@@ -827,14 +865,14 @@ public class OnlineMaps : MonoBehaviour
 
                         tile.CheckTextureSize(tileTexture);
 
-                        if (tile.status != OnlineMapsTileStatus.error)
+                        if (tile.status != OnlineMapsTileStatus.error && tile.status != OnlineMapsTileStatus.disposed)
                         {
                             tile.texture = tileTexture;
                             tile.status = OnlineMapsTileStatus.loaded;
                         }
                     }
 
-                    if (tile.status != OnlineMapsTileStatus.error)
+                    if (tile.status != OnlineMapsTileStatus.error && tile.status != OnlineMapsTileStatus.disposed)
                     {
                         if (OnlineMapsTile.OnTileDownloaded != null) OnlineMapsTile.OnTileDownloaded(tile);
                     }
@@ -843,11 +881,7 @@ public class OnlineMaps : MonoBehaviour
                 }
                 else tile.OnDownloadError();
 
-                if (tile.www != null)
-                {
-                    tile.www.Dispose();
-                    tile.www = null;
-                }
+                tile.www = null;
             }
 
             if (tile.status == OnlineMapsTileStatus.loaded && tile.trafficWWW != null && tile.trafficWWW.isDone)
@@ -874,11 +908,7 @@ public class OnlineMaps : MonoBehaviour
                     CheckRedrawType();
                 }
 
-                if (tile.trafficWWW != null)
-                {
-                    tile.trafficWWW.Dispose();
-                    tile.trafficWWW = null;
-                }
+                tile.trafficWWW = null;
             }
         }
 
@@ -896,7 +926,6 @@ public class OnlineMaps : MonoBehaviour
                 item.CheckComplete();
                 if (item.status != OnlineMapsQueryStatus.downloading)
                 {
-                    if (item.type == OnlineMapsQueryType.location && OnFindLocationAfter != null) OnFindLocationAfter();
                     item.Destroy();
                     reqDelete = true;
                 }
@@ -935,6 +964,19 @@ public class OnlineMaps : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
+    private void CheckScriptCompiling() 
+    {
+        if (!EditorApplication.isPlaying) EditorApplication.update -= CheckScriptCompiling;
+
+        if (stopPlayingWhenScriptsCompile && EditorApplication.isPlaying && EditorApplication.isCompiling)
+        {
+            Debug.Log("Online Maps stop playing to compile scripts.");
+            EditorApplication.isPlaying = false;
+        }
+    }
+#endif
+
     /// <summary>
     /// Allows you to test the connection to the Internet.
     /// </summary>
@@ -964,48 +1006,6 @@ public class OnlineMaps : MonoBehaviour
         }
     }
 
-    /// <summary>Find route by coordinates or title.</summary>
-    /// <param name="origin">Coordinates or the name of the route begins.</param>
-    /// <param name="destination">Coordinates or the name of the route ends.</param>
-    /// <param name="alternatives">Search for alternative routes.</param>
-    /// <returns>Query instance to the Google API.</returns>
-    [Obsolete("OnlineMaps.FindDirection is obsolete and will be removed. Use OnlineMapsFindDirection.Find.")]
-    public OnlineMapsGoogleAPIQuery FindDirection(string origin, string destination, bool alternatives = false)
-    {
-        OnlineMapsGoogleAPIQuery fl = OnlineMapsFindDirection.Find(origin, destination, alternatives);
-        googleQueries.Add(fl);
-        return fl;
-    }
-
-    /// <summary>
-    /// Search for location coordinates by the specified string and change the current position in the first search results.
-    /// </summary>
-    /// <param name="search">Address you want to find.</param>
-    /// <returns>Instance of the search query.</returns>
-    [Obsolete("OnlineMaps.FindLocation is obsolete and will be removed. Use OnlineMapsFindLocation.Find.")]
-    public OnlineMapsGoogleAPIQuery FindLocation(string search)
-    {
-        OnlineMapsFindLocation fl = new OnlineMapsFindLocation(search);
-        fl.OnComplete += OnlineMapsFindLocation.MovePositionToResult;
-        googleQueries.Add(fl);
-        return fl;
-    }
-
-    /// <summary>
-    /// Search for location coordinates by the specified string and return search result to callback function.
-    /// </summary>
-    /// <param name="search">Address you want to find.</param>
-    /// <param name="callback">Function, which will be given search results as XML string.</param>
-    /// <returns>Instance of the search query.</returns>
-    [Obsolete("OnlineMaps.FindLocation is obsolete and will be removed. Use OnlineMapsFindLocation.Find.")]
-    public OnlineMapsFindLocation FindLocation(string search, Action<string> callback)
-    {
-        OnlineMapsFindLocation fl = new OnlineMapsFindLocation(search);
-        fl.OnComplete += callback;
-        googleQueries.Add(fl);
-        return fl;
-    }
-
     /// <summary>
     /// Unloads unused assets and initializes the garbage collection.
     /// </summary>
@@ -1015,13 +1015,39 @@ public class OnlineMaps : MonoBehaviour
         {
             lastGC = DateTime.Now.Ticks;
             needGC = false;
-            Resources.UnloadUnusedAssets();
-            GC.Collect();
+            if (OnGCCollect != null) OnGCCollect();
+#if UNITY_5_2L
+            else
+            {
+                Resources.UnloadUnusedAssets();
+                GC.Collect();
+            }
+#endif
         }
         catch
         {
         }
         
+    }
+
+    /// <summary>
+    /// Gets the name of the map types available for the provider.
+    /// </summary>
+    /// <param name="provider">Provider</param>
+    /// <returns>Array of names.</returns>
+    public static string[] GetAvailableTypes(OnlineMapsProviderEnum provider)
+    {
+        string[] types = {"Satellite", "Relief", "Terrain", "Map"};
+        if (provider == OnlineMapsProviderEnum.aMap) return new[] {types[0], types[2]};
+        if (provider == OnlineMapsProviderEnum.arcGis) return new[] {types[0], types[2]};
+        if (provider == OnlineMapsProviderEnum.custom) return null;
+        if (provider == OnlineMapsProviderEnum.google) return new[] {types[0], types[1], types[2]};
+        if (provider == OnlineMapsProviderEnum.mapQuest) return new[] {types[0], types[2]};
+        if (provider == OnlineMapsProviderEnum.nokia) return new[] {types[0], types[2], types[3]};
+        if (provider == OnlineMapsProviderEnum.openStreetMap) return null;
+        if (provider == OnlineMapsProviderEnum.sputnik) return null;
+        if (provider == OnlineMapsProviderEnum.virtualEarth) return new[] {types[0], types[2]};
+        return types;
     }
 
     /// <summary>
@@ -1043,7 +1069,7 @@ public class OnlineMaps : MonoBehaviour
     /// <returns>Drawing element</returns>
     public OnlineMapsDrawingElement GetDrawingElement(Vector2 screenPosition)
     {
-        return drawingElements.FirstOrDefault(el => el.HitTest(OnlineMapsControlBase.instance.GetCoords(screenPosition), zoom));
+        return drawingElements.LastOrDefault(el => el.HitTest(OnlineMapsControlBase.instance.GetCoords(screenPosition), zoom));
     }
 
     /// <summary>
@@ -1057,11 +1083,31 @@ public class OnlineMaps : MonoBehaviour
     /// </returns>
     public OnlineMapsMarker GetMarkerFromScreen(Vector2 screenPosition)
     {
-        if (control is OnlineMapsTileSetControl)
+        if (target == OnlineMapsTarget.tileset) return OnlineMapsTileSetControl.instance.GetMarkerFromScreen(screenPosition);
+
+        Vector2 coords = OnlineMapsControlBase.instance.GetCoords(screenPosition);
+        if (coords == Vector2.zero) return null;
+
+        OnlineMapsMarker marker = null;
+        double lng = double.MinValue, lat = double.MaxValue;
+        double mx, my;
+
+        foreach (OnlineMapsMarker m in markers)
         {
-            return OnlineMapsTileSetControl.instance.GetMarkerFromScreen(screenPosition);
+            if (!m.enabled || !m.range.InRange(zoom)) continue;
+            if (m.HitTest(coords, zoom))
+            {
+                m.GetPosition(out mx, out my);
+                if (my < lat || (my == lat && mx > lng))
+                {
+                    marker = m;
+                    lat = my;
+                    lng = mx;
+                }
+            }
         }
-        return markers.FirstOrDefault(marker => marker.HitTest(OnlineMapsControlBase.instance.GetCoords(screenPosition), zoom));
+
+        return marker;
     }
 
     /// <summary>
@@ -1096,7 +1142,6 @@ public class OnlineMaps : MonoBehaviour
         if (needGC || DateTime.Now.Ticks - lastGC > OnlineMapsUtils.second * 5) GCCollect();
     }
 
-// ReSharper disable once UnusedMember.Local
     private void OnDestroy()
     {
         OnlineMapsThreadManager.Dispose();
@@ -1106,24 +1151,18 @@ public class OnlineMaps : MonoBehaviour
             _buffer.Dispose();
             _buffer = null;
         }
-        
+#if NETFX_CORE
+        if (renderThread != null) renderThread.Dispose();
+#endif
+#if !UNITY_WEBGL
+        renderThread = null;
+#endif
+
         if (defaultColors != null && texture != null)
         {
             texture.SetPixels(defaultColors);
             texture.Apply();
         }
-
-#if !UNITY_WEBGL
-        if (renderThread != null)
-        {
-#if UNITY_IOS
-            renderThread.Interrupt();
-#else
-            renderThread.Abort();
-#endif
-        }
-        renderThread = null;
-#endif
 
         drawingElements = null;
         markers = null;
@@ -1131,61 +1170,104 @@ public class OnlineMaps : MonoBehaviour
         GCCollect();
     }
 
-// ReSharper disable once UnusedMember.Local
     private void OnDisable ()
     {
-        if (_instance == this) _instance = null;
+        OnlineMapsThreadManager.Dispose();
 
-#if !UNITY_WEBGL
-        if (renderThread != null)
+        if (_buffer != null)
         {
-#if UNITY_IOS
-            renderThread.Interrupt();
-#else
-            renderThread.Abort();
-#endif
+            _buffer.Dispose();
+            _buffer = null;
         }
+
+#if NETFX_CORE
+        if (renderThread != null) renderThread.Dispose();
+#endif
+#if !UNITY_WEBGL
         renderThread = null;
 #endif
+
+        OnChangePosition = null;
+        OnChangeZoom = null;
+        OnGCCollect = null;
+        OnMapUpdated = null;
+        OnMapUpdated = null;
+        OnUpdateBefore = null;
+        OnUpdateLate = null;
+        OnlineMapsTile.OnGetResourcesPath = null;
+        OnlineMapsTile.OnTileDownloaded = null;
+        OnlineMapsTile.OnTrafficDownloaded = null;
+        OnlineMapsMarkerBase.OnMarkerDrawTooltip = null;
+
+        if (_instance == this) _instance = null;
     }
 
     private void OnEnable()
     {
+#if UNITY_EDITOR
+        EditorApplication.update += CheckScriptCompiling;
+#endif
+
         _instance = this;
 
-        if (language == "") language = provider != OnlineMapsProviderEnum.nokia ? "en" : "eng";
         if (drawingElements == null) drawingElements = new List<OnlineMapsDrawingElement>();
-        _provider = provider;
-        _type = type;
+
+#pragma warning disable 612, 618
+        if (string.IsNullOrEmpty(mapType)) mapType = OnlineMapsProvider.Upgrade((int) provider, type);
+#pragma warning restore 612, 618
+
+        _mapType = mapType;
+        activeType = OnlineMapsProvider.FindMapType(mapType);
+
+        if (language == "") language = activeType.provider.twoLetterLanguage ? "en" : "eng";
+
         _language = language;
+        _labels = labels;
+        _traffic = traffic;
 
         UpdateTopLeftPosition();
         UpdateBottonRightPosition();
+
+        tooltipStyle = new GUIStyle
+        {
+            normal =
+            {
+                background = tooltipBackgroundTexture,
+                textColor = new Color32(230, 230, 230, 255)
+            },
+            border = new RectOffset(8, 8, 8, 8),
+            margin = new RectOffset(4, 4, 4, 4),
+            wordWrap = true,
+            richText = true,
+            alignment = TextAnchor.MiddleCenter,
+            stretchWidth = true,
+            padding = new RectOffset(0, 0, 3, 3)
+        };
     }
 
-// ReSharper disable once UnusedMember.Local
     private void OnGUI()
     {
         if (string.IsNullOrEmpty(tooltip) && showMarkerTooltip != OnlineMapsShowMarkerTooltip.always) return;
 
-        if (skin != null) GUI.skin = skin;
-        GUIStyle style = new GUIStyle(GUI.skin.label);
+        GUIStyle style = new GUIStyle(tooltipStyle);
 			
         if (OnPrepareTooltipStyle != null) OnPrepareTooltipStyle(ref style);
 
         if (!string.IsNullOrEmpty(tooltip))
         {
+            Vector2 inputPosition = control.GetInputPosition();
+
             if (tooltipMarker != null)
             {
                 if (tooltipMarker.OnDrawTooltip != null) tooltipMarker.OnDrawTooltip(tooltipMarker);
                 else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(tooltipMarker);
-                else OnGUITooltip(style, tooltip, Input.mousePosition);
+                else OnGUITooltip(style, tooltip, inputPosition);
             }
             else if (tooltipDrawingElement != null)
             {
                 if (tooltipDrawingElement.OnDrawTooltip != null) tooltipDrawingElement.OnDrawTooltip(tooltipDrawingElement);
                 else if (OnlineMapsDrawingElement.OnElementDrawTooltip != null) OnlineMapsDrawingElement.OnElementDrawTooltip(tooltipDrawingElement);
-                else OnGUITooltip(style, tooltip, Input.mousePosition);
+                else OnGUITooltip(style, tooltip, inputPosition);
             }
         }
 
@@ -1203,17 +1285,16 @@ public class OnlineMaps : MonoBehaviour
                 {
                     if (string.IsNullOrEmpty(marker.label)) continue;
 
-                    float mx = marker.position.x;
+                    double mx, my;
+                    marker.GetPosition(out mx, out my);
 
-                    if (!(((mx > tlx && mx < brx) || (mx + 360 > tlx && mx + 360 < brx) ||
-                       (mx - 360 > tlx && mx - 360 < brx)) &&
-                      marker.position.y < tly && marker.position.y > bry)) continue;
+                    if (!(((mx > tlx && mx < brx) || (mx + 360 > tlx && mx + 360 < brx) || (mx - 360 > tlx && mx - 360 < brx)) && my < tly && my > bry)) continue;
 
                     if (marker.OnDrawTooltip != null) marker.OnDrawTooltip(marker);
                     else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(marker);
                     else
                     {
-                        Vector3 p1 = OnlineMapsTileSetControl.instance.GetWorldPositionWithElevation(marker.position, tlx, tly, brx, bry);
+                        Vector3 p1 = OnlineMapsTileSetControl.instance.GetWorldPositionWithElevation(mx, my, tlx, tly, brx, bry);
                         Vector3 p2 = p1 + new Vector3(0, 0, tilesetSize.y / tilesetHeight * marker.height * marker.scale);
 
                         Vector2 screenPoint1 = OnlineMapsTileSetControl.instance.activeCamera.WorldToScreenPoint(p1);
@@ -1229,17 +1310,18 @@ public class OnlineMaps : MonoBehaviour
                 {
                     if (string.IsNullOrEmpty(marker.label)) continue;
 
-                    float mx = marker.position.x;
+                    double mx, my;
+                    marker.GetPosition(out mx, out my);
 
                     if (!(((mx > tlx && mx < brx) || (mx + 360 > tlx && mx + 360 < brx) ||
                        (mx - 360 > tlx && mx - 360 < brx)) &&
-                      marker.position.y < tly && marker.position.y > bry)) continue;
+                      my < tly && my > bry)) continue;
 
                     if (marker.OnDrawTooltip != null) marker.OnDrawTooltip(marker);
                     else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(marker);
                     else
                     {
-                        Vector3 p1 = OnlineMapsTileSetControl.instance.GetWorldPositionWithElevation(marker.position, tlx, tly, brx, bry);
+                        Vector3 p1 = OnlineMapsTileSetControl.instance.GetWorldPositionWithElevation(mx, my, tlx, tly, brx, bry);
                         Vector3 p2 = p1 + new Vector3(0, 0, tilesetSize.y / tilesetHeight * marker.scale);
 
                         Vector2 screenPoint1 = OnlineMapsTileSetControl.instance.activeCamera.WorldToScreenPoint(p1);
@@ -1293,18 +1375,6 @@ public class OnlineMaps : MonoBehaviour
     /// </summary>
     public void RedrawImmediately()
     {
-#if !UNITY_WEBGL
-        if (renderThread != null)
-        {
-#if UNITY_IOS
-            renderThread.Interrupt();
-#else
-            renderThread.Abort();
-#endif
-        }
-        renderThread = null;
-#endif
-
         OnlineMapsThreadManager.Dispose();
 
         if (_buffer != null)
@@ -1312,6 +1382,14 @@ public class OnlineMaps : MonoBehaviour
             _buffer.Dispose();
             _buffer = null;
         }
+
+#if NETFX_CORE
+        if (renderThread != null) renderThread.Dispose();
+#endif
+#if !UNITY_WEBGL
+        renderThread = null;
+#endif
+
 
         GCCollect();
 
@@ -1323,7 +1401,11 @@ public class OnlineMaps : MonoBehaviour
     /// </summary>
     public void RemoveAllDrawingElements()
     {
-        foreach (OnlineMapsDrawingElement element in drawingElements) element.OnRemoveFromMap();
+        foreach (OnlineMapsDrawingElement element in drawingElements)
+        {
+            element.OnRemoveFromMap();
+            element.Dispose();
+        }
         drawingElements.Clear();
         needRedraw = true;
     }
@@ -1333,6 +1415,7 @@ public class OnlineMaps : MonoBehaviour
     /// </summary>
     public void RemoveAllMarkers()
     {
+        foreach (OnlineMapsMarker marker in markers) marker.Dispose();
         markers = new OnlineMapsMarker[0];
         Redraw();
     }
@@ -1341,9 +1424,11 @@ public class OnlineMaps : MonoBehaviour
     /// Remove the specified drawing element from the map.
     /// </summary>
     /// <param name="element">Drawing element you want to remove.</param>
-    public void RemoveDrawingElement(OnlineMapsDrawingElement element)
+    /// <param name="disposeElement">Indicates that need to dispose drawingElement.</param>
+    public void RemoveDrawingElement(OnlineMapsDrawingElement element, bool disposeElement = true)
     {
         element.OnRemoveFromMap();
+        if (disposeElement) element.Dispose();
         drawingElements.Remove(element);
         needRedraw = true;
     }
@@ -1357,6 +1442,7 @@ public class OnlineMaps : MonoBehaviour
         if (elementIndex < 0 || elementIndex >= markers.Length) return;
 
         OnlineMapsDrawingElement element = drawingElements[elementIndex];
+        element.Dispose();
 
         element.OnRemoveFromMap();
         drawingElements.Remove(element);
@@ -1367,10 +1453,14 @@ public class OnlineMaps : MonoBehaviour
     /// Remove the specified 2D marker from the map.
     /// </summary>
     /// <param name="marker">2D marker you want to remove.</param>
-    public void RemoveMarker(OnlineMapsMarker marker)
+    /// <param name="disposeMarker">Dispose marker.</param>
+    public void RemoveMarker(OnlineMapsMarker marker, bool disposeMarker = true)
     {
+        if (OnRemoveMarker != null && OnRemoveMarker(marker)) return;
+
         List<OnlineMapsMarker> ms = markers.ToList();
         ms.Remove(marker);
+        if (disposeMarker) marker.Dispose();
         markers = ms.ToArray();
         Redraw();
     }
@@ -1381,12 +1471,15 @@ public class OnlineMaps : MonoBehaviour
     /// <param name="markerIndex">Marker index.</param>
     public void RemoveMarkerAt(int markerIndex)
     {
+        if (OnRemoveMarkerAt != null && OnRemoveMarkerAt(markerIndex)) return;
+
         if (markerIndex < 0 || markerIndex >= markers.Length) return;
 
         OnlineMapsMarker marker = markers[markerIndex];
 
         List<OnlineMapsMarker> ms = markers.ToList();
         ms.Remove(marker);
+        marker.Dispose();
         markers = ms.ToArray();
         Redraw();
     }
@@ -1436,16 +1529,15 @@ public class OnlineMaps : MonoBehaviour
         }
 
         element.Create("Source", (int)source);
-        element.Create("Provider", (int)provider);
-        if (provider == OnlineMapsProviderEnum.custom) element.Create("CustomProviderURL", customProviderURL);
-        element.Create("Type", type);
+        element.Create("MapType", mapType);
+        if (activeType.isCustom) element.Create("CustomProviderURL", customProviderURL);
         element.Create("Labels", labels);
         element.Create("Traffic", traffic);
         element.Create("RedrawOnPlay", redrawOnPlay);
         element.Create("UseSmartTexture", useSmartTexture);
         element.Create("EmptyColor", emptyColor);
         element.Create("DefaultTileTexture", defaultTileTexture);
-        element.Create("Skin", skin);
+        element.Create("TooltipTexture", tooltipBackgroundTexture);
         element.Create("DefaultMarkerTexture", defaultMarkerTexture);
         element.Create("DefaultMarkerAlign", (int)defaultMarkerAlign);
         element.Create("ShowMarkerTooltip", (int)showMarkerTooltip);
@@ -1473,27 +1565,27 @@ public class OnlineMaps : MonoBehaviour
             else if (positionRange.type == OnlineMapsPositionRangeType.border)
             {
                 double px, py;
-                OnlineMapsUtils.LatLongToTiled(lng, lat, _zoom, out px, out py);
+                projection.CoordinatesToTile(lng, lat, _zoom, out px, out py);
                 Vector2 offset = new Vector2(countX / 2f, countY / 2f);
 
                 double tlx, tly, brx, bry;
 
-                OnlineMapsUtils.TileToLatLong(px - offset.x, py - offset.y, _zoom, out tlx, out tly);
-                OnlineMapsUtils.TileToLatLong(px + offset.x, py + offset.y, _zoom, out brx, out bry);
+                projection.TileToCoordinates(px - offset.x, py - offset.y, _zoom, out tlx, out tly);
+                projection.TileToCoordinates(px + offset.x, py + offset.y, _zoom, out brx, out bry);
 
                 double ltlx = tlx;
                 double lbrx = brx;
 
-                bool tlc = positionRange.CheckAndFix(ref tly, ref tlx);
-                bool brc = positionRange.CheckAndFix(ref bry, ref brx);
+                bool tlc = positionRange.CheckAndFix(ref tlx, ref tly);
+                bool brc = positionRange.CheckAndFix(ref brx, ref bry);
 
                 if (tlc && brc)
                 {
                     if (ltlx == tlx || lbrx == brx)
                     {
                         double tx, ty;
-                        OnlineMapsUtils.LatLongToTiled(tlx, tly, _zoom, out tx, out ty);
-                        OnlineMapsUtils.TileToLatLong(tx + offset.x, ty + offset.y, _zoom, out lng, out lat);
+                        projection.CoordinatesToTile(tlx, tly, _zoom, out tx, out ty);
+                        projection.TileToCoordinates(tx + offset.x, ty + offset.y, _zoom, out lng, out lat);
                     }
                     else
                     {
@@ -1504,20 +1596,20 @@ public class OnlineMaps : MonoBehaviour
                 else if (tlc)
                 {
                     double tx, ty;
-                    OnlineMapsUtils.LatLongToTiled(tlx, tly, _zoom, out tx, out ty);
-                    OnlineMapsUtils.TileToLatLong(tx + offset.x, ty + offset.y, _zoom, out lng, out lat);
+                    projection.CoordinatesToTile(tlx, tly, _zoom, out tx, out ty);
+                    projection.TileToCoordinates(tx + offset.x, ty + offset.y, _zoom, out lng, out lat);
                 }
                 else if (brc)
                 {
                     double tx, ty;
-                    OnlineMapsUtils.LatLongToTiled(brx, bry, _zoom, out tx, out ty);
-                    OnlineMapsUtils.TileToLatLong(tx - offset.x, ty - offset.y, _zoom, out lng, out lat);
+                    projection.CoordinatesToTile(brx, bry, _zoom, out tx, out ty);
+                    projection.TileToCoordinates(tx - offset.x, ty - offset.y, _zoom, out lng, out lat);
                 }
             }
         }
 
         double tpx, tpy;
-        OnlineMapsUtils.LatLongToTiled(lng, lat, _zoom, out tpx, out tpy);
+        projection.CoordinatesToTile(lng, lat, _zoom, out tpx, out tpy);
 
         float haftCountY = countY / 2f;
         int maxY = (2 << zoom) / 2;
@@ -1533,7 +1625,7 @@ public class OnlineMaps : MonoBehaviour
             modified = true;
         }
 
-        if (modified) OnlineMapsUtils.TileToLatLong(tpx, tpy, _zoom, out lng, out lat);
+        if (modified) projection.TileToCoordinates(tpx, tpy, _zoom, out lng, out lat);
 
         if (latitude == lat && longitude == lng) return;
 
@@ -1624,7 +1716,6 @@ public class OnlineMaps : MonoBehaviour
         }
     }
 
-// ReSharper disable once UnusedMember.Local
     private void Start()
     {
         if (redrawOnPlay)
@@ -1649,7 +1740,7 @@ public class OnlineMaps : MonoBehaviour
             countDownload = OnlineMapsTile.tiles.Count(t => t.status == OnlineMapsTileStatus.loading);
             if (countDownload >= maxTileDownloads) return;
 
-            tiles = OnlineMapsTile.tiles.Where(t => t.status == OnlineMapsTileStatus.none).OrderBy(t => t.zoom).ToArray();
+            tiles = OnlineMapsTile.tiles.Where(t => t.status == OnlineMapsTileStatus.none).OrderBy(t => t.zoom).Take(maxTileDownloads - countDownload).ToList();
         }
         foreach (OnlineMapsTile tile in tiles)
         {
@@ -1676,6 +1767,7 @@ public class OnlineMaps : MonoBehaviour
             UnityEngine.Object tileTexture = Resources.Load(tile.resourcesPath);
             if (tileTexture != null)
             {
+                tileTexture = Instantiate(tileTexture);
                 if (target == OnlineMapsTarget.texture)
                 {
                     tile.ApplyTexture(tileTexture as Texture2D);
@@ -1723,14 +1815,18 @@ public class OnlineMaps : MonoBehaviour
         
         buffer.redrawType = redrawType;
         buffer.generateSmartBuffer = isUserControl;
-        buffer.status = OnlineMapsBufferStatus.start;
-        
+        buffer.status = OnlineMapsBufferStatus.start;        
+
 #if !UNITY_WEBGL
         if (renderInThread)
         {
             if (renderThread == null)
             {
+#if NETFX_CORE
+                renderThread = new OnlineMapsThreadWINRT(buffer.GenerateFrontBuffer);
+#else
                 renderThread = new Thread(buffer.GenerateFrontBuffer);
+#endif
                 renderThread.Start();
             }
         }
@@ -1743,7 +1839,6 @@ public class OnlineMaps : MonoBehaviour
         needRedraw = false;
     }
 
-// ReSharper disable once UnusedMember.Local
     private void Update()
     {
         if (OnUpdateBefore != null) OnUpdateBefore();
@@ -1755,18 +1850,24 @@ public class OnlineMaps : MonoBehaviour
         if (OnUpdateLate != null) OnUpdateLate();
     }
 
+    public void UpdateBorders()
+    {
+        UpdateTopLeftPosition();
+        UpdateBottonRightPosition();
+    }
+
     private void UpdateBottonRightPosition()
     {
         int countX = width / OnlineMapsUtils.tileSize;
         int countY = height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        OnlineMapsUtils.LatLongToTiled(longitude, latitude, _zoom, out px, out py);
+        projection.CoordinatesToTile(longitude, latitude, _zoom, out px, out py);
 
         px += countX / 2.0;
         py += countY / 2.0;
 
-        OnlineMapsUtils.TileToLatLong(px, py, _zoom, out bottomRightLongitude, out bottomRightLatitude);
+        projection.TileToCoordinates(px, py, _zoom, out bottomRightLongitude, out bottomRightLatitude);
     }
 
     private void UpdateTopLeftPosition()
@@ -1776,12 +1877,12 @@ public class OnlineMaps : MonoBehaviour
 
         double px, py;
 
-        OnlineMapsUtils.LatLongToTiled(longitude, latitude, _zoom, out px, out py);
+        projection.CoordinatesToTile(longitude, latitude, _zoom, out px, out py);
 
         px -= countX / 2.0;
         py -= countY / 2.0;
 
-        OnlineMapsUtils.TileToLatLong(px, py, _zoom, out topLeftLongitude, out topLeftLatitude);
+        projection.TileToCoordinates(px, py, _zoom, out topLeftLongitude, out topLeftLatitude);
     }
 
 #endregion

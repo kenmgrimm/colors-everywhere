@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to make the overlay for the tileset.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/TilesetOverlayExample")]
     public class TilesetOverlayExample : MonoBehaviour
     {
@@ -73,21 +76,22 @@ namespace InfinityCode.OnlineMapsExamples
 
             // Init overlay UV
             OnlineMaps api = OnlineMaps.instance;
-            Vector2 topLeftPosition = api.topLeftPosition;
-            Vector2 bottomRightPosition = api.bottomRightPosition;
 
-            Vector2 topLeftTile = OnlineMapsUtils.LatLongToTilef(topLeftPosition, api.zoom);
-            Vector2 bottomRightTile = OnlineMapsUtils.LatLongToTilef(bottomRightPosition, api.zoom);
+            double tlx, tly, brx, bry;
+            api.GetTopLeftPosition(out tlx, out tly);
+            api.GetBottomRightPosition(out brx, out bry);
+            api.projection.CoordinatesToTile(tlx, tly, api.zoom, out tlx, out tly);
+            api.projection.CoordinatesToTile(brx, bry, api.zoom, out brx, out bry);
 
             int maxTileCount = 1 << api.zoom;
 
-            float uvX1 = topLeftTile.x / maxTileCount;
-            float uvX2 = bottomRightTile.x / maxTileCount;
+            float uvX1 = (float)(tlx / maxTileCount);
+            float uvX2 = (float)(brx / maxTileCount);
 
             if (uvX1 > uvX2) uvX2 += 1;
 
-            float uvY1 = 1 - topLeftTile.y / maxTileCount;
-            float uvY2 = 1 - bottomRightTile.y / maxTileCount;
+            float uvY1 = (float)(1 - tly / maxTileCount);
+            float uvY2 = (float)(1 - bry / maxTileCount);
 
             overlayMesh.uv = new[]
             {

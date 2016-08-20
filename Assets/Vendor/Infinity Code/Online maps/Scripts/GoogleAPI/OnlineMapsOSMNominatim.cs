@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -25,11 +26,11 @@ public class OnlineMapsOSMNominatim:OnlineMapsGoogleAPIQuery
     private OnlineMapsOSMNominatim(string query, string acceptlanguage, int limit, bool addressdetails)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://nominatim.openstreetmap.org/search?format=xml&q={0}";
-        if (addressdetails) url += "&addressdetails=1";
-        if (limit > 0) url += "&limit=" + limit;
-        if (string.IsNullOrEmpty(acceptlanguage)) url += "&accept-language=" + acceptlanguage;
-        url = string.Format(url, query.Replace(" ", "+"));
+        StringBuilder url = new StringBuilder("https://nominatim.openstreetmap.org/search?format=xml&q=").Append(OnlineMapsWWW.EscapeURL(query));
+        if (addressdetails) url.Append("&addressdetails=1");
+        if (limit > 0) url.Append("&limit=").Append(limit);
+        if (string.IsNullOrEmpty(acceptlanguage)) url.Append("&accept-language=").Append(acceptlanguage);
+
         www = OnlineMapsUtils.GetWWW(url);
         OnlineMaps.instance.AddGoogleAPIQuery(this);
     }
@@ -37,10 +38,12 @@ public class OnlineMapsOSMNominatim:OnlineMapsGoogleAPIQuery
     private OnlineMapsOSMNominatim(Vector2 location, string acceptlanguage, bool addressdetails)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://nominatim.openstreetmap.org/reverse?format=xml&lat={0}&lon={1}";
-        if (addressdetails) url += "&addressdetails=1";
-        if (string.IsNullOrEmpty(acceptlanguage)) url += "&accept-language=" + acceptlanguage;
-        url = string.Format(url, location.y, location.x);
+        StringBuilder url = new StringBuilder("https://nominatim.openstreetmap.org/reverse?format=xml&lat=");
+        url.Append(location.y).Append("&lon=").Append(location.x);
+
+        if (addressdetails) url.Append("&addressdetails=1");
+        if (string.IsNullOrEmpty(acceptlanguage)) url.Append("&accept-language=").Append(acceptlanguage);
+        
         www = OnlineMapsUtils.GetWWW(url);
         OnlineMaps.instance.AddGoogleAPIQuery(this);
     }
@@ -108,122 +111,5 @@ public class OnlineMapsOSMNominatim:OnlineMapsGoogleAPIQuery
         }
 
         return null;
-    }
-}
-
-/// <summary>
-/// Result of Nominatim query.
-/// </summary>
-public class OnlineMapsOSMNominatimResult
-{
-    /// <summary>
-    /// XML node
-    /// </summary>
-    public OnlineMapsXML node;
-
-    /// <summary>
-    /// Place ID
-    /// </summary>
-    public int place_id;
-
-    /// <summary>
-    /// OSM Type
-    /// </summary>
-    public string osm_type;
-
-    /// <summary>
-    /// OSM ID
-    /// </summary>
-    public int osm_id;
-
-    /// <summary>
-    /// Place rank
-    /// </summary>
-    public int place_rank;
-
-    /// <summary>
-    /// Bounding box
-    /// </summary>
-    public Rect boundingbox;
-
-    /// <summary>
-    /// Latitude
-    /// </summary>
-    public double latitude;
-
-    /// <summary>
-    /// Longitude
-    /// </summary>
-    public double longitude;
-
-    /// <summary>
-    /// Сoordinates of location (X - longitude, Y - latitude).
-    /// </summary>
-    public Vector2 location;
-
-    /// <summary>
-    /// Display name
-    /// </summary>
-    public string display_name;
-
-    /// <summary>
-    /// Type of object
-    /// </summary>
-    public string type;
-
-    /// <summary>
-    /// Importance
-    /// </summary>
-    public double importance;
-
-    /// <summary>
-    /// Dictionary of address details
-    /// </summary>
-    public Dictionary<string, string> addressdetails;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="node">XML Node</param>
-    /// <param name="isReverse">Indicates reverse geocoding result.</param>
-    public OnlineMapsOSMNominatimResult(OnlineMapsXML node, bool isReverse)
-    {
-        this.node = node;
-
-        place_id = node.A<int>("place_id");
-        osm_type = node.A("osm_type");
-        osm_id = node.A<int>("osm_id");
-        place_rank = node.A<int>("place_rank");
-        latitude = node.A<double>("lat");
-        longitude = node.A<double>("lon");
-        location = new Vector2((float)longitude, (float)latitude);
-        display_name = isReverse? node.Value(): node.A("display_name");
-        type = node.A("type");
-        importance = node.A<double>("importance");
-
-        string bb = node.A("boundingbox");
-        if (!string.IsNullOrEmpty(bb))
-        {
-            string[] bbParts = bb.Split(',');
-            double w = Double.Parse(bbParts[0]);
-            double e = Double.Parse(bbParts[1]);
-            double s = Double.Parse(bbParts[2]);
-            double n = Double.Parse(bbParts[3]);
-            boundingbox = new Rect((float)w, (float)n, (float)(e - w), (float)(s - n));
-        }
-        
-        addressdetails = new Dictionary<string, string>();
-    }
-
-    /// <summary>
-    /// Load address details.
-    /// </summary>
-    /// <param name="adNode">Address details XML node.</param>
-    public void LoadAddressDetails(OnlineMapsXML adNode)
-    {
-        foreach (OnlineMapsXML n in adNode)
-        {
-            if (!n.isNull) addressdetails.Add(n.name, n.Value());
-        }
     }
 }

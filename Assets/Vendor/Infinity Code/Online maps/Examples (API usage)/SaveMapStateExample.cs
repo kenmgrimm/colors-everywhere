@@ -6,11 +6,17 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of runtime saving map state.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/SaveMapStateExample")]
     public class SaveMapStateExample : MonoBehaviour
     {
         private string key = "MapSettings";
 
+        /// <summary>
+        /// Loading saved state.
+        /// </summary>
         private void LoadState()
         {
             if (!PlayerPrefs.HasKey(key)) return;
@@ -30,6 +36,7 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void OnGUI()
         {
+            // By clicking on the button to save the current state.
             if (GUI.Button(new Rect(5, 5, 150, 30), "Save State")) SaveState();
         }
 

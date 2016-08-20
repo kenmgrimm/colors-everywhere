@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsDemos
 {
+    [AddComponentMenu("Infinity Code/Online Maps/Demos/Aircraft")]
     public class Aircraft : MonoBehaviour
     {
         public GameObject container;
@@ -37,6 +38,9 @@ namespace InfinityCode.OnlineMapsDemos
         {
             const float maxTilt = 50;
 
+            OnlineMaps api = OnlineMaps.instance;
+            OnlineMapsTileSetControl control = OnlineMapsTileSetControl.instance;
+
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
                 tilt -= Time.deltaTime * tiltSpeed * maxTilt;
@@ -60,8 +64,6 @@ namespace InfinityCode.OnlineMapsDemos
                 transform.Rotate(Vector3.up, tilt * rotateSpeed * Time.deltaTime);
             }
 
-            OnlineMaps api = OnlineMaps.instance;
-
             double tlx, tly, brx, bry, dx, dy;
 
             api.GetTopLeftPosition(out tlx, out tly);
@@ -83,7 +85,7 @@ namespace InfinityCode.OnlineMapsDemos
             api.SetPosition(px, py);
 
             Vector3 pos = transform.position;
-            pos.y = altitude * OnlineMapsTileSetControl.instance.GetBestElevationYScale(api.topLeftPosition, api.bottomRightPosition) * OnlineMapsTileSetControl.instance.elevationScale;
+            pos.y = altitude * control.GetBestElevationYScale(tlx, tly, brx, bry) * control.elevationScale;
             transform.position = pos;
 
             Camera.main.transform.position = transform.position - transform.rotation * cameraOffset;

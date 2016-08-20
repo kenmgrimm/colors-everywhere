@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class OnlineMapsAboutWindow:EditorWindow
 {
-    [MenuItem("Component/Infinity Code/Online Maps/About")]
+    [MenuItem("GameObject/Infinity Code/Online Maps/About", false, 3)]
     public static void OpenWindow()
     {
         OnlineMapsAboutWindow window = GetWindow<OnlineMapsAboutWindow>(true, "About", true);

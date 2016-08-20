@@ -9,7 +9,6 @@ using UnityEngine;
 /// <summary>
 /// Class that draws a rectangle on the map.
 /// </summary>
-[Serializable]
 public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
 {
     /// <summary>
@@ -322,30 +321,30 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
         this.backgroundColor = backgroundColor;
     }
 
-    public override void Draw(Color[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom)
+    public override void Draw(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, bool invertY = false)
     {
         if (!visible) return;
 
-        FillPoly(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, backgroundColor);
-        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, borderColor, borderWeight, true);
+        FillPoly(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, backgroundColor, invertY);
+        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, borderColor, borderWeight, true, invertY);
     }
 
-    public override void DrawOnTileset(OnlineMapsTileSetControl control)
+    public override void DrawOnTileset(OnlineMapsTileSetControl control, int index)
     {
-        base.DrawOnTileset(control);
+        base.DrawOnTileset(control, index);
 
-        InitMesh(control, "Rect", borderColor, backgroundColor);
-
-        if (!_visible)
+        if (!visible)
         {
             active = false;
             return;
         }
 
+        InitMesh(control, "Rect", borderColor, backgroundColor);
+
         api.GetTopLeftPosition(out tlx, out tly);
         api.GetBottomRightPosition(out brx, out bry);
 
-        List<Vector2> localPoints = GetLocalPoints(points, true);
+        List<Vector2> localPoints = GetLocalPoints(points, true, false);
 
         if (localPoints.All(p => p.x < 0))
         {
@@ -407,11 +406,11 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
             localPoints[i] = point;
         }
 
-        List<Vector3> verticles = new List<Vector3>();
-        List<Vector3> normals = new List<Vector3>();
-        List<int> backTriangles = new List<int>();
+        List<Vector3> verticles = new List<Vector3>(16);
+        List<Vector3> normals = new List<Vector3>(16);
+        List<int> backTriangles = new List<int>(6);
         List<int> borderTriangles = new List<int>();
-        List<Vector2> uv = new List<Vector2>();
+        List<Vector2> uv = new List<Vector2>(16);
 
         verticles.Add(new Vector3(-localPoints[0].x, -0.05f, localPoints[0].y));
         verticles.Add(new Vector3(-localPoints[1].x, -0.05f, localPoints[1].y));
@@ -523,6 +522,8 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
 
         mesh.SetTriangles(borderTriangles.ToArray(), 0);
         mesh.SetTriangles(backTriangles.ToArray(), 1);
+
+        UpdateMaterialsQuote(control, index);
     }
 
     private void DrawActivePointsCI3(OnlineMapsTileSetControl control, bool ignoreTop, bool ignoreRight, bool ignoreBottom, List<Vector2> activePoints,
@@ -543,10 +544,10 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
         DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
     }
 
-    public override bool HitTest(Vector2 positionLatLng, int zoom)
+    public override bool HitTest(Vector2 positionLngLat, int zoom)
     {
-        if (positionLatLng.x < x || positionLatLng.x > x + width) return false;
-        if (positionLatLng.y < y || positionLatLng.y > y + height) return false;
+        if (positionLngLat.x < x || positionLngLat.x > x + width) return false;
+        if (positionLngLat.y < y || positionLngLat.y > y + height) return false;
         return true;
     }
 
@@ -560,5 +561,12 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
             new Vector2(_x, _y + _height)
         };
         OnlineMaps.instance.needRedraw = true;
+    }
+
+    protected override void DisposeLate()
+    {
+        base.DisposeLate();
+
+        points = null;
     }
 }

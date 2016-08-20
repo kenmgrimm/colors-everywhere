@@ -104,14 +104,14 @@ public class OnlineMapsRWTConnector : MonoBehaviour
         if (rwt == null)
         {
             Debug.LogError("Real World Terrain Connector should be together c Real World Terrain Container.");
-            DestroyImmediate(this);
+            OnlineMapsUtils.DestroyImmediate(this);
             return;
         }
 
         if (positionMode == OnlineMapsRWTConnectorPositionMode.transform && targetTransform == null)
         {
             Debug.LogError("Target Transform is not specified.");
-            DestroyImmediate(this);
+            OnlineMapsUtils.DestroyImmediate(this);
             return;
         }
 

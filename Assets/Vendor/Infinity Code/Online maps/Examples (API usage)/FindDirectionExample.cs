@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Search a route between two locations and draws the route.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/FindDirectionExample")]
     public class FindDirectionExample : MonoBehaviour
     {

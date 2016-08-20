@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to make a request to Open Street Map Overpass API and handle the response.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/OSMRequestExample")]
     public class OSMRequestExample : MonoBehaviour
     {

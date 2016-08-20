@@ -7,18 +7,27 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of calculating the size of area.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/CalcAreaExample")]
     public class CalcAreaExample : MonoBehaviour
     {
+        /// <summary>
+        /// Texture of marker
+        /// </summary>
         public Texture2D markerTexture;
+
+        /// <summary>
+        /// Line width.
+        /// </summary>
+        public float borderWeight;
 
         private OnlineMaps api;
         private bool changed = false;
         private List<OnlineMapsMarker> markers = new List<OnlineMapsMarker>();
         private List<Vector2> markerPositions = new List<Vector2>();
         private OnlineMapsDrawingPoly polygon;
-
-        public float borderWeight;
 
         private float _borderWeight;
 
@@ -45,8 +54,7 @@ namespace InfinityCode.OnlineMapsExamples
                 Vector2 cursorCoords = api.control.GetCoords();
 
                 // Create a new marker at the specified coordinates.
-                OnlineMapsMarker marker = api.AddMarker(cursorCoords, markerTexture,
-                    "Marker " + (api.markers.Length + 1));
+                OnlineMapsMarker marker = api.AddMarker(cursorCoords, markerTexture, "Marker " + (api.markers.Length + 1));
 
                 // Save marker and coordinates.
                 markerPositions.Add(cursorCoords);

@@ -115,12 +115,12 @@ Transform:
   m_LocalRotation: {x: -0.6159235, y: 0.54383194, z: 0.4455712, w: 0.35545936}
   m_LocalPosition: {x: -2.545617, y: 0.51240885, z: -0.1656905}
   m_LocalScale: {x: 0.100000024, y: 0.10000004, z: 0.10000004}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2099859517}
   - {fileID: 1115047903}
   m_Father: {fileID: 764452323}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &154870705
 Animator:
   serializedVersion: 3
@@ -164,10 +164,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 32.25482, y: 3.5587034, z: -3.0655859}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &265473583
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -243,6 +243,7 @@ MonoBehaviour:
   invertTouchZoom: 0
   zoomInOnDoubleClick: 1
   activeCamera: {fileID: 1424423002}
+  allowAddMarker3DByN: 1
   allowDefaultMarkerEvents: 0
   allowCameraControl: 0
   cameraDistance: 100
@@ -252,7 +253,6 @@ MonoBehaviour:
   marker2DSize: 100
   markers3D: []
   marker3DScale: 1
-  allowAddMarker3DByN: 1
   bingAPI: 
   checkMarker2DVisibility: 0
   colliderType: 1
@@ -265,6 +265,10 @@ MonoBehaviour:
   markerMaterial: {fileID: 0}
   markerShader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
   smoothZoom: 1
+  smoothZoomMinScale: -3.4028235e+38
+  smoothZoomMaxScale: 3.4028235e+38
+  smoothZoomStarted: 0
+  originalPosition: {x: 0, y: 0, z: 0}
   smoothZoomMode: 0
   tileMaterial: {fileID: 0}
   tilesetShader: {fileID: 4800000, guid: e951aa0c126d1a7409bfec1296857a7b, type: 3}
@@ -282,31 +286,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowRedraw: 1
   control: {fileID: 0}
-  customProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
+  customProviderURL: http://localhost/{zoom}/{y}/{x}
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
   defaultTileTexture: {fileID: 0}
   dispatchEvents: 1
   drawingElements: []
-  emptyColor:
-    r: 0.49803922
-    g: 0.49803922
-    b: 0.49803922
-    a: 1
+  emptyColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
   height: 0
   labels: 0
-  language: 656e
+  language: en
   lockRedraw: 0
   markers: []
   needGC: 0
   needRedraw: 1
+  notInteractUnderGUI: 1
   provider: 0
   redrawOnPlay: 0
   renderInThread: 1
-  resourcesPath: 4f6e6c696e654d61707354696c65732f7b7a6f6f6d7d2f7b787d2f7b797d
+  resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
   showMarkerTooltip: 0
-  skin: {fileID: 11400000, guid: 4ced77c4c4467874e8782601a87210c2, type: 2}
+  skin: {fileID: 0}
   smartTexture: {fileID: 0}
   source: 0
   target: 1
@@ -329,11 +330,11 @@ MonoBehaviour:
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
   useSmartTexture: 1
-  webplayerProxyURL: 687474703a2f2f736572766963652e696e66696e6974792d636f64652e636f6d2f72656469726563742e7068703f
+  webplayerProxyURL: http://service.infinity-code.com/redirect.php?
   width: 0
   zoomRange:
-    max: 2147483647
-    min: -2147483648
+    max: 0
+    min: 0
   latitude: 46.171451568603516
   longitude: 8.84636116027832
   _position: {x: 0, y: 0}
@@ -347,10 +348,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &580776021
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,10 +378,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6568996, y: 5.9163914, z: 6.8070664}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &580776023
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -488,10 +489,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6018275, y: 9.513187, z: 3.3084624}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &640163324
 GameObject:
   m_ObjectHideFlags: 0
@@ -517,6 +518,7 @@ Transform:
   m_LocalRotation: {x: -0.05693793, y: 0.7048107, z: 0.056937944, w: 0.7048107}
   m_LocalPosition: {x: 0.1559625, y: -0.07634512, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 265473582}
   - {fileID: 2038889870}
@@ -532,7 +534,6 @@ Transform:
   - {fileID: 821760303}
   m_Father: {fileID: 764452323}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &640163326
 Animator:
   serializedVersion: 3
@@ -575,12 +576,12 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 640163325}
   - {fileID: 154870704}
   m_Father: {fileID: 2023560750}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &821760302
 GameObject:
   m_ObjectHideFlags: 0
@@ -607,10 +608,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6564851, y: -1.6408758, z: 32.235855}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 11
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &821760304
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -676,10 +677,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6018221, y: 10.544138, z: -2.6118348}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &931789571
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -744,10 +745,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6569017, y: 1.229147, z: -1.808493}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1000862095
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -813,10 +814,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6578633, y: 9.4500475, z: -22.974838}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1086580321
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -882,10 +883,10 @@ Transform:
   m_LocalRotation: {x: 0.000000012466241, y: -0.0806241, z: -0.0000000031156056, w: 0.99674463}
   m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 154870704}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1115047904
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -950,10 +951,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6568972, y: 0.91368836, z: 36.89977}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1227249467
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1019,10 +1020,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6568913, y: 8.364255, z: 7.6394596}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1320290936
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1088,10 +1089,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6569053, y: 9.582475, z: -23.06062}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1361627123
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1213,10 +1214,10 @@ Transform:
   m_LocalRotation: {x: -0.000000030908623, y: 0.7071068, z: -0.7071068, w: -0.000000030908623}
   m_LocalPosition: {x: -512, y: 1024, z: 512}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2023560749
 GameObject:
   m_ObjectHideFlags: 0
@@ -1243,11 +1244,11 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.28683883, y: 0.28683883, z: 0.28683883}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 764452323}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2023560751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1303,10 +1304,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -29.049627, y: 3.5587306, z: -3.0655968}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2038889871
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1372,10 +1373,10 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1.6823869, y: 7.4053555, z: -10.283741}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 640163325}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2041383726
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1440,10 +1441,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.9434523, y: -0.926594, z: -2.2559211}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 154870704}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2099859518
 MeshRenderer:
   m_ObjectHideFlags: 0

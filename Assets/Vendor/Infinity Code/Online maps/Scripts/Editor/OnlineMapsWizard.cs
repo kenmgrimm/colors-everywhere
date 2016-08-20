@@ -33,12 +33,10 @@ public class OnlineMapsWizard : EditorWindow
     private string language = "en";
     private int mapControl2D = 0;
     private int mapControl3D = 0;
-    private int mapProviderType = 0;
-    private int mapType = 1;
+    private int use3DControl = 1;
     private Material markerMaterial;
     private Shader markerShader;
     private bool moveCameraToTileset = true;
-    private OnlineMapsProviderEnum provider = OnlineMapsProviderEnum.arcGis;
     private Vector2 scrollPosition;
     private bool showCustomProviderTokens;
     private OnlineMapsSource source = OnlineMapsSource.Online;
@@ -62,60 +60,10 @@ public class OnlineMapsWizard : EditorWindow
     private bool smartTexture = true;
     private GameObject DFGUIParent;
     private GameObject IGUIParent;
-
-    public bool availableLabels
-    {
-        get
-        {
-            if (provider == OnlineMapsProviderEnum.google && mapProviderType == 0) return true;
-            if (provider == OnlineMapsProviderEnum.nokia && mapProviderType == 0) return true;
-            if (provider == OnlineMapsProviderEnum.virtualEarth && mapProviderType == 0) return true;
-            return false;
-        }
-    }
-
-    public bool availableLanguage
-    {
-        get
-        {
-            if (provider == OnlineMapsProviderEnum.arcGis) return false;
-            if (provider == OnlineMapsProviderEnum.mapQuest) return false;
-            if (provider == OnlineMapsProviderEnum.openStreetMap) return false;
-            if (provider == OnlineMapsProviderEnum.sputnik) return false;
-            return true;
-        }
-    }
-
-    public string[] availableTypes
-    {
-        get
-        {
-            string[] types = {"Satellite", "Relief", "Terrain", "Map"};
-            if (provider == OnlineMapsProviderEnum.arcGis) return new[] {types[0], types[2]};
-            if (provider == OnlineMapsProviderEnum.google) return new[] {types[0], types[1], types[2]};
-            if (provider == OnlineMapsProviderEnum.mapQuest) return new[] {types[0], types[2]};
-            if (provider == OnlineMapsProviderEnum.nokia) return new[] {types[0], types[2], types[3]};
-            if (provider == OnlineMapsProviderEnum.openStreetMap) return null;
-            if (provider == OnlineMapsProviderEnum.virtualEarth) return new[] {types[0], types[2]};
-            if (provider == OnlineMapsProviderEnum.sputnik) return null;
-            if (provider == OnlineMapsProviderEnum.custom) return null;
-            return types;
-        }
-    }
-
-    public bool enabledLabels
-    {
-        get
-        {
-            if (provider == OnlineMapsProviderEnum.arcGis && mapType == 1) return true;
-            if (provider == OnlineMapsProviderEnum.google) return true;
-            if (provider == OnlineMapsProviderEnum.mapQuest && mapType == 1) return true;
-            if (provider == OnlineMapsProviderEnum.nokia) return true;
-            if (provider == OnlineMapsProviderEnum.virtualEarth) return true;
-            if (provider == OnlineMapsProviderEnum.sputnik) return true;
-            return false;
-        }
-    }
+    private static OnlineMapsProvider.MapType activeMapType;
+    private static string[] providersTitle;
+    private static int providerIndex;
+    private static OnlineMapsProvider[] providers;
 
     private float CheckCameraDistance(Camera tsCamera)
     {
@@ -176,7 +124,7 @@ public class OnlineMapsWizard : EditorWindow
 
     private void DrawControls(ref bool allowCreate)
     {
-        if (mapType == 0)
+        if (use3DControl == 0)
         {
             EditorGUILayout.HelpBox(
                 "All 2D controls have the same features.\nSelect a control, depending on the place where you want to show the map.",
@@ -191,7 +139,7 @@ public class OnlineMapsWizard : EditorWindow
 
         EditorGUILayout.LabelField("Select control");
 
-        if (mapType == 0)
+        if (use3DControl == 0)
         {
             EditorGUI.BeginChangeCheck();
             mapControl2D = GUILayout.SelectionGrid(mapControl2D,
@@ -219,29 +167,26 @@ public class OnlineMapsWizard : EditorWindow
     {
         EditorGUILayout.HelpBox("To use the Elevation requires the Bing Maps API Key.", MessageType.Warning);
         bingAPI = EditorGUILayout.TextField("Bing Maps API key:", bingAPI);
-        if (GUILayout.Button("Create Bing Maps API Key"))
-            Process.Start("https://msdn.microsoft.com/en-us/library/ff428642.aspx");
+        if (GUILayout.Button("Create Bing Maps API Key")) Process.Start("https://msdn.microsoft.com/en-us/library/ff428642.aspx");
     }
 
-    private void DrawLabels(ref bool allowCreate)
+    private void DrawLabels()
     {
         bool showLanguage;
-        if (availableLabels)
+        if (activeMapType.hasLabels)
         {
             labels = EditorGUILayout.Toggle("Labels: ", labels);
             showLanguage = labels;
         }
         else
         {
-            showLanguage = enabledLabels;
+            showLanguage = activeMapType.labelsEnabled;
             GUILayout.Label("Labels " + (showLanguage ? "enabled" : "disabled"));
         }
-        if (showLanguage && availableLanguage)
+        if (showLanguage && activeMapType.hasLanguage)
         {
             language = EditorGUILayout.TextField("Language: ", language);
-            GUILayout.Label(provider == OnlineMapsProviderEnum.nokia
-                ? "Use three-letter code such as: eng"
-                : "Use two-letter code such as: en");
+            EditorGUILayout.HelpBox(activeMapType.provider.twoLetterLanguage? "Use two-letter code such as: en": "Use three-letter code such as: eng", MessageType.Info);
         }
     }
 
@@ -249,7 +194,7 @@ public class OnlineMapsWizard : EditorWindow
     {
         EditorGUILayout.LabelField("Select the type of map");
         EditorGUI.BeginChangeCheck();
-        mapType = GUILayout.SelectionGrid(mapType, new[] {"2D", "3D"}, 1, "toggle");
+        use3DControl = GUILayout.SelectionGrid(use3DControl, new[] {"2D", "3D"}, 1, "toggle");
         if (EditorGUI.EndChangeCheck()) InitSteps();
     }
 
@@ -260,12 +205,12 @@ public class OnlineMapsWizard : EditorWindow
         traffic = EditorGUILayout.Toggle("Traffic: ", traffic);
         useRWT = EditorGUILayout.Toggle("Real World Terrain", useRWT);
 
-        if (mapType == 0 || (mapType == 1 && mapControl3D != 0))
+        if (use3DControl == 0 || (use3DControl == 1 && mapControl3D != 0))
         {
             smartTexture = EditorGUILayout.Toggle("Smart Texture", smartTexture);
         }
 
-        if (mapType == 1)
+        if (use3DControl == 1)
             allowCameraControl = EditorGUILayout.Toggle("Camera Control", allowCameraControl);
     }
 
@@ -317,12 +262,10 @@ public class OnlineMapsWizard : EditorWindow
     private void DrawProvider(ref bool allowCreate)
     {
         EditorGUI.BeginChangeCheck();
-        provider =
-            (OnlineMapsProviderEnum)
-                EditorGUILayout.EnumPopup(new GUIContent("Provider: ", "Provider of tiles"), provider);
-        if (EditorGUI.EndChangeCheck()) mapProviderType = 0;
+        providerIndex = EditorGUILayout.Popup("Provider", providerIndex, providersTitle);
+        if (EditorGUI.EndChangeCheck()) activeMapType = providers[providerIndex].types[0];
 
-        if (provider == OnlineMapsProviderEnum.custom)
+        if (activeMapType.isCustom)
         {
             customProviderURL = EditorGUILayout.TextField("URL: ", customProviderURL);
 
@@ -350,17 +293,16 @@ public class OnlineMapsWizard : EditorWindow
 
             DrawProvider(ref allowCreate);
 
-            if (availableTypes != null)
+            GUIContent[] aviableTypes = activeMapType.provider.types.Select(t => new GUIContent(t.title)).ToArray();
+            if (aviableTypes != null)
             {
-                GUIContent[] aviableTypes = availableTypes.Select(t => new GUIContent(t)).ToArray();
-                if (aviableTypes != null)
-                {
-                    mapProviderType = EditorGUILayout.Popup(new GUIContent("Type: ", "Type of map texture"),
-                        mapProviderType, aviableTypes);
-                }
+                int index = activeMapType.index;
+                EditorGUI.BeginChangeCheck();
+                index = EditorGUILayout.Popup(new GUIContent("Type: ", "Type of map texture"), index, aviableTypes);
+                if (EditorGUI.EndChangeCheck()) activeMapType = activeMapType.provider.types[index];
             }
 
-            DrawLabels(ref allowCreate);
+            DrawLabels();
         }
     }
 
@@ -464,9 +406,9 @@ public class OnlineMapsWizard : EditorWindow
         steps.Add(DrawControls);
         steps.Add(DrawSource);
 
-        if (mapType == 0 || (mapType == 1 && mapControl3D == 1))
+        if (use3DControl == 0 || (use3DControl == 1 && mapControl3D == 1))
         {
-            if (mapType == 0)
+            if (use3DControl == 0)
             {
                 if (mapControl2D == 2 || mapControl2D == 3) steps.Add(DrawUGUIParent);
                 else if (mapControl2D == 4) steps.Add(DrawNGUIParent);
@@ -539,7 +481,7 @@ public class OnlineMapsWizard : EditorWindow
         if (map != null)
         {
             EditorGUILayout.HelpBox("In the scene already have a map. You can only use one instance of map in the scene.", MessageType.Error);
-            if (GUILayout.Button("Delete map")) DestroyImmediate(map.gameObject);
+            if (GUILayout.Button("Delete map")) OnlineMapsUtils.DestroyImmediate(map.gameObject);
             if (GUILayout.Button("Close Wizard")) Close();
             return true;
         }
@@ -550,7 +492,7 @@ public class OnlineMapsWizard : EditorWindow
     {
         OnlineMaps map = CreateMapGameObject();
         GameObject go = map.gameObject;
-        if (mapType == 0)
+        if (use3DControl == 0)
         {
             Texture2D texture = CreateTexture(map);
 
@@ -558,7 +500,6 @@ public class OnlineMapsWizard : EditorWindow
             {
                 go.AddComponent<OnlineMapsGUITextureControl>();
                 GUITexture guiTexture = go.GetComponent<GUITexture>();
-                Debug.Log(guiTexture + "   " + texture);
                 guiTexture.texture = texture;
                 go.transform.localPosition = new Vector3(0.5f, 0.5f);
                 go.transform.localScale = Vector3.zero;
@@ -715,7 +656,7 @@ public class OnlineMapsWizard : EditorWindow
             textureImporter.textureFormat = TextureImporterFormat.RGB24;
             textureImporter.maxTextureSize = Mathf.Max(textureWidth, textureHeight);
 
-            if (mapType == 0 && (mapControl2D == 1 || mapControl2D == 2))
+            if (use3DControl == 0 && (mapControl2D == 1 || mapControl2D == 2))
             {
                 textureImporter.spriteImportMode = SpriteImportMode.Single;
                 textureImporter.npotScale = TextureImporterNPOTScale.None;
@@ -733,8 +674,7 @@ public class OnlineMapsWizard : EditorWindow
         OnlineMaps map = go.AddComponent<OnlineMaps>();
 
         map.source = source;
-        map.provider = provider;
-        map.type = mapProviderType;
+        map.mapType = activeMapType.ToString();
         map.webplayerProxyURL = webplayerProxyURL;
         map.labels = labels;
         map.customProviderURL = customProviderURL;
@@ -744,10 +684,15 @@ public class OnlineMapsWizard : EditorWindow
         return map;
     }
 
+    [MenuItem("GameObject/Infinity Code/Online Maps/Map Wizard", false, 0)]
     [MenuItem("GameObject/Create Other/Map")]
     public static void OpenWindow()
     {
         GetWindow<OnlineMapsWizard>(true, "Create Map", true);
+        activeMapType = OnlineMapsProvider.FindMapType("arcgis");
+        providers = OnlineMapsProvider.GetProviders();
+        providersTitle = OnlineMapsProvider.GetProvidersTitle();
+        providerIndex = activeMapType.provider.index;
     }
 
     private delegate void OnlineMapsWizardDelegate(ref bool allowCreate);

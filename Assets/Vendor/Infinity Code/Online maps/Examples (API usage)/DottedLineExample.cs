@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example how to draw a dotted line in tileset.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DottedLineExample")]
     public class DottedLineExample : MonoBehaviour
     {

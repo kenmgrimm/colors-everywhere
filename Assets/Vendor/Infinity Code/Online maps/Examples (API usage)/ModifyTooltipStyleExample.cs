@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to intercept preparation of style for drawing tooltips.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ModifyTooltipStyleExample")]
     public class ModifyTooltipStyleExample : MonoBehaviour
     {

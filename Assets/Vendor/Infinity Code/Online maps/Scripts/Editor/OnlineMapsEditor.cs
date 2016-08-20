@@ -1,6 +1,14 @@
 /*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
+#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7
+#define UNITY_5_0P
+#endif
+
+#if UNITY_5_0P && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#define UNITY_5_3P
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,12 +17,17 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
+
+#if UNITY_5_3P
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+#endif
 
 [CustomEditor(typeof (OnlineMaps))]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsEditor : Editor
 {
-    internal enum TextureType
+    private enum TextureType
     {
         Texture,
         Sprite
@@ -26,7 +39,6 @@ public class OnlineMapsEditor : Editor
     public static readonly int[] availableSizes = {256, 512, 1024, 2048, 4096};
     private string[] availableSizesStr;
     private bool showAdvanced;
-    private bool showCacheInfo;
     private bool showCreateTexture;
     private bool showCustomProviderTokens;
     private bool showMarkers;
@@ -49,15 +61,68 @@ public class OnlineMapsEditor : Editor
     private bool allowSaveLocationService;
     private bool allowSaveTexture;
 
+    private SerializedProperty pSource;
+    private SerializedProperty pMapType;
+
+    private SerializedProperty pProvider;
+    private SerializedProperty pType;
+    private SerializedProperty pLabels;
+    private SerializedProperty pCustomProviderURL;
+    private SerializedProperty pResourcesPath;
+    private SerializedProperty pTexture;
+    private SerializedProperty pTarget;
+    private SerializedProperty pRedrawOnPlay;
+    private SerializedProperty pUseSmartTexture;
+    private SerializedProperty pUseCurrentZoomTiles;
+    private SerializedProperty pTraffic;
+    private SerializedProperty pEmptyColor;
+    private SerializedProperty pDefaultTileTexture;
+    private SerializedProperty pTooltipTexture;
+    private SerializedProperty pDefaultMarkerTexture;
+    private SerializedProperty pDefaultMarkerAlign;
+    private SerializedProperty pShowMarkerTooltip;
+    private SerializedProperty pLanguage;
+    private SerializedProperty pUseSoftwareJPEGDecoder;
+    private SerializedProperty pNotInteractUnderGUI;
+    private SerializedProperty pStopPlayingWhenScriptsCompile;
+    private SerializedProperty pTilesetWidth;
+    private SerializedProperty pTilesetHeight;
+    private SerializedProperty pTilesetSize;
+    private SerializedProperty pMarkers;
+
+    private GUIContent cUseSmartTexture;
+    private GUIContent cDefaultMarkerAlign;
+    private GUIContent cTilesetWidth;
+    private GUIContent cTilesetHeight;
+    private GUIContent cTilesetSize;
+    private GUIContent cUseSoftwareJPEGDecoder;
+
+    private OnlineMapsProvider[] providers;
+    private string[] providersTitle;
+    private OnlineMapsProvider.MapType mapType;
+    private int providerIndex;
+    private GUIContent cTooltipTexture;
+
+#if UNITY_WEBGL || UNITY_WEBPLAYER
+    private SerializedProperty pUseProxy;
+    private SerializedProperty pWebplayerProxyURL;
+#endif
+
+#if !UNITY_WEBGL
+    private SerializedProperty pRenderInThread;
+#endif
+
     public static GUIStyle warningStyle
     {
         get
         {
             if (_warningStyle == null)
             {
-                _warningStyle = new GUIStyle(GUI.skin.label);
-                _warningStyle.normal.textColor = Color.red;
-                _warningStyle.fontStyle = FontStyle.Bold;
+                _warningStyle = new GUIStyle(GUI.skin.label)
+                {
+                    normal = {textColor = Color.red},
+                    fontStyle = FontStyle.Bold
+                };
             }
             
             return _warningStyle;
@@ -77,7 +142,67 @@ public class OnlineMapsEditor : Editor
         PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, String.Join(";", directives.ToArray()));
     }
 
-    private void CheckAPITextureImporter(Texture2D texture)
+    private void CacheSerializedProperties()
+    {
+        pSource = serializedObject.FindProperty("source");
+        pMapType = serializedObject.FindProperty("mapType");
+
+        pProvider = serializedObject.FindProperty("provider");
+        pType = serializedObject.FindProperty("type");
+
+        pCustomProviderURL = serializedObject.FindProperty("customProviderURL");
+        pResourcesPath = serializedObject.FindProperty("resourcesPath");
+
+        pLabels = serializedObject.FindProperty("labels");
+        pLanguage = serializedObject.FindProperty("language");
+        pTarget = serializedObject.FindProperty("target");
+        pTexture = serializedObject.FindProperty("texture");
+
+        pTilesetWidth = serializedObject.FindProperty("tilesetWidth");
+        pTilesetHeight = serializedObject.FindProperty("tilesetHeight");
+        pTilesetSize = serializedObject.FindProperty("tilesetSize");
+
+        pMarkers = serializedObject.FindProperty("markers");
+
+        pRedrawOnPlay = serializedObject.FindProperty("redrawOnPlay");
+        pUseSmartTexture = serializedObject.FindProperty("useSmartTexture");
+        pUseCurrentZoomTiles = serializedObject.FindProperty("useCurrentZoomTiles");
+        pTraffic = serializedObject.FindProperty("traffic");
+        pEmptyColor = serializedObject.FindProperty("emptyColor");
+        pDefaultTileTexture = serializedObject.FindProperty("defaultTileTexture");
+        pTooltipTexture = serializedObject.FindProperty("tooltipBackgroundTexture");
+        pDefaultMarkerTexture = serializedObject.FindProperty("defaultMarkerTexture");
+        pDefaultMarkerAlign = serializedObject.FindProperty("defaultMarkerAlign");
+        pShowMarkerTooltip = serializedObject.FindProperty("showMarkerTooltip");
+        pUseSoftwareJPEGDecoder = serializedObject.FindProperty("useSoftwareJPEGDecoder");
+
+#if !UNITY_WEBGL
+        pRenderInThread = serializedObject.FindProperty("renderInThread");
+#endif
+        pNotInteractUnderGUI = serializedObject.FindProperty("notInteractUnderGUI");
+        pStopPlayingWhenScriptsCompile = serializedObject.FindProperty("stopPlayingWhenScriptsCompile");
+
+#if UNITY_WEBGL || UNITY_WEBPLAYER
+        pUseProxy = serializedObject.FindProperty("useWebplayerProxy");
+        pWebplayerProxyURL = serializedObject.FindProperty("webplayerProxyURL");
+#endif
+
+        cUseSmartTexture = new GUIContent("Smart Texture");
+        cDefaultMarkerAlign = new GUIContent("Marker Align");
+        cTilesetWidth = new GUIContent("Width (pixels)");
+        cTilesetHeight = new GUIContent("Height (pixels)");
+        cTilesetSize = new GUIContent("Size (in scene)");
+        cUseSoftwareJPEGDecoder = new GUIContent("Software JPEG Decoder");
+        cTooltipTexture = new GUIContent("Tooltip Background");
+    }
+
+    private void CheckAPITextureImporter(SerializedProperty property)
+    {
+        Texture2D texture = property.objectReferenceValue as Texture2D;
+        CheckAPITextureImporter(texture);
+    }
+
+    private static void CheckAPITextureImporter(Texture2D texture)
     {
         if (texture == null) return;
 
@@ -110,6 +235,27 @@ public class OnlineMapsEditor : Editor
         if (needReimport) AssetDatabase.ImportAsset(textureFilename, ImportAssetOptions.ForceUpdate);
     }
 
+#if UNITY_WEBPLAYER
+    private void CheckJSLoader()
+    {
+        OnlineMapsJSLoader loader = api.GetComponent<OnlineMapsJSLoader>();
+        if (loader != null) return;
+
+        EditorGUILayout.BeginVertical(GUI.skin.box);
+
+        EditorGUILayout.HelpBox("For Webplayer strongly recommended to use JS Loader.", MessageType.Warning);
+        if (GUILayout.Button("Add JS Loader")) api.gameObject.AddComponent<OnlineMapsJSLoader>();
+
+        EditorGUILayout.EndVertical();
+    }
+#endif
+
+    public static void CheckMarkerTextureImporter(SerializedProperty property)
+    {
+        Texture2D texture = property.objectReferenceValue as Texture2D;
+        CheckMarkerTextureImporter(texture);
+    }
+
     public static void CheckMarkerTextureImporter(Texture2D texture)
     {
         if (texture == null) return;
@@ -138,11 +284,55 @@ public class OnlineMapsEditor : Editor
         if (needReimport) AssetDatabase.ImportAsset(textureFilename, ImportAssetOptions.ForceUpdate);
     }
 
+    private void CheckNullControl()
+    {
+        OnlineMapsControlBase[] controls = api.GetComponents<OnlineMapsControlBase>();
+        if (controls != null && controls.Length != 0) return;
+
+        EditorGUILayout.BeginVertical(GUI.skin.box);
+
+        EditorGUILayout.HelpBox("Problem detected:\nCan not find OnlineMaps Control component.", MessageType.Error);
+        if (GUILayout.Button("Add Control"))
+        {
+            GenericMenu menu = new GenericMenu();
+
+            Type[] types = api.GetType().Assembly.GetTypes();
+            foreach (Type t in types)
+            {
+                if (t.IsSubclassOf(typeof (OnlineMapsControlBase)))
+                {
+                    if (t == typeof (OnlineMapsControlBase2D) || t == typeof (OnlineMapsControlBase3D)) continue;
+
+                    string fullName = t.FullName.Substring(10);
+
+                    int controlIndex = fullName.IndexOf("Control");
+                    fullName = fullName.Insert(controlIndex, " ");
+
+                    int textureIndex = fullName.IndexOf("Texture");
+                    if (textureIndex > 0) fullName = fullName.Insert(textureIndex, " ");
+
+                    menu.AddItem(new GUIContent(fullName), false, data =>
+                    {
+                        Type ct = data as Type;
+                        api.gameObject.AddComponent(ct);
+                        pTarget.enumValueIndex = ct == typeof (OnlineMapsTileSetControl) ? (int)OnlineMapsTarget.tileset : (int)OnlineMapsTarget.texture;
+                        Repaint();
+                    }, t);
+                }
+            }
+
+            menu.ShowAsContext();
+        }
+
+        EditorGUILayout.EndVertical();
+    }
+
     private void CreateTexture()
     {
         string texturePath = string.Format("Assets/{0}.png", textureFilename);
-        api.texture = new Texture2D(textureWidth, textureHeight);
-        File.WriteAllBytes(texturePath, api.texture.EncodeToPNG());
+        
+        Texture2D texture = new Texture2D(textureWidth, textureHeight);
+        File.WriteAllBytes(texturePath, texture.EncodeToPNG());
         AssetDatabase.Refresh();
         TextureImporter textureImporter = AssetImporter.GetAtPath(texturePath) as TextureImporter;
         if (textureImporter != null)
@@ -159,51 +349,58 @@ public class OnlineMapsEditor : Editor
             }
 
             AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate);
-            api.texture = (Texture2D)AssetDatabase.LoadAssetAtPath(texturePath, typeof(Texture2D));
+            Texture2D newTexture = AssetDatabase.LoadAssetAtPath(texturePath, typeof(Texture2D)) as Texture2D;
+            pTexture.objectReferenceValue = newTexture;
+
+#if NGUI
+            UITexture uiTexture = api.GetComponent<UITexture>();
+            if (uiTexture != null) uiTexture.mainTexture = newTexture;
+#endif
         }
 
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+        OnlineMapsUtils.DestroyImmediate(texture);
+
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
         EditorUtility.UnloadUnusedAssets();
 #else
         EditorUtility.UnloadUnusedAssetsImmediate();
 #endif
     }
 
-    private void DrawAdvancedGUI(ref bool dirty)
+    private void DrawAdvancedGUI()
     {
-        EditorGUI.BeginChangeCheck();
+        float oldWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 160;
 
-        if (api.target == OnlineMapsTarget.texture)
+        if (pTarget.enumValueIndex == (int)OnlineMapsTarget.texture)
         {
-            api.redrawOnPlay = EditorGUILayout.Toggle("Redraw on Play", api.redrawOnPlay);
-            api.useSmartTexture = EditorGUILayout.Toggle("Smart Texture", api.useSmartTexture);
+            EditorGUILayout.PropertyField(pRedrawOnPlay);
+            EditorGUILayout.PropertyField(pUseSmartTexture, cUseSmartTexture);
         }
 
-        api.useCurrentZoomTiles = EditorGUILayout.Toggle("Use Current Zoom Tiles", api.useCurrentZoomTiles);
+        EditorGUILayout.PropertyField(pUseCurrentZoomTiles);
+        EditorGUILayout.PropertyField(pTraffic);
+        EditorGUILayout.PropertyField(pEmptyColor);
 
-        DrawTrafficGUI(ref dirty);
+        EditorGUI.BeginChangeCheck();
+        EditorGUILayout.PropertyField(pDefaultTileTexture);
+        if (EditorGUI.EndChangeCheck()) CheckAPITextureImporter(pDefaultTileTexture);
 
-        api.emptyColor = EditorGUILayout.ColorField("Empty Color: ", api.emptyColor);
+        EditorGUILayout.PropertyField(pTooltipTexture, cTooltipTexture);
 
-        api.defaultTileTexture = (Texture2D)EditorGUILayout.ObjectField("Default Tile: ", api.defaultTileTexture, typeof(Texture2D), false);
-        CheckAPITextureImporter(api.defaultTileTexture);
+        EditorGUI.BeginChangeCheck();
+        EditorGUILayout.PropertyField(pDefaultMarkerTexture);
+        if (EditorGUI.EndChangeCheck()) CheckMarkerTextureImporter(pDefaultMarkerTexture);
 
-        api.skin = (GUISkin) EditorGUILayout.ObjectField("Skin: ", api.skin, typeof (GUISkin), false);
+        EditorGUILayout.PropertyField(pDefaultMarkerAlign, cDefaultMarkerAlign);
+        EditorGUILayout.PropertyField(pShowMarkerTooltip);
 
-        api.defaultMarkerTexture = (Texture2D) EditorGUILayout.ObjectField("Default Marker: ", api.defaultMarkerTexture, typeof (Texture2D), false);
-        CheckMarkerTextureImporter(api.defaultMarkerTexture);
-
-        api.defaultMarkerAlign = (OnlineMapsAlign) EditorGUILayout.EnumPopup("Markers Align: ", api.defaultMarkerAlign);
-        api.showMarkerTooltip = (OnlineMapsShowMarkerTooltip)EditorGUILayout.EnumPopup("Show Marker Tooltip: ", api.showMarkerTooltip);
-
-        if (EditorGUI.EndChangeCheck()) dirty = true;
+        EditorGUIUtility.labelWidth = oldWidth;
     }
 
     private void DrawCacheGUI(ref bool dirty)
     {
-        if (api.source == OnlineMapsSource.Resources || !GUILayout.Button("Cache tiles to Resources")) return;
-
-        List<string> files = new List<string>();
+        if (pSource.enumValueIndex == (int)OnlineMapsSource.Resources || !GUILayout.Button("Cache tiles to Resources")) return;
 
         lock (OnlineMapsTile.tiles)
         {
@@ -217,27 +414,22 @@ public class OnlineMapsEditor : Editor
                 FileInfo info = new FileInfo(tilePath);
                 if (!info.Directory.Exists) info.Directory.Create();
 
-                if (api.target == OnlineMapsTarget.tileset) File.WriteAllBytes(tilePath, tile.texture.EncodeToPNG());
+                if (pTarget.enumValueIndex == (int)OnlineMapsTarget.tileset) File.WriteAllBytes(tilePath, tile.texture.EncodeToPNG());
                 else
                 {
-                    Texture2D texture = new Texture2D(OnlineMapsUtils.tileSize, OnlineMapsUtils.tileSize,
-                        TextureFormat.ARGB32, false);
-                    texture.SetPixels(tile.colors);
+                    Texture2D texture = new Texture2D(OnlineMapsUtils.tileSize, OnlineMapsUtils.tileSize, TextureFormat.ARGB32, false);
+                    texture.SetPixels32(tile.colors);
                     texture.Apply();
                     File.WriteAllBytes(tilePath, texture.EncodeToPNG());
                 }
-
-                files.Add(tilePath);
             }
         }
 
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
         AssetDatabase.Refresh();
-
-        for (int i = 0; i < files.Count; i++)
-        {
-            string f = files[i];
-            FixTileImporter(f, i / (float) files.Count);
-        }
+#else
+        EditorPrefs.SetBool("OnlineMapsRefreshAssets", true);
+#endif
 
         EditorUtility.ClearProgressBar();
         EditorUtility.DisplayDialog("Cache complete", "Stop playback and select 'Source - Resources And Online'.", "OK");
@@ -249,13 +441,11 @@ public class OnlineMapsEditor : Editor
     {
         if (availableSizesStr == null) availableSizesStr = availableSizes.Select(s => s.ToString()).ToArray();
 
-        textureFilename = EditorGUILayout.TextField("Filename: ", textureFilename);
-        textureType = (TextureType)EditorGUILayout.EnumPopup("Type: ", textureType);
+        textureFilename = EditorGUILayout.TextField("Filename", textureFilename);
+        textureType = (TextureType)EditorGUILayout.EnumPopup("Type", textureType);
 
-        textureWidth = EditorGUILayout.IntPopup("Width: ", textureWidth,
-            availableSizesStr, availableSizes);
-        textureHeight = EditorGUILayout.IntPopup("Height: ", textureHeight,
-            availableSizesStr, availableSizes);
+        textureWidth = EditorGUILayout.IntPopup("Width", textureWidth, availableSizesStr, availableSizes);
+        textureHeight = EditorGUILayout.IntPopup("Height", textureHeight, availableSizesStr, availableSizes);
 
         if (GUILayout.Button("Create"))
         {
@@ -270,9 +460,9 @@ public class OnlineMapsEditor : Editor
     {
         bool dirty = false;
 
-        DrawSourceGUI(ref dirty);
+        DrawSourceGUI();
         DrawLocationGUI(ref dirty);
-        DrawTargetGUI(ref dirty);
+        DrawTargetGUI();
 
         if (isPlay)
         {
@@ -284,7 +474,7 @@ public class OnlineMapsEditor : Editor
                 {
                     allowSaveMarkers3D = api.GetComponent<OnlineMapsControlBase3D>() != null;
                     allowSaveLocationService = api.GetComponent<OnlineMapsLocationService>() != null;
-                    allowSaveTexture = api.target == OnlineMapsTarget.texture;
+                    allowSaveTexture = pTarget.enumValueIndex == (int)OnlineMapsTarget.texture;
 
                     showSave = true;
                     dirty = true;
@@ -299,140 +489,112 @@ public class OnlineMapsEditor : Editor
         return dirty;
     }
 
-    private void DrawLabelsGUI(ref bool dirty)
+    private void DrawLabelsGUI()
     {
         bool showLanguage;
-        if (api.availableLabels)
+        if (mapType.hasLabels)
         {
-            bool labels = api.labels;
-            api.labels = EditorGUILayout.Toggle("Labels: ", api.labels);
-            if (labels != api.labels) dirty = true;
-            showLanguage = api.labels;
+            EditorGUILayout.PropertyField(pLabels);
+            showLanguage = pLabels.boolValue;
         }
         else
         {
-            showLanguage = api.enabledLabels;
+            showLanguage = mapType.labelsEnabled;
             GUILayout.Label("Labels " + (showLanguage ? "enabled" : "disabled"));
         }
-        if (showLanguage && api.availableLanguage)
+        if (showLanguage && mapType.hasLanguage)
         {
-            api.language = EditorGUILayout.TextField("Language: ", api.language);
-            GUILayout.Label(api.provider == OnlineMapsProviderEnum.nokia
-                ? "Use three-letter code such as: eng"
-                : "Use two-letter code such as: en");
+            EditorGUILayout.PropertyField(pLanguage);
+            EditorGUILayout.HelpBox(mapType.provider.twoLetterLanguage ? "Use two-letter code such as: en": "Use three-letter code such as: eng", MessageType.Info);
         }
     }
 
     private void DrawLocationGUI(ref bool dirty)
     {
-        Vector2 p = api.position;
+        double px, py;
+        api.GetPosition(out px, out py);
+
         EditorGUI.BeginChangeCheck();
-        p.y = EditorGUILayout.FloatField("Latitude: ", p.y);
-        p.x = EditorGUILayout.FloatField("Longitude: ", p.x);
+#if UNITY_5_0P
+        py = EditorGUILayout.DoubleField("Latitude", py);
+        px = EditorGUILayout.DoubleField("Longitude", px);
+#else
+        py = EditorGUILayout.FloatField("Latitude", (float)py);
+        px = EditorGUILayout.FloatField("Longitude", (float) px);
+#endif
+
         if (EditorGUI.EndChangeCheck())
         {
             dirty = true;
-            api.SetPosition(p.x, p.y);
+            api.SetPosition(px, py);
         }
+
         EditorGUI.BeginChangeCheck();
-        api.zoom = EditorGUILayout.IntSlider("Zoom: ", api.zoom, 3, 20);
+        api.zoom = EditorGUILayout.IntSlider("Zoom", api.zoom, 3, 20);
         if (EditorGUI.EndChangeCheck()) dirty = true;
     }
 
-    private void DrawMarkerGUI(int i, ref int index, ref bool hasDeleted)
+    private void DrawMarkersGUI(ref bool dirty)
     {
-        EditorGUILayout.BeginVertical(GUI.skin.box);
-
-        OnlineMapsMarker marker = api.markers[i];
-        GUILayout.Label("Marker " + index);
+        int removedIndex = -1;
 
         EditorGUI.BeginChangeCheck();
-        marker.position.y = EditorGUILayout.FloatField("Latitude: ", marker.position.y);
-        marker.position.x = EditorGUILayout.FloatField("Longitude: ", marker.position.x);
-
-        float min = marker.range.min;
-        float max = marker.range.max;
-        EditorGUILayout.MinMaxSlider(new GUIContent(string.Format("Zooms ({0}-{1}): ", marker.range.min, marker.range.max) ), ref min, ref max, 3, 20);
-        marker.range.min = Mathf.RoundToInt(min);
-        marker.range.max = Mathf.RoundToInt(max);
-
-        marker.range.min = Mathf.Clamp(marker.range.min, 3, 20);
-        marker.range.max = Mathf.Clamp(marker.range.max, 3, 20);
-
-        marker.rotation = Mathf.Repeat(EditorGUILayout.FloatField("Rotation (0-1): ", marker.rotation), 1);
-        marker.label = EditorGUILayout.TextField("Label: ", marker.label);
-        marker.align = (OnlineMapsAlign) EditorGUILayout.EnumPopup("Align: ", marker.align);
-        marker.texture =
-            (Texture2D) EditorGUILayout.ObjectField("Texture: ", marker.texture, typeof (Texture2D), true);
-
-        if (EditorGUI.EndChangeCheck() && Application.isPlaying) api.Redraw();
-
-        CheckMarkerTextureImporter(marker.texture);
-
-        if (GUILayout.Button("Remove"))
+        for (int i = 0; i < pMarkers.arraySize; i++)
         {
-            api.markers[i] = null;
-            hasDeleted = true;
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            OnlineMapsMarkerPropertyDrawer.isRemoved = false;
+            EditorGUILayout.PropertyField(pMarkers.GetArrayElementAtIndex(i), new GUIContent("Marker " + (i + 1)));
+            if (OnlineMapsMarkerPropertyDrawer.isRemoved) removedIndex = i;
+            EditorGUILayout.EndHorizontal();
         }
-        index++;
+        if (EditorGUI.EndChangeCheck()) dirty = true;
 
-        EditorGUILayout.EndVertical();
-    }
-
-    private void DrawMarkersGUI()
-    {
-        if (api.markers == null) api.markers = new OnlineMapsMarker[0];
-
-        int index = 1;
-        bool hasDeleted = false;
-
-        for (int i = 0; i < api.markers.Length; i++) DrawMarkerGUI(i, ref index, ref hasDeleted);
-
-        if (hasDeleted)
+        if (removedIndex != -1)
         {
-            List<OnlineMapsMarker> markers = api.markers.ToList();
-            markers.RemoveAll(m => m == null);
-            api.markers = markers.ToArray();
-            if (Application.isPlaying) api.Redraw();
+            ArrayUtility.RemoveAt(ref api.markers, removedIndex);
+            dirty = true;
         }
 
         EditorGUILayout.Space();
 
-        if (GUILayout.Button("Add marker"))
+        if (GUILayout.Button("Add Marker"))
         {
             if (!Application.isPlaying)
             {
-                OnlineMapsMarker marker = new OnlineMapsMarker { position = api.position, align = api.defaultMarkerAlign };
-                List<OnlineMapsMarker> markers = new List<OnlineMapsMarker>(api.markers) { marker };
-                api.markers = markers.ToArray();
+                OnlineMapsMarker marker = new OnlineMapsMarker
+                {
+                    position = api.position,
+                    align = (OnlineMapsAlign)pDefaultMarkerAlign.enumValueIndex
+                };
+                ArrayUtility.Add(ref api.markers, marker);
             }
             else
             {
                 OnlineMapsMarker marker = api.AddMarker(api.position);
-                marker.align = api.defaultMarkerAlign;
+                marker.align = (OnlineMapsAlign)pDefaultMarkerAlign.enumValueIndex;
             }
+
+            dirty = true;
         }
     }
 
-    private void DrawProviderGUI(ref bool dirty)
+    private void DrawProviderGUI()
     {
         EditorGUI.BeginChangeCheck();
-        api.provider = (OnlineMapsProviderEnum)EditorGUILayout.EnumPopup(new GUIContent("Provider: ", "Provider of tiles"), api.provider);
+        providerIndex = EditorGUILayout.Popup("Provider", providerIndex, providersTitle);
         if (EditorGUI.EndChangeCheck())
         {
-            api.type = 0;
-            dirty = true;
+            mapType = providers[providerIndex].types[0];
+            pMapType.stringValue = mapType.ToString();
         }
 
-        if (api.provider == OnlineMapsProviderEnum.sputnik)
+        if (mapType.useHTTP)
         {
-            EditorGUILayout.HelpBox("Sputnik uses http, which can cause problems in iOS9+.", MessageType.Warning);
+            EditorGUILayout.HelpBox(mapType.provider.title + " - " + mapType.title + " uses HTTP, which can cause problems in iOS9+.", MessageType.Warning);
         }
-        else if (api.provider == OnlineMapsProviderEnum.custom)
+        else if (mapType.isCustom)
         {
-            string customProviderURL = api.customProviderURL;
-            api.customProviderURL = EditorGUILayout.TextField("URL: ", api.customProviderURL);
-            if (customProviderURL != api.customProviderURL) dirty = true;
+            EditorGUILayout.PropertyField(pCustomProviderURL);
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
             showCustomProviderTokens = Foldout(showCustomProviderTokens, "Available tokens");
@@ -446,10 +608,6 @@ public class OnlineMapsEditor : Editor
             }
             EditorGUILayout.EndVertical();
         }
-
-#if UNITY_WEBPLAYER
-        if (provider != OnlineMapsProviderEnum.custom) GUILayout.Label("This provider can be slow on Webplayer");
-#endif
     }
 
     private void DrawSaveGUI(ref bool dirty)
@@ -506,32 +664,32 @@ public class OnlineMapsEditor : Editor
         EditorGUILayout.EndVertical();
     }
 
-    private void DrawSourceGUI(ref bool dirty)
+    private void DrawSourceGUI()
     {
         EditorGUI.BeginDisabledGroup(isPlay);
 
-        OnlineMapsSource source = (OnlineMapsSource) EditorGUILayout.EnumPopup("Source: ", api.source);
-        if (source != api.source)
-        {
-            api.source = source;
-            dirty = true;
-        }
+        EditorGUILayout.PropertyField(pSource);
 
-#if UNITY_WEBPLAYER
-        if (source != OnlineMapsSource.Resources)
+#if UNITY_WEBPLAYER || UNITY_WEBGL
+        if (pSource.enumValueIndex != (int)OnlineMapsSource.Resources)
         {
-            api.webplayerProxyURL = EditorGUILayout.TextField("Proxy: ", api.webplayerProxyURL);
+            EditorGUILayout.PropertyField(pUseProxy, new GUIContent("Use Proxy"));
+            EditorGUI.BeginDisabledGroup(!pUseProxy.boolValue);
+            
+            EditorGUILayout.PropertyField(pWebplayerProxyURL, new GUIContent("Proxy"));
+            EditorGUI.EndDisabledGroup();
         }
 #endif
 
-        if (source != OnlineMapsSource.Online)
+        if (pSource.enumValueIndex != (int)OnlineMapsSource.Online)
         {
-            if (GUILayout.Button("Fix import settings for tiles")) FixImportSettings();
+            if (GUILayout.Button("Fix Import Settings for Tiles")) FixImportSettings();
             if (GUILayout.Button("Import from GMapCatcher")) ImportFromGMapCatcher();
-            api.resourcesPath = EditorGUILayout.TextField("Resources Path:", api.resourcesPath);
+            
+            EditorGUILayout.PropertyField(pResourcesPath);
             
             EditorGUILayout.BeginVertical(GUI.skin.box);
-            showResourcesTokens = Foldout(showResourcesTokens, "Available tokens");
+            showResourcesTokens = Foldout(showResourcesTokens, "Available Tokens");
             if (showResourcesTokens)
             {
                 GUILayout.Label("{zoom}");
@@ -545,73 +703,68 @@ public class OnlineMapsEditor : Editor
 
         EditorGUI.EndDisabledGroup();
 
-        if (source != OnlineMapsSource.Resources)
+        if (pSource.enumValueIndex != (int)OnlineMapsSource.Resources)
         {
-            DrawProviderGUI(ref dirty);
+            DrawProviderGUI();
 
-            string[] availableTypes = api.availableTypes;
-            if (availableTypes != null)
+            if (mapType.provider.types.Length > 1)
             {
-                GUIContent[] aviableTypes = availableTypes.Select(t => new GUIContent(t)).ToArray();
-                if (aviableTypes != null)
+                GUIContent[] availableTypes = mapType.provider.types.Select(t => new GUIContent(t.title)).ToArray();
+                if (availableTypes != null)
                 {
-                    int type = api.type;
-                    api.type = EditorGUILayout.Popup(new GUIContent("Type: ", "Type of map texture"), api.type, aviableTypes);
-                    if (type != api.type) dirty = true;
+                    int index = mapType.index;
+                    EditorGUI.BeginChangeCheck();
+                    index = EditorGUILayout.Popup(new GUIContent("Type", "Type of map texture"), index, availableTypes);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        mapType = mapType.provider.types[index];
+                        pMapType.stringValue = mapType.ToString();
+                    }
                 }
             }
 
-            DrawLabelsGUI(ref dirty);
+            DrawLabelsGUI();
         }
     }
 
-    private void DrawTargetGUI(ref bool dirty)
+    private void DrawTargetGUI()
     {
         EditorGUI.BeginDisabledGroup(isPlay);
+        EditorGUILayout.PropertyField(pTarget, new GUIContent("Target", "Where will be drawn map"));
 
-        OnlineMapsTarget mapTarget = api.target;
-        api.target =
-            (OnlineMapsTarget) EditorGUILayout.EnumPopup(new GUIContent("Target:", "Where will be drawn map"), api.target);
-        if (mapTarget != api.target) dirty = true;
-
-        if (api.target == OnlineMapsTarget.texture)
+        if (pTarget.enumValueIndex == (int)OnlineMapsTarget.texture)
         {
-            Texture2D texture = api.texture;
-            api.texture = (Texture2D) EditorGUILayout.ObjectField("Texture: ", api.texture, typeof (Texture2D), true);
-            if (texture != api.texture)
+            EditorGUI.BeginChangeCheck();
+            Object oldValue = pTexture.objectReferenceValue;
+            EditorGUILayout.PropertyField(pTexture);
+            if (EditorGUI.EndChangeCheck())
             {
-                if (api.texture != null && (!Mathf.IsPowerOfTwo(api.texture.width) || !Mathf.IsPowerOfTwo(api.texture.height)))
+                Texture2D texture = pTexture.objectReferenceValue as Texture2D;
+                if (texture != null && (!Mathf.IsPowerOfTwo(texture.width) || !Mathf.IsPowerOfTwo(texture.height)))
                 {
                     EditorUtility.DisplayDialog("Error", "Texture width and height must be power of two!!!", "OK");
-                    api.texture = texture;
+                    pTexture.objectReferenceValue = oldValue;
                 }
-                else
-                {
-                    CheckAPITextureImporter(api.texture);
-                }
-                dirty = true;
+                else CheckAPITextureImporter(texture);
             }
         }
-        else if (api.target == OnlineMapsTarget.tileset) DrawTilesetPropsGUI(ref dirty);
+        else DrawTilesetPropsGUI();
 
         EditorGUI.EndDisabledGroup();
     }
 
-    private void DrawTilesetPropsGUI(ref bool dirty)
+    private void DrawTilesetPropsGUI()
     {
-        EditorGUI.BeginChangeCheck();
-        api.tilesetWidth = EditorGUILayout.IntField("Width (pixels): ", api.tilesetWidth);
-        api.tilesetHeight = EditorGUILayout.IntField("Height (pixels): ", api.tilesetHeight);
-        api.tilesetSize = EditorGUILayout.Vector2Field("Size (in scene): ", api.tilesetSize);
-        if (EditorGUI.EndChangeCheck()) dirty = true;
+        EditorGUILayout.PropertyField(pTilesetWidth, cTilesetWidth);
+        EditorGUILayout.PropertyField(pTilesetHeight, cTilesetHeight);
+        EditorGUILayout.PropertyField(pTilesetSize, cTilesetSize);
 
         int dts = OnlineMapsUtils.tileSize * 2;
-        if (api.tilesetWidth % dts != 0) api.tilesetWidth = Mathf.FloorToInt(api.tilesetWidth / (float) dts + 0.5f) * dts;
-        if (api.tilesetHeight % dts != 0)
-            api.tilesetHeight = Mathf.FloorToInt(api.tilesetHeight / (float) dts + 0.5f) * dts;
+        if (pTilesetWidth.intValue % dts != 0) pTilesetWidth.intValue = Mathf.FloorToInt(pTilesetWidth.intValue / (float) dts + 0.5f) * dts;
+        if (pTilesetHeight.intValue % dts != 0) pTilesetHeight.intValue = Mathf.FloorToInt(pTilesetHeight.intValue / (float) dts + 0.5f) * dts;
 
-        if (api.tilesetWidth <= 0) api.tilesetWidth = dts;
-        if (api.tilesetHeight <= 0) api.tilesetHeight = dts;
+        if (pTilesetWidth.intValue <= 0) pTilesetWidth.intValue = dts;
+        if (pTilesetHeight.intValue <= 0) pTilesetHeight.intValue = dts;
     }
 
     private void DrawToolbarGUI()
@@ -649,26 +802,25 @@ public class OnlineMapsEditor : Editor
         GUILayout.EndHorizontal();
     }
 
-    private void DrawTrafficGUI(ref bool dirty)
-    {
-        bool traffic = api.traffic;
-        api.traffic = EditorGUILayout.Toggle("Traffic: ", api.traffic);
-        if (traffic != api.traffic) dirty = true;
-    }
-
     private void DrawTroubleshootingGUI(ref bool dirty)
     {
         EditorGUILayout.BeginHorizontal(GUI.skin.box);
+        float oldWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 220;
         GUILayout.Label("Use this props only if you have a problem!!!", warningStyle);
         EditorGUILayout.EndHorizontal();
         EditorGUI.BeginChangeCheck();
-        api.useSoftwareJPEGDecoder = EditorGUILayout.Toggle("Software JPEG Decoder", api.useSoftwareJPEGDecoder);
+
+        EditorGUILayout.PropertyField(pUseSoftwareJPEGDecoder, cUseSoftwareJPEGDecoder);
 
 #if !UNITY_WEBGL
-        api.renderInThread = EditorGUILayout.Toggle("Render in Thread", api.renderInThread);
+        EditorGUILayout.PropertyField(pRenderInThread);
 #endif
 
-        api.notInteractUnderGUI = EditorGUILayout.Toggle("Not interact under GUI", api.notInteractUnderGUI);
+        EditorGUILayout.PropertyField(pNotInteractUnderGUI);
+        EditorGUILayout.PropertyField(pStopPlayingWhenScriptsCompile);
+
+        EditorGUIUtility.labelWidth = oldWidth;
 
         if (EditorGUI.EndChangeCheck()) dirty = true;
     }
@@ -676,6 +828,8 @@ public class OnlineMapsEditor : Editor
     private static void FixImportSettings()
     {
         string resourcesFolder = Path.Combine(Application.dataPath, "Resources/OnlineMapsTiles");
+        if (!Directory.Exists(resourcesFolder)) return;
+
         string[] tiles = Directory.GetFiles(resourcesFolder, "*.png", SearchOption.AllDirectories);
         float count = tiles.Length;
         int index = 0;
@@ -692,8 +846,7 @@ public class OnlineMapsEditor : Editor
     private static void FixTileImporter(string shortPath, float progress)
     {
         TextureImporter textureImporter = AssetImporter.GetAtPath(shortPath) as TextureImporter;
-        EditorUtility.DisplayProgressBar("Update import settings for tiles",
-            "Please wait, this may take several minutes.", progress);
+        EditorUtility.DisplayProgressBar("Update import settings for tiles", "Please wait, this may take several minutes.", progress);
         if (textureImporter != null)
         {
             textureImporter.mipmapEnabled = false;
@@ -742,7 +895,7 @@ public class OnlineMapsEditor : Editor
     {
         string shortPath = file.Substring(folder.Length + 1);
         shortPath = shortPath.Replace('\\', '/');
-        string[] shortArr = shortPath.Split(new[] {'/'});
+        string[] shortArr = shortPath.Split('/');
         int zoom = 17 - int.Parse(shortArr[0]);
         int x = int.Parse(shortArr[1]) * 1024 + int.Parse(shortArr[2]);
         int y = int.Parse(shortArr[3]) * 1024 + int.Parse(shortArr[4].Substring(0, shortArr[4].Length - 4));
@@ -782,48 +935,46 @@ public class OnlineMapsEditor : Editor
 
     private void OnEnable()
     {
+        CacheSerializedProperties();
         api = (OnlineMaps) target;
 
-        double lng, lat;
-        api.GetPosition(out lng, out lat);
+        providers = OnlineMapsProvider.GetProviders();
+        providersTitle = providers.Select(p => p.title).ToArray();
 
-        if (api._position != Vector2.zero && lng == 0 && lat == 0)
-        {
-            api.position = api._position;
-            api._position = Vector2.zero;
-        }
+        if (string.IsNullOrEmpty(pMapType.stringValue)) pMapType.stringValue = OnlineMapsProvider.Upgrade(pProvider.enumValueIndex, pType.intValue);
 
-        if (api.defaultMarkerTexture == null) api.defaultMarkerTexture = GetIcon("DefaultMarker.png");
-        if (api.skin == null)
-        {
-            api.skin =
-                (GUISkin)
-                    AssetDatabase.LoadAssetAtPath("Assets/Infinity Code/Online maps/Skin/DefaultSkin.guiskin",
-                        typeof (GUISkin));
-        }
+        if (pDefaultMarkerTexture.objectReferenceValue == null) pDefaultMarkerTexture.objectReferenceValue = GetIcon("DefaultMarker.png");
+        if (pTooltipTexture.objectReferenceValue == null) pTooltipTexture.objectReferenceValue = GetIcon("Tooltip.psd");
 
         string[] files = Directory.GetFiles("Assets", "update_available.png", SearchOption.AllDirectories);
         if (files.Length > 0)
         {
             Texture updateAvailableIcon = AssetDatabase.LoadAssetAtPath(files[0], typeof (Texture)) as Texture;
-            updateAvailableContent = new GUIContent("Update Available", updateAvailableIcon, "Update available");
+            updateAvailableContent = new GUIContent("Update Available", updateAvailableIcon, "Update Available");
         }
 
         OnlineMapsUpdater.CheckNewVersionAvailable();
+
+        mapType = OnlineMapsProvider.FindMapType(pMapType.stringValue);
+        providerIndex = mapType.provider.index;
+
+        serializedObject.ApplyModifiedProperties();
     }
 
     public override void OnInspectorGUI()
     {
         DrawToolbarGUI();
 
+        serializedObject.Update();
+
         bool dirty = DrawGeneralGUI();
 
         EditorGUILayout.BeginVertical(GUI.skin.box);
-        showMarkers = Foldout(showMarkers, "2D Markers");
-        if (showMarkers) DrawMarkersGUI();
+        showMarkers = Foldout(showMarkers, string.Format("2D Markers (Count: {0})", pMarkers.arraySize));
+        if (showMarkers) DrawMarkersGUI(ref dirty);
         EditorGUILayout.EndVertical();
 
-        if (api.target == OnlineMapsTarget.texture)
+        if (pTarget.enumValueIndex == (int)OnlineMapsTarget.texture)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box);
             showCreateTexture = Foldout(showCreateTexture, "Create texture");
@@ -833,7 +984,7 @@ public class OnlineMapsEditor : Editor
 
         EditorGUILayout.BeginVertical(GUI.skin.box);
         showAdvanced = Foldout(showAdvanced, "Advanced");
-        if (showAdvanced) DrawAdvancedGUI(ref dirty);
+        if (showAdvanced) DrawAdvancedGUI();
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.BeginVertical(GUI.skin.box);
@@ -841,53 +992,23 @@ public class OnlineMapsEditor : Editor
         if (showTroubleshooting) DrawTroubleshootingGUI(ref dirty);
         EditorGUILayout.EndVertical();
 
-        OnlineMapsControlBase[] controls = api.GetComponents<OnlineMapsControlBase>();
-        if (controls == null || controls.Length == 0)
-        {
-            EditorGUILayout.BeginVertical(GUI.skin.box);
+        CheckNullControl();
+#if UNITY_WEBPLAYER
+        CheckJSLoader();
+#endif
 
-            EditorGUILayout.HelpBox("Problem detected:\nCan not find OnlineMaps Control component.", MessageType.Error);
-            if (GUILayout.Button("Add Control"))
-            {
-                GenericMenu menu = new GenericMenu();
-
-                Type[] types = api.GetType().Assembly.GetTypes();
-                foreach (Type t in types)
-                {
-                    if (t.IsSubclassOf(typeof(OnlineMapsControlBase))) 
-                    {
-                        if (t == typeof(OnlineMapsControlBase2D) || t == typeof(OnlineMapsControlBase3D)) continue;
-
-                        string fullName = t.FullName.Substring(10);
-
-                        int controlIndex = fullName.IndexOf("Control");
-                        fullName = fullName.Insert(controlIndex, " ");
-
-                        int textureIndex = fullName.IndexOf("Texture");
-                        if (textureIndex > 0) fullName = fullName.Insert(textureIndex, " ");
-
-                        menu.AddItem(new GUIContent(fullName), false, data =>
-                        {
-                            Type ct = data as Type;
-                            api.gameObject.AddComponent(ct);
-                            api.target = (ct == typeof (OnlineMapsTileSetControl))
-                                ? OnlineMapsTarget.tileset
-                                : OnlineMapsTarget.texture;
-                            Repaint();
-                        }, t);
-                    }
-                }
-
-                menu.ShowAsContext();
-            }
-
-            EditorGUILayout.EndVertical();
-        }
+        serializedObject.ApplyModifiedProperties();
 
         if (dirty)
         {
             EditorUtility.SetDirty(api);
-            Repaint();
+            if (!Application.isPlaying)
+            {
+#if UNITY_5_3P
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+#endif
+            }
+            else api.Redraw();
         }
     }
 

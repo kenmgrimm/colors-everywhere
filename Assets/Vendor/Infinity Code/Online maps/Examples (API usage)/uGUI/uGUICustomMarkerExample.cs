@@ -11,11 +11,17 @@ namespace InfinityCode.OnlineMapsExamples
     [AddComponentMenu("")]
     public class uGUICustomMarkerExample:MonoBehaviour
     {
-        public Vector2 position;
+        public double lng;
+        public double lat;
         public string text;
 
         public Text textField;
         public float height;
+
+        public void Dispose()
+        {
+            textField = null;
+        }
 
         public void Start()
         {

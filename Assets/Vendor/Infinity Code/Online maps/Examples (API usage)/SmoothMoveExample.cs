@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of a smooth movement to current GPS location.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/SmoothMoveExample")]
     public class SmoothMoveExample : MonoBehaviour
     {
@@ -36,14 +39,15 @@ namespace InfinityCode.OnlineMapsExamples
                 fromPosition = OnlineMaps.instance.position;
 
                 // to GPS position;
-                toPosition = OnlineMaps.instance.GetComponent<OnlineMapsLocationService>().position;
+                toPosition = OnlineMapsLocationService.instance.position;
 
                 // calculates tile positions
-                Vector2 fromTile = OnlineMapsUtils.LatLongToTilef(fromPosition, OnlineMaps.instance.zoom);
-                Vector2 toTile = OnlineMapsUtils.LatLongToTilef(toPosition, OnlineMaps.instance.zoom);
+                double fromTileX, fromTileY, toTileX, toTileY;
+                OnlineMaps.instance.projection.CoordinatesToTile(fromPosition.x, fromPosition.y, OnlineMaps.instance.zoom, out fromTileX, out fromTileY);
+                OnlineMaps.instance.projection.CoordinatesToTile(toPosition.x, toPosition.y, OnlineMaps.instance.zoom, out toTileX, out toTileY);
 
                 // if tile offset < 4, then start smooth movement
-                if ((fromTile - toTile).magnitude < 4)
+                if (OnlineMapsUtils.Magnitude(fromTileX, fromTileY, toTileX, toTileY) < 4)
                 {
                     // set relative position 0
                     angle = 0;

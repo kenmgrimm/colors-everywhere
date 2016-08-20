@@ -20,14 +20,30 @@ public class OnlineMapsRange
     public int min = int.MinValue;
 
     /// <summary>
+    /// Maximum limit.\n
+    /// Uses in inpector.
+    /// </summary>
+    public int maxLimit = 20;
+
+    /// <summary>
+    /// Minimum limit.\n
+    /// Uses in inpector.
+    /// </summary>
+    public int minLimit = 3;
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="min">Minimum value.</param>
     /// <param name="max">Maximum value.</param>
-    public OnlineMapsRange(int min = int.MinValue, int max = int.MaxValue)
+    /// <param name="minLimit">Minimum limit.</param>
+    /// <param name="maxLimit">Maximum limit.</param>
+    public OnlineMapsRange(int min = int.MinValue, int max = int.MaxValue, int minLimit = 3, int maxLimit = 20)
     {
         this.min = min;
         this.max = max;
+        this.maxLimit = maxLimit;
+        this.minLimit = minLimit;
     }
 
     /// <summary>
@@ -37,7 +53,7 @@ public class OnlineMapsRange
     /// <returns>Value corresponding to the specified range.</returns>
     public int CheckAndFix(int value)
     {
-        FixZeroRange();
+        //FixZeroRange();
         if (value < min) value = min;
         if (value > max) value = max;
         return value;
@@ -59,7 +75,7 @@ public class OnlineMapsRange
     /// <returns>True - if the number is in the range, false - if not.</returns>
     public bool InRange(int value)
     {
-        FixZeroRange();
+        //FixZeroRange();
         return value >= min && value <= max;
     }
 

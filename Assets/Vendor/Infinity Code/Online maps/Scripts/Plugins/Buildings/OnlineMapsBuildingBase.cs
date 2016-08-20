@@ -63,24 +63,24 @@ public class OnlineMapsBuildingBase:MonoBehaviour
 
     private int lastTouchCount = 0;
 
+    /// <summary>
+    /// Collider of building.
+    /// </summary>
     protected Collider buildingCollider;
+
+    /// <summary>
+    /// Indicates that the building has an error.
+    /// </summary>
     protected bool hasErrors = false;
 
     private bool isPressed;
-    private Vector3 pressPoint;
+    private Vector2 pressPoint;
 
-    private void AddMetaInfo(string title, string info)
-    {
-        if (metaInfo == null) metaInfo = new OnlineMapsBuildingMetaInfo[0];
-
-        List<OnlineMapsBuildingMetaInfo> metaList = new List<OnlineMapsBuildingMetaInfo>(metaInfo)
-        {
-            new OnlineMapsBuildingMetaInfo {info = info, title = title}
-        };
-
-        metaInfo = metaList.ToArray();
-    }
-
+    /// <summary>
+    /// Checks ignore the building.
+    /// </summary>
+    /// <param name="way">Building way.</param>
+    /// <returns>TRUE - ignore building, FALSE - generate building.</returns>
     protected static bool CheckIgnoredBuildings(OnlineMapsOSMWay way)
     {
         if (way.GetTagValue("building") == "bridge") return true;
@@ -91,6 +91,11 @@ public class OnlineMapsBuildingBase:MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Creates a new child GameObject, with the specified name.
+    /// </summary>
+    /// <param name="id">Name of GameObject.</param>
+    /// <returns></returns>
     protected static GameObject CreateGameObject(string id)
     {
         GameObject buildingGameObject = new GameObject(id);
@@ -114,23 +119,43 @@ public class OnlineMapsBuildingBase:MonoBehaviour
     /// <param name="item">Object that contains meta description.</param>
     public void LoadMeta(OnlineMapsOSMBase item)
     {
-        foreach (OnlineMapsOSMTag itemTag in item.tags) AddMetaInfo(itemTag.key, itemTag.value);
+        metaInfo = new OnlineMapsBuildingMetaInfo[item.tags.Count];
+        for (int i = 0; i < item.tags.Count; i++)
+        {
+            OnlineMapsOSMTag tag = item.tags[i];
+            metaInfo[i] = new OnlineMapsBuildingMetaInfo()
+            {
+                info = tag.value,
+                title = tag.key
+            };
+        }
     }
 
+    /// <summary>
+    /// Converts a list of nodes into an list of points in Unity World Space.
+    /// </summary>
+    /// <param name="nodes">List of nodes.</param>
+    /// <returns>List of points in Unity World Space.</returns>
     protected static List<Vector3> GetLocalPoints(List<OnlineMapsOSMNode> nodes)
     {
         OnlineMaps api = OnlineMaps.instance;
-        Vector2 startTilePos = OnlineMapsUtils.LatLongToTilef(api.topLeftPosition, api.buffer.apiZoom);
+        double tlx, tly;
+        api.GetTopLeftPosition(out tlx, out tly);
 
-        List<Vector3> localPoints = new List<Vector3>();
+        double sx, sy;
+        api.projection.CoordinatesToTile(tlx, tly, api.buffer.apiZoom, out sx, out sy);
+
+        List<Vector3> localPoints = new List<Vector3>(nodes.Count);
 
         float sw = OnlineMapsUtils.tileSize * api.tilesetSize.x / api.tilesetWidth;
         float sh = OnlineMapsUtils.tileSize * api.tilesetSize.y / api.tilesetHeight;
 
         for (int i = 0; i < nodes.Count; i++)
         {
-            Vector2 p = OnlineMapsUtils.LatLongToTilef(nodes[i], api.buffer.apiZoom) - startTilePos;
-            localPoints.Add(new Vector3(-p.x * sw, 0, p.y * sh));
+            double px, py;
+            api.projection.CoordinatesToTile(nodes[i].lon, nodes[i].lat, api.buffer.apiZoom, out px, out py);
+
+            localPoints.Add(new Vector3((float)(-(px - sx) * sw), 0, (float)((py - sy) * sh)));
         }
         return localPoints;
     }
@@ -144,31 +169,41 @@ public class OnlineMapsBuildingBase:MonoBehaviour
                 OnlineMapsUtils.maxRaycastDistance);
     }
 
+    /// <summary>
+    /// This method is called when you press a building.
+    /// </summary>
     protected void OnBasePress()
     {
         isPressed = true;
         if (OnPress != null) OnPress(this);
-        pressPoint = Input.mousePosition;
+        pressPoint = OnlineMapsControlBase.instance.GetInputPosition();
     }
 
+    /// <summary>
+    /// This method is called when you release a building.
+    /// </summary>
     protected void OnBaseRelease()
     {
         isPressed = false;
         if (OnRelease != null) OnRelease(this);
-        if ((pressPoint - Input.mousePosition).magnitude < 10)
+        if ((pressPoint - OnlineMapsControlBase.instance.GetInputPosition()).magnitude < 10)
         {
             if (OnClick != null) OnClick(this);
         }
     }
 
 #if !UNITY_ANDROID
-    // ReSharper disable once UnusedMember.Global
+    /// <summary>
+    /// This method is called when you mouse down on a building.
+    /// </summary>
     protected void OnMouseDown()
     {
         OnBasePress();
     }
 
-    // ReSharper disable once UnusedMember.Global
+    /// <summary>
+    /// This method is called when you mouse up on a building.
+    /// </summary>
     protected void OnMouseUp()
     {
         OnBaseRelease();

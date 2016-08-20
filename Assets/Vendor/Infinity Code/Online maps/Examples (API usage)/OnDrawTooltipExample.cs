@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to intercept drawing tooltips and draw them yourself. 
+    /// In this case, the square drawn around the marker.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/OnDrawTooltipExample")]
     public class OnDrawTooltipExample : MonoBehaviour
     {

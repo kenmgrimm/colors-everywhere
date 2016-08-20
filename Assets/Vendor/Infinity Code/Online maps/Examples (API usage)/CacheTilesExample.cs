@@ -3,12 +3,14 @@
 
 #if !UNITY_WEBPLAYER
 
-using System;
 using System.IO;
 using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example how to make a runtime caching tiles.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/CacheTilesExample")]
     public class CacheTilesExample : MonoBehaviour
     {
@@ -21,14 +23,14 @@ namespace InfinityCode.OnlineMapsExamples
         {
             string[] parts =
             {
-            Application.persistentDataPath,
-            "OnlineMapsTileCache",
-            Enum.GetName(typeof(OnlineMapsProviderEnum), tile.provider),
-            OnlineMaps.instance.type.ToString(),
-            tile.zoom.ToString(),
-            tile.x.ToString(),
-            tile.y + ".png"
-        };
+                Application.persistentDataPath,
+                "OnlineMapsTileCache",
+                tile.mapType.provider.id,
+                tile.mapType.id,
+                tile.zoom.ToString(),
+                tile.x.ToString(),
+                tile.y + ".png"
+            };
             return string.Join("/", parts);
         }
 

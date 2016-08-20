@@ -14,7 +14,6 @@ using RenderMode = UnityEngine.RenderMode;
 /// Class control the map for the uGUI UI RawImage.
 /// </summary>
 [AddComponentMenu("Infinity Code/Online Maps/Controls/UI RawImage")]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsUIRawImageControl : OnlineMapsControlBase2D
 {
     private RawImage image;
@@ -38,7 +37,7 @@ public class OnlineMapsUIRawImageControl : OnlineMapsControlBase2D
 
     protected override void BeforeUpdate()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBPLAYER
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
         int touchCount = Input.GetMouseButton(0) ? 1 : 0;
         if (touchCount != lastTouchCount)
         {
@@ -76,12 +75,12 @@ public class OnlineMapsUIRawImageControl : OnlineMapsControlBase2D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         px -= countX * r.x;
         py += countY * r.y;
 
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -106,12 +105,12 @@ public class OnlineMapsUIRawImageControl : OnlineMapsControlBase2D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         px -= countX * r.x;
         py += countY * r.y;
 
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
         return true;
     }
 
@@ -136,13 +135,26 @@ public class OnlineMapsUIRawImageControl : OnlineMapsControlBase2D
 
     protected override bool HitTest()
     {
+        Vector2 inputPosition = GetInputPosition();
+
         PointerEventData pe = new PointerEventData(EventSystem.current);
-        pe.position = Input.mousePosition;
+        pe.position = inputPosition;
         List<RaycastResult> hits = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pe, hits);
 
         if (hits.Count > 0 && hits[0].gameObject != gameObject) return false;
-        return RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, Input.mousePosition, worldCamera);
+        return RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, inputPosition, worldCamera);
+    }
+
+    protected override bool HitTest(Vector2 position)
+    {
+        PointerEventData pe = new PointerEventData(EventSystem.current);
+        pe.position = position;
+        List<RaycastResult> hits = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pe, hits);
+
+        if (hits.Count > 0 && hits[0].gameObject != gameObject) return false;
+        return RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera);
     }
 
     protected override void OnEnableLate()
@@ -151,7 +163,7 @@ public class OnlineMapsUIRawImageControl : OnlineMapsControlBase2D
         if (image == null)
         {
             Debug.LogError("Can not find Image.");
-            Destroy(this);
+            OnlineMapsUtils.DestroyImmediate(this);
         }
     }
 

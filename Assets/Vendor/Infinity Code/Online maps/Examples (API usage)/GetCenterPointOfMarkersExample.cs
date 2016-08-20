@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Calculates the center and the best  zoom for all markers on the map, and show it.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/GetCenterPointOfMarkersExample")]
     public class GetCenterPointOfMarkersExample : MonoBehaviour
     {

@@ -9,11 +9,11 @@ using UnityEngine;
 /// </summary>
 [System.Serializable]
 [AddComponentMenu("Infinity Code/Online Maps/Controls/NGUI Texture")]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsNGUITextureControl : OnlineMapsControlBase2D
 {
 #if NGUI
     private UITexture uiTexture;
+    private UIWidget uiWidget;
 
     /// <summary>
     /// Singleton instance of OnlineMapsNGUITextureControl control.
@@ -35,62 +35,32 @@ public class OnlineMapsNGUITextureControl : OnlineMapsControlBase2D
 
     public override Vector2 GetCoords(Vector2 position)
     {
-        Rect rect = GetRect();
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
-    
-        double px, py;
-        api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
-
-        float rx = (rect.center.x - position.x) / rect.width * 2;
-        float ry = (rect.center.y - position.y) / rect.height * 2;
-        px -= countX / 2f * rx;
-        py += countY / 2f * ry;
-
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
-        return new Vector2((float)px, (float)py);
+        double lng, lat;
+        GetCoords(out lng, out lat, position);
+        return new Vector2((float)lng, (float)lat);
     }
 
     public override bool GetCoords(out double lng, out double lat, Vector2 position)
     {
-        Rect rect = GetRect();
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
-    
+        Vector3 worldPos = UICamera.currentCamera.ScreenToWorldPoint(position);
+        Vector3 localPos = transform.worldToLocalMatrix.MultiplyPoint3x4(worldPos);
+
+        localPos.x = localPos.x / uiWidget.localSize.x;
+        localPos.y = localPos.y / uiWidget.localSize.y;
+
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
-        float rx = (rect.center.x - position.x) / rect.width * 2;
-        float ry = (rect.center.y - position.y) / rect.height * 2;
-        px -= countX / 2f * rx;
-        py += countY / 2f * ry;
-        
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        int countX = api.texture.width / OnlineMapsUtils.tileSize;
+        int countY = api.texture.height / OnlineMapsUtils.tileSize;
+
+        px += countX * localPos.x;
+        py -= countY * localPos.y;
+
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+
         return true;
-    }
-
-    protected override bool HitTest()
-    {
-        return UICamera.hoveredObject == gameObject;
-    }
-
-    protected override void OnEnableLate()
-    {
-        uiTexture = GetComponent<UITexture>();
-        if (uiTexture == null)
-        {
-            Debug.LogError("Can not find UITexture.");
-            Destroy(this);
-        }
-    }
-
-// ReSharper disable once UnusedMember.Local
-    private void OnPress(bool state)
-    {
-        if (state) OnMapBasePress();
-        else OnMapBaseRelease();
     }
 
     public override Rect GetRect()
@@ -106,6 +76,50 @@ public class OnlineMapsNGUITextureControl : OnlineMapsControlBase2D
         int rw = Mathf.RoundToInt(b.size.y * h);
 
         return new Rect(rx, ry, rz, rw);
+    }
+
+    public override Vector2 GetScreenPosition(Vector2 coords)
+    {
+        if (UICamera.currentCamera == null) return Vector2.zero;
+
+        Vector2 mapPos = GetPosition(coords);
+        mapPos.x = (mapPos.x / api.width - 0.5f) * uiWidget.localSize.x;
+        mapPos.y = (0.5f - mapPos.y / api.height) * uiWidget.localSize.y;
+        Vector3 worldPos = transform.TransformPoint(mapPos);
+        Vector3 screenPosition = UICamera.currentCamera.WorldToScreenPoint(worldPos);
+        return screenPosition;
+    }
+
+    protected override bool HitTest()
+    {
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+        return UICamera.currentTouch != null && UICamera.currentTouch.current == gameObject;
+#else
+        return UICamera.hoveredObject == gameObject;
+#endif
+    }
+
+    protected override bool HitTest(Vector2 position)
+    {
+        return HitTest();
+    }
+
+
+    protected override void OnEnableLate()
+    {
+        uiWidget = GetComponent<UIWidget>();
+        uiTexture = GetComponent<UITexture>();
+        if (uiTexture == null)
+        {
+            Debug.LogError("Can not find UITexture.");
+            OnlineMapsUtils.DestroyImmediate(this);
+        }
+    }
+
+    private void OnPress(bool state)
+    {
+        if (state) OnMapBasePress();
+        else OnMapBaseRelease();
     }
 
     public override void SetTexture(Texture2D texture)

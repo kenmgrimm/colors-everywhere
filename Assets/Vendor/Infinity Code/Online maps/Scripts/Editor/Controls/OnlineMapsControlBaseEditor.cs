@@ -28,7 +28,7 @@ public class OnlineMapsControlBaseEditor:Editor
             if (controlIndex != -1)
             {
                 OnlineMapsControlBase activeControl = controls[controlIndex];
-                foreach (OnlineMapsControlBase c in controls) if (c != activeControl) DestroyImmediate(c);
+                foreach (OnlineMapsControlBase c in controls) if (c != activeControl) OnlineMapsUtils.DestroyImmediate(c);
                 dirty = true;
             }
 
@@ -84,7 +84,7 @@ public class OnlineMapsControlBaseEditor:Editor
 
         if (GUILayout.Button("Remove"))
         {
-            DestroyImmediate(target);
+            OnlineMapsUtils.DestroyImmediate(target);
         }
     }
 }

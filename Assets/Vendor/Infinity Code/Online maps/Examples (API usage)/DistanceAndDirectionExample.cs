@@ -1,10 +1,14 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of calculation of the distance and angle between the locations.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DistanceAndDirectionExample")]
     public class DistanceAndDirectionExample : MonoBehaviour
     {
@@ -33,20 +37,21 @@ namespace InfinityCode.OnlineMapsExamples
                 Debug.Log("Distance: " + distance);
 
                 int zoom = 15;
-                int maxX = 1 << zoom;
+                int maxX = 1 << (zoom - 1);
 
                 // Calculate the tile position of locations.
-                Vector2 userTile = OnlineMapsUtils.LatLongToTilef(userCoordinares, zoom);
-                Vector2 markerTile = OnlineMapsUtils.LatLongToTilef(markerCoordinates, zoom);
+                double userTileX, userTileY, markerTileX, markerTileY;
+                OnlineMaps.instance.projection.CoordinatesToTile(userCoordinares.x, userCoordinares.y, zoom, out userTileX, out userTileY);
+                OnlineMaps.instance.projection.CoordinatesToTile(markerCoordinates.x, markerCoordinates.y, zoom, out markerTileX, out markerTileY);
 
                 // Calculate the angle between locations.
-                float angle = OnlineMapsUtils.Angle2D(userTile, markerTile);
-                if (Mathf.Abs(userTile.x - markerTile.x) > maxX / 2) angle = 360 - angle;
+                double angle = OnlineMapsUtils.Angle2D(userTileX, userTileY, markerTileX, markerTileY);
+                if (Math.Abs(userTileX - markerTileX) > maxX) angle = 360 - angle;
 
                 Debug.Log("Angle: " + angle);
 
                 // Calculate relative angle between locations.
-                float relativeAngle = angle - compassTrueHeading;
+                double relativeAngle = angle - compassTrueHeading;
                 Debug.Log("Relative angle: " + relativeAngle);
             }
         }

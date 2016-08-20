@@ -46,14 +46,14 @@ public class OnlineMapsIGUITextureControl : OnlineMapsControlBase2D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         float rx = (rect.center.x - position.x) / rect.width * 2;
         float ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
         
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -67,14 +67,14 @@ public class OnlineMapsIGUITextureControl : OnlineMapsControlBase2D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         float rx = (rect.center.x - position.x) / rect.width * 2;
         float ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
         
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
         return true;
     }
 
@@ -87,7 +87,14 @@ public class OnlineMapsIGUITextureControl : OnlineMapsControlBase2D
     {
         Rect rect = image.getAbsoluteRect();
         rect.y = Screen.height - rect.yMax;
-        return rect.Contains(Input.mousePosition);
+        return rect.Contains(GetInputPosition());
+    }
+
+    protected override bool HitTest(Vector2 position)
+    {
+        Rect rect = image.getAbsoluteRect();
+        rect.y = Screen.height - rect.yMax;
+        return rect.Contains(position);
     }
 
     protected override void OnEnableLate()
@@ -96,7 +103,7 @@ public class OnlineMapsIGUITextureControl : OnlineMapsControlBase2D
         if (image == null)
         {
             Debug.LogError("Can not find iGUIImage.");
-            Destroy(this);
+            OnlineMapsUtils.DestroyImmediate(this);
         }
     }
 

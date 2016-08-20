@@ -74,7 +74,7 @@ public class OnlineMapsPositionRange
         if (position.y > maxLat) position.y = maxLat;
         return position;
     }
-
+    
     /// <summary>
     /// Checks and limits geographic coordinates.
     /// </summary>

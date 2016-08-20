@@ -118,10 +118,10 @@ Transform:
   m_LocalRotation: {x: -0.0013950138, y: -0.8327092, z: 0.55370474, w: -0.0021454517}
   m_LocalPosition: {x: -1063.0673, y: 823.22, z: 2895.4797}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &491272877
 Camera:
   m_ObjectHideFlags: 0
@@ -204,10 +204,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -534.8456, y: -76.58099, z: 1902.0579}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1085486630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,31 +221,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowRedraw: 1
   control: {fileID: 0}
-  customProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
+  customProviderURL: http://localhost/{zoom}/{y}/{x}
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
   defaultTileTexture: {fileID: 0}
   dispatchEvents: 1
   drawingElements: []
-  emptyColor:
-    r: 0.49803922
-    g: 0.49803922
-    b: 0.49803922
-    a: 1
+  emptyColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
   height: 0
   labels: 1
-  language: 656e
+  language: en
   lockRedraw: 0
   markers: []
   needGC: 0
   needRedraw: 1
+  notInteractUnderGUI: 1
   provider: 0
   redrawOnPlay: 1
   renderInThread: 1
-  resourcesPath: 4f6e6c696e654d61707354696c65732f7b7a6f6f6d7d2f7b787d2f7b797d
+  resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
   showMarkerTooltip: 0
-  skin: {fileID: 11400000, guid: 4ced77c4c4467874e8782601a87210c2, type: 2}
+  skin: {fileID: 0}
   smartTexture: {fileID: 0}
   source: 0
   target: 1
@@ -265,15 +262,17 @@ MonoBehaviour:
     scale: 1
   traffic: 0
   type: 0
+  useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
   useSmartTexture: 1
-  webplayerProxyURL: 687474703a2f2f736572766963652e696e66696e6974792d636f64652e636f6d2f72656469726563742e7068703f
+  webplayerProxyURL: http://service.infinity-code.com/redirect.php?
   width: 0
   zoomRange:
-    max: 2147483647
-    min: -2147483648
+    max: 0
+    min: 0
   latitude: 41.88990020751953
   longitude: 12.491649627685547
+  _position: {x: 0, y: 0}
   _zoom: 18
 --- !u!114 &1085486631
 MonoBehaviour:
@@ -294,6 +293,7 @@ MonoBehaviour:
   invertTouchZoom: 0
   zoomInOnDoubleClick: 1
   activeCamera: {fileID: 491272877}
+  allowAddMarker3DByN: 1
   allowDefaultMarkerEvents: 0
   allowCameraControl: 1
   cameraDistance: 1000
@@ -303,7 +303,6 @@ MonoBehaviour:
   marker2DSize: 100
   markers3D: []
   marker3DScale: 1
-  allowAddMarker3DByN: 1
   bingAPI: 
   checkMarker2DVisibility: 0
   colliderType: 1
@@ -316,6 +315,11 @@ MonoBehaviour:
   markerMaterial: {fileID: 0}
   markerShader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
   smoothZoom: 0
+  smoothZoomMinScale: -3.4028235e+38
+  smoothZoomMaxScale: 3.4028235e+38
+  smoothZoomStarted: 0
+  originalPosition: {x: 0, y: 0, z: 0}
+  smoothZoomMode: 0
   tileMaterial: {fileID: 0}
   tilesetShader: {fileID: 4800000, guid: f65580aa9bbbd7e42b05adab01e1ca2d, type: 3}
   useElevation: 0

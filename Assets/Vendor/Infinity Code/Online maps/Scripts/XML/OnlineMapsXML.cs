@@ -4,10 +4,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Xml;
 using UnityEngine;
 using Object = UnityEngine.Object;
+
+#if NETFX_CORE
+using Windows.Data.Xml.Dom;
+#else
+using System.Xml;
+#endif
 
 /// <summary>
 /// Wrapper for XML.
@@ -22,7 +28,11 @@ public class OnlineMapsXML : IEnumerable
     /// </summary>
     public string name
     {
-        get { return (_element != null)? _element.Name: null; }
+#if !NETFX_CORE
+        get { return (_element != null) ? _element.Name : null; }
+#else
+        get { return (_element != null) ? _element.TagName: null; }
+#endif
     }
 
     /// <summary>
@@ -30,7 +40,7 @@ public class OnlineMapsXML : IEnumerable
     /// </summary>
     public int count
     {
-        get { return (_element != null && _element.HasChildNodes) ? _element.ChildNodes.Count : 0; }
+        get { return hasChildNodes ? _element.ChildNodes.Count : 0; }
     }
 
     /// <summary>
@@ -57,6 +67,30 @@ public class OnlineMapsXML : IEnumerable
         get { return _element; }
     }
 
+    public bool hasAttributes
+    {
+        get
+        {
+#if !NETFX_CORE
+            return _element != null && _element.HasAttributes;
+#else
+            return _element != null && _element.Attributes.Count > 0;
+#endif
+        }
+    }
+
+    public bool hasChildNodes
+    {
+        get
+        {
+#if !NETFX_CORE
+            return _element != null && _element.HasChildNodes;
+#else
+            return _element != null && _element.HasChildNodes();
+#endif
+        }
+    }
+
     /// <summary>
     /// Content of node as string.
     /// </summary>
@@ -64,7 +98,11 @@ public class OnlineMapsXML : IEnumerable
     {
         get
         {
-            return (_element != null)? _element.OuterXml: null;
+#if !NETFX_CORE
+            return (_element != null) ? _element.OuterXml : null;
+#else
+            return (_element != null)? _element.GetXml(): null;
+#endif
         }
     }
 
@@ -77,12 +115,12 @@ public class OnlineMapsXML : IEnumerable
     {
         get
         {
-            if (_element == null || !_element.HasChildNodes) return new OnlineMapsXML();
+            if (!hasChildNodes) return new OnlineMapsXML();
             if (index < 0 || index >= _element.ChildNodes.Count) return new OnlineMapsXML();
             return new OnlineMapsXML(_element.ChildNodes[index] as XmlElement);
         }
     }
-
+    
     /// <summary>
     /// Get the child element by name.
     /// </summary>
@@ -92,8 +130,12 @@ public class OnlineMapsXML : IEnumerable
     {
         get
         {
-            if (_element == null || !_element.HasChildNodes) return new OnlineMapsXML();
+            if (!hasChildNodes) return new OnlineMapsXML();
+#if !NETFX_CORE
             return new OnlineMapsXML(_element[childName]);
+#else
+            return new OnlineMapsXML(GetFirstChild(_element, childName));
+#endif
         }
     }
 
@@ -154,9 +196,13 @@ public class OnlineMapsXML : IEnumerable
     /// <returns>Value of attribute as specified type.</returns>
     public T A<T>(string attributeName)
     {
-        if (_element == null || !_element.HasAttributes) return default(T);
-
+        if (!hasAttributes) return default(T);
+#if !NETFX_CORE
         XmlAttribute el = _element.Attributes[attributeName];
+#else
+        XmlAttribute el = _element.Attributes.GetNamedItem(attributeName) as XmlAttribute;
+#endif
+
         if (el == null) return default(T);
 
         string value = el.Value;
@@ -166,15 +212,26 @@ public class OnlineMapsXML : IEnumerable
         if (type == typeof(string)) return (T)Convert.ChangeType(value, type);
 
         T obj = default(T);
+#if !NETFX_CORE
         PropertyInfo[] properties = type.GetProperties();
+#else
+        PropertyInfo[] properties = type.GetTypeInfo().DeclaredProperties.ToArray();
+#endif
         Type underlyingType = type;
 
-        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.InvariantCultureIgnoreCase))
-            underlyingType = properties[1].PropertyType;
+#if !UNITY_WSA
+        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.InvariantCultureIgnoreCase)) underlyingType = properties[1].PropertyType;
+#else
+        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.OrdinalIgnoreCase)) underlyingType = properties[1].PropertyType;
+#endif
 
         try
         {
+#if !NETFX_CORE
             MethodInfo method = underlyingType.GetMethod("Parse", new[] { typeof(string) });
+#else
+            MethodInfo method = underlyingType.GetTypeInfo().GetDeclaredMethod("Parse");
+#endif
             obj = (T)method.Invoke(null, new[] { value });
         }
         catch (Exception)
@@ -212,7 +269,8 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="newChild">Element.</param>
     public void AppendChild(XmlElement newChild)
     {
-        if (_element == null) return;
+        if (_element == null || newChild == null) return;
+        if (_element.OwnerDocument != newChild.OwnerDocument) newChild = _element.OwnerDocument.ImportNode(newChild, true) as XmlElement;
         _element.AppendChild(newChild);
     }
 
@@ -220,6 +278,17 @@ public class OnlineMapsXML : IEnumerable
     /// Append a child element.
     /// </summary>
     /// <param name="newChild">Element.</param>
+    public void AppendChild(OnlineMapsXML newChild)
+    {
+        if (newChild == null) return;
+        AppendChild(newChild._element);
+    }
+
+    /// <summary>
+    /// Append a child element.
+    /// </summary>
+    /// <param name="newChild">Element.</param>
+    [Obsolete("This method has a typo. Use AppendChild.")]
     public void AppentChild(OnlineMapsXML newChild)
     {
         if (_element == null || newChild._element == null) return;
@@ -230,11 +299,15 @@ public class OnlineMapsXML : IEnumerable
     /// Append a child elements.
     /// </summary>
     /// <param name="list">List of elements.</param>
+#if !NETFX_CORE
     public void AppendChilds(IEnumerable<XmlNode> list)
+#else
+    public void AppendChilds(IEnumerable<IXmlNode> list)
+#endif
     {
         if (_element == null) return;
 
-        foreach (XmlNode node in list) _element.AppendChild(node);
+        foreach (var node in list) _element.AppendChild(node);
     }
 
     /// <summary>
@@ -259,7 +332,11 @@ public class OnlineMapsXML : IEnumerable
     {
         if (_element == null) return;
 
+#if !NETFX_CORE
         foreach (XmlNode node in list) _element.AppendChild(node);
+#else
+        foreach (IXmlNode node in list) _element.AppendChild(node);
+#endif
     }
 
     /// <summary>
@@ -319,6 +396,17 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="value">Value of child element.</param>
     /// <returns>Child element.</returns>
     public OnlineMapsXML Create(string nodeName, float value)
+    {
+        return Create(nodeName, value.ToString());
+    }
+
+    /// <summary>
+    /// Creates a child element with the specified name and value.
+    /// </summary>
+    /// <param name="nodeName">Name of child element.</param>
+    /// <param name="value">Value of child element.</param>
+    /// <returns>Child element.</returns>
+    public OnlineMapsXML Create(string nodeName, double value)
     {
         return Create(nodeName, value.ToString());
     }
@@ -407,12 +495,27 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="xpath">XPath string.</param>
     /// <param name="nsmgr">An XmlNamespaceManager to use for resolving namespaces for prefixes in the XPath expression. </param>
     /// <returns>Child element.</returns>
-    public OnlineMapsXML Find(string xpath, XmlNamespaceManager nsmgr = null)
+    public OnlineMapsXML Find(string xpath, System.Xml.XmlNamespaceManager nsmgr = null)
     {
-        if (_element == null || !_element.HasChildNodes) return new OnlineMapsXML();
+        if (!hasChildNodes) return new OnlineMapsXML();
+#if !NETFX_CORE
 
         XmlElement xmlElement = _element.SelectSingleNode(xpath, nsmgr) as XmlElement;
+#else
+        string ns = null;
+        if (nsmgr != null)
+        {
+            var nss = nsmgr.GetNamespacesInScope(System.Xml.XmlNamespaceScope.ExcludeXml);
+            if (nss.Keys.Count > 0)
+            {
+                var key = nss.Keys.First();
+                ns = String.Format("xmlns:{0}='{1}'", key, nsmgr.LookupNamespace(key));                
+            }
+        }
         
+        XmlElement xmlElement = (ns == null ? _element.SelectSingleNode(xpath) : _element.SelectSingleNodeNS(xpath, ns)) as XmlElement;
+#endif
+
         if (xmlElement != null) return new OnlineMapsXML(xmlElement);
         return new OnlineMapsXML();
     }
@@ -424,10 +527,25 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="xpath">XPath string.</param>
     /// <param name="nsmgr">An XmlNamespaceManager to use for resolving namespaces for prefixes in the XPath expression. </param>
     /// <returns>Value of child element as the specified type.</returns>
-    public T Find<T>(string xpath, XmlNamespaceManager nsmgr = null)
+    public T Find<T>(string xpath, System.Xml.XmlNamespaceManager nsmgr = null)
     {
-        if (_element == null || !_element.HasChildNodes) return default(T);
+        if (!hasChildNodes) return default(T);
+#if !NETFX_CORE
         return Get<T>(_element.SelectSingleNode(xpath, nsmgr) as XmlElement);
+#else
+        string ns = null;
+        if (nsmgr != null)
+        {
+            var nss = nsmgr.GetNamespacesInScope(System.Xml.XmlNamespaceScope.ExcludeXml);
+            if (nss.Keys.Count > 0)
+            {
+                var key = nss.Keys.First();
+                ns = String.Format("xmlns:{0}='{1}'", key, nsmgr.LookupNamespace(key));                      
+            }
+        }
+                
+        return Get<T>((ns == null ? _element.SelectSingleNode(xpath) : _element.SelectSingleNodeNS(xpath, ns)) as XmlElement);
+#endif
     }
 
     /// <summary>
@@ -436,10 +554,25 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="xpath">XPath string.</param>
     /// <param name="nsmgr">An XmlNamespaceManager to use for resolving namespaces for prefixes in the XPath expression. </param>
     /// <returns>List of the elements.</returns>
-    public OnlineMapsXMLList FindAll(string xpath, XmlNamespaceManager nsmgr = null)
+    public OnlineMapsXMLList FindAll(string xpath, System.Xml.XmlNamespaceManager nsmgr = null)
     {
-        if (_element == null || !_element.HasChildNodes) return new OnlineMapsXMLList();
+        if (!hasChildNodes) return new OnlineMapsXMLList();
+#if !NETFX_CORE
         return new OnlineMapsXMLList(_element.SelectNodes(xpath, nsmgr));
+#else
+        string ns = null;
+        if (nsmgr != null)
+        {
+            var nss = nsmgr.GetNamespacesInScope(System.Xml.XmlNamespaceScope.ExcludeXml);
+            if (nss.Keys.Count > 0)
+            {
+                var key = nss.Keys.First();
+                ns = String.Format("xmlns:{0}='{1}'", key, nsmgr.LookupNamespace(key));                       
+            }
+        }
+        
+        return new OnlineMapsXMLList(ns == null ? _element.SelectNodes(xpath) : _element.SelectNodesNS(xpath, ns));
+#endif
     }
 
     /// <summary>
@@ -452,6 +585,16 @@ public class OnlineMapsXML : IEnumerable
         return Get<string>(childName);
     }
 
+#if NETFX_CORE
+    private static XmlElement GetFirstChild(XmlElement element, string childName)
+    {
+        if (element == null) return null;
+        var nodeList = element.GetElementsByTagName(childName);
+        if (nodeList.Count == 0) return null;
+        return nodeList[0] as XmlElement;
+    }
+#endif
+
     /// <summary>
     /// Get the value of element as the specified type.
     /// </summary>
@@ -461,27 +604,59 @@ public class OnlineMapsXML : IEnumerable
     public T Get<T>(XmlElement el)
     {
         if (el == null) return default(T);
-        
+
+#if !NETFX_CORE
         string value = el.InnerXml;
+#else
+        string value = el.InnerText;
+#endif
         if (string.IsNullOrEmpty(value)) return default(T);
 
         Type type = typeof(T);
         if (type == typeof(string)) return (T)Convert.ChangeType(value, type);
-        if (type == typeof (Vector2)) return (T)Convert.ChangeType(new Vector2(Get<float>(el["X"]), Get<float>(el["Y"])), type);
-        if (type == typeof (Vector3)) return (T)Convert.ChangeType(new Vector3(Get<float>(el["X"]), Get<float>(el["Y"]), Get<float>(el["Z"])), type);
         if (type == typeof(Color) || type == typeof(Color32)) return (T)Convert.ChangeType(OnlineMapsUtils.HexToColor(value), type);
-        if (type == typeof(OnlineMapsRange)) return (T)Convert.ChangeType(new OnlineMapsRange(Get<int>("Min"), Get<int>("Max")), type);
+
+#if !NETFX_CORE
+        if (type == typeof(Vector2)) return (T)Convert.ChangeType(new Vector2(Get<float>(el["X"]), Get<float>(el["Y"])), type);
+        if (type == typeof(Vector3)) return (T)Convert.ChangeType(new Vector3(Get<float>(el["X"]), Get<float>(el["Y"]), Get<float>(el["Z"])), type);
+        if (type == typeof(OnlineMapsRange)) return (T)Convert.ChangeType(new OnlineMapsRange(Get<int>(el["Min"]), Get<int>(el["Max"])), type);
+#else
+        if (type == typeof(Vector2)) return (T)Convert.ChangeType(new Vector2(Get<float>(GetFirstChild(el, "X")), Get<float>(GetFirstChild(el, "Y"))), type);
+        if (type == typeof(Vector3)) return (T)Convert.ChangeType(new Vector3(Get<float>(GetFirstChild(el, "X")), Get<float>(GetFirstChild(el, "Y")), Get<float>(GetFirstChild(el, "Z"))), type);
+        if (type == typeof(OnlineMapsRange)) return (T)Convert.ChangeType(new OnlineMapsRange(Get<int>(GetFirstChild(el, "Min")), Get<int>(GetFirstChild(el, "Max"))), type);
+#endif
 
         T obj = default(T);
+#if !NETFX_CORE
         PropertyInfo[] properties = type.GetProperties();
+#else
+        PropertyInfo[] properties = type.GetTypeInfo().DeclaredProperties.ToArray();
+#endif
         Type underlyingType = type;
 
-        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.InvariantCultureIgnoreCase))
-            underlyingType = properties[1].PropertyType;
+#if !UNITY_WSA
+        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.InvariantCultureIgnoreCase)) underlyingType = properties[1].PropertyType;
+#else
+        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.OrdinalIgnoreCase)) underlyingType = properties[1].PropertyType;
+#endif
 
         try
         {
+#if !NETFX_CORE
             MethodInfo method = underlyingType.GetMethod("Parse", new[] { typeof(string) });
+#else
+            MethodInfo method = null;
+            var methods = underlyingType.GetTypeInfo().GetDeclaredMethods("Parse");
+            foreach(var m in methods)
+            {
+                var parms = m.GetParameters();
+                if (parms != null && parms.Length == 1 && parms[0].ParameterType == typeof(string))
+                {
+                    method = m;
+                    break;
+                }
+            }
+#endif
             obj = (T)method.Invoke(null, new[] { value });
         }
         catch (Exception exception)
@@ -504,26 +679,59 @@ public class OnlineMapsXML : IEnumerable
     {
         if (el == null) return defaultValue;
 
+#if !NETFX_CORE
         string value = el.InnerXml;
+#else
+        string value = el.InnerText;
+#endif
         if (string.IsNullOrEmpty(value)) return defaultValue;
 
         Type type = typeof(T);
+
         if (type == typeof(string)) return (T)Convert.ChangeType(value, type);
+        if (type == typeof(Color) || type == typeof(Color32)) return (T)Convert.ChangeType(OnlineMapsUtils.HexToColor(value), type);
+
+#if !NETFX_CORE
         if (type == typeof(Vector2)) return (T)Convert.ChangeType(new Vector2(Get<float>(el["X"]), Get<float>(el["Y"])), type);
         if (type == typeof(Vector3)) return (T)Convert.ChangeType(new Vector3(Get<float>(el["X"]), Get<float>(el["Y"]), Get<float>(el["Z"])), type);
-        if (type == typeof(Color) || type == typeof(Color32)) return (T)Convert.ChangeType(OnlineMapsUtils.HexToColor(value), type);
-        if (type == typeof(OnlineMapsRange)) return (T)Convert.ChangeType(new OnlineMapsRange(Get<int>("Min"), Get<int>("Max")), type);
+        if (type == typeof(OnlineMapsRange)) return (T)Convert.ChangeType(new OnlineMapsRange(Get<int>(el["Min"]), Get<int>(el["Max"])), type);
+#else
+        if (type == typeof(Vector2)) return (T)Convert.ChangeType(new Vector2(Get<float>(GetFirstChild(el, "X")), Get<float>(GetFirstChild(el, "Y"))), type);
+        if (type == typeof(Vector3)) return (T)Convert.ChangeType(new Vector3(Get<float>(GetFirstChild(el, "X")), Get<float>(GetFirstChild(el, "Y")), Get<float>(GetFirstChild(el, "Z"))), type);
+        if (type == typeof(OnlineMapsRange)) return (T)Convert.ChangeType(new OnlineMapsRange(Get<int>(GetFirstChild(el, "Min")), Get<int>(GetFirstChild(el, "Max"))), type);
+#endif
 
         T obj = defaultValue;
+#if !NETFX_CORE
         PropertyInfo[] properties = type.GetProperties();
+#else
+        PropertyInfo[] properties = type.GetTypeInfo().DeclaredProperties.ToArray();
+#endif
         Type underlyingType = type;
 
-        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.InvariantCultureIgnoreCase))
-            underlyingType = properties[1].PropertyType;
+#if !UNITY_WSA
+        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.InvariantCultureIgnoreCase)) underlyingType = properties[1].PropertyType;
+#else
+        if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.OrdinalIgnoreCase)) underlyingType = properties[1].PropertyType;
+#endif
 
         try
         {
+#if !NETFX_CORE
             MethodInfo method = underlyingType.GetMethod("Parse", new[] { typeof(string) });
+#else
+            MethodInfo method = null;
+            var methods = underlyingType.GetTypeInfo().GetDeclaredMethods("Parse");
+            foreach(var m in methods)
+            {
+                var parms = m.GetParameters();
+                if (parms != null && parms.Length == 1 && parms[0].ParameterType == typeof(string))
+                {
+                    method = m;
+                    break;
+                }
+            }
+#endif
             obj = (T)method.Invoke(null, new[] { value });
         }
         catch (Exception exception)
@@ -543,8 +751,12 @@ public class OnlineMapsXML : IEnumerable
     /// <returns>Value of element as the specified type.</returns>
     public T Get<T>(string childName)
     {
-        if (_element == null || !_element.HasChildNodes) return default(T);
+        if (!hasChildNodes) return default(T);
+#if !NETFX_CORE
         return Get<T>(_element[childName]);
+#else
+        return Get<T>(GetFirstChild(_element, childName));
+#endif
     }
 
     /// <summary>
@@ -556,13 +768,23 @@ public class OnlineMapsXML : IEnumerable
     /// <returns>Value of element as the specified type or default value.</returns>
     public T Get<T>(string childName, T defaultValue)
     {
-        if (_element == null || !_element.HasChildNodes) return defaultValue;
+        if (!hasChildNodes) return defaultValue;
+#if !NETFX_CORE
         return Get(_element[childName], defaultValue);
+#else
+        return Get(GetFirstChild(_element, childName), defaultValue);
+#endif
     }
 
     public IEnumerator GetEnumerator()
     {
         return new OnlineMapsXMLEnum(this);
+    }
+
+    public Vector2 GetLatLng(string subNodeName)
+    {
+        OnlineMapsXML subNode = this[subNodeName];
+        return new Vector2(subNode.Get<float>("lng"), subNode.Get<float>("lat"));
     }
 
     /// <summary>
@@ -572,10 +794,25 @@ public class OnlineMapsXML : IEnumerable
     /// <returns>NamespaceManager</returns>
     public OnlineMapsXMLNamespaceManager GetNamespaceManager(string prefix = null)
     {
+#if !NETFX_CORE
         OnlineMapsXMLNamespaceManager nsmgr = new OnlineMapsXMLNamespaceManager(document.NameTable);
         if (prefix == null) prefix = element.GetPrefixOfNamespace(element.NamespaceURI);
         nsmgr.AddNamespace(prefix, element.NamespaceURI);
+#else
+        OnlineMapsXMLNamespaceManager nsmgr = new OnlineMapsXMLNamespaceManager(new System.Xml.NameTable());
+        if (prefix == null) prefix = element.Prefix.ToString();
+        nsmgr.AddNamespace(prefix, element.NamespaceUri.ToString());
+#endif
         return nsmgr;
+    }
+    public bool HasChild(string childName)
+    {
+        if (!hasChildNodes) return false;
+#if !NETFX_CORE
+        return _element[childName] != null;
+#else
+        return GetFirstChild(_element, childName) != null;
+#endif
     }
 
     /// <summary>
@@ -593,7 +830,7 @@ public class OnlineMapsXML : IEnumerable
         }
         catch (Exception exception)
         {
-            Debug.Log(exception.Message);
+            Debug.Log(exception.Message + "\n" + exception.StackTrace);
             return new OnlineMapsXML();
         }
     }
@@ -603,7 +840,7 @@ public class OnlineMapsXML : IEnumerable
     /// </summary>
     public void Remove()
     {
-        if (_element == null) return;
+        if (_element == null || _element.ParentNode == null) return;
         _element.ParentNode.RemoveChild(_element);
     }
 
@@ -613,8 +850,12 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="childName">Name of child element.</param>
     public void Remove(string childName)
     {
-        if (_element == null || !_element.HasChildNodes) return;
+        if (!hasChildNodes) return;
+#if !NETFX_CORE
         _element.RemoveChild(_element[childName]);
+#else
+        _element.RemoveChild(GetFirstChild(_element, childName));
+#endif
     }
 
     /// <summary>
@@ -623,7 +864,7 @@ public class OnlineMapsXML : IEnumerable
     /// <param name="childIndex">Index of child element.</param>
     public void Remove(int childIndex)
     {
-        if (_element == null || !_element.HasChildNodes) return;
+        if (!hasChildNodes) return;
         if (childIndex < 0 || childIndex >= _element.ChildNodes.Count) return;
         _element.RemoveChild(_element.ChildNodes[childIndex]);
     }

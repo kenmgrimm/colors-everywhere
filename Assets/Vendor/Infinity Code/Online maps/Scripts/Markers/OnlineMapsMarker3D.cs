@@ -48,6 +48,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
 
     private GameObject _prefab;
     private Vector3 _relativePosition;
+    private bool _visible = true;
 
     /// <summary>
     /// Gets or sets marker enabled.
@@ -62,7 +63,18 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
             if (_enabled != value)
             {
                 _enabled = value;
-                instance.SetActive(value);
+
+                if (!value) visible = false;
+                else
+                {
+                    Debug.Log("Enabled true");
+                    double tlx, tly, brx, bry;
+                    OnlineMaps api = OnlineMaps.instance;
+                    api.GetTopLeftPosition(out tlx, out tly);
+                    api.GetBottomRightPosition(out brx, out bry);
+                    Update(tlx, tly, brx, bry, api.zoom);
+                }
+
                 if (OnEnabledChange != null) OnEnabledChange(this);
             }
         }
@@ -87,7 +99,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
     /// </summary>
     public Quaternion rotation
     {
-        get { return (transform != null)? transform.rotation: new Quaternion(); }
+        get { return transform != null? transform.rotation: new Quaternion(); }
         set { if (transform != null) transform.rotation = value; }
     }
 
@@ -105,12 +117,23 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         }
     }
 
+    private bool visible
+    {
+        get { return _visible; }
+        set
+        {
+            if (_visible == value) return;
+            _visible = value;
+            instance.SetActive(value);
+        }
+    }
+
     /// <summary>
     /// Constructor of 3D marker
     /// </summary>
     public OnlineMapsMarker3D()
     {
-        range = new OnlineMapsRange(3, 20);
+        
     }
 
     /// <summary>
@@ -140,7 +163,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
     /// </param>
     public void Init(Transform parent)
     {
-        if (instance != null) Object.DestroyImmediate(instance);
+        if (instance != null) OnlineMapsUtils.DestroyImmediate(instance);
 
         if (prefab == null)
         {
@@ -153,7 +176,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         
         instance.transform.parent = parent;
         instance.AddComponent<OnlineMapsMarker3DInstance>().marker = this;
-        enabled = false;
+        visible = false;
         inited = true;
         OnlineMaps api = OnlineMaps.instance;
 
@@ -199,7 +222,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         if (instance)
         {
             Transform parent = instance.transform.parent;
-            Object.Destroy(instance);
+            OnlineMapsUtils.DestroyImmediate(instance);
             Init(parent);
         }
         Update(tlx, tly, brx, bry, zoom);
@@ -232,32 +255,30 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
 
     public override void Update(double tlx, double tly, double brx, double bry, int zoom)
     {
-        if (instance == null)
-        {
-            Debug.Log("No instance");
-            return;
-        }
-
-        if (!range.InRange(zoom)) enabled = false;
-        else if (position.y > tly || position.y < bry) enabled = false;
-        else if (tlx < brx && (position.x < tlx || position.x > brx)) enabled = false;
-        else if (tlx > brx && position.x < tlx && position.x > brx) enabled = false;
-        else enabled = true;
-
         if (!enabled) return;
+        if (instance == null) Init(OnlineMaps.instance.transform);  
+
+        if (!range.InRange(zoom)) visible = false;
+        else if (latitude > tly || latitude < bry) visible = false;
+        else if (tlx < brx && (longitude < tlx || longitude > brx)) visible = false;
+        else if (tlx > brx && longitude < tlx && longitude > brx) visible = false;
+        else visible = true;
+
+        if (!visible) return;
 
         if (_prefab != prefab) Reinit(tlx, tly, brx, bry, zoom);
 
+        OnlineMaps api = OnlineMaps.instance;
+
         double mx, my;
-        OnlineMapsUtils.LatLongToTiled(position.x, position.y, zoom, out mx, out my);
+        api.projection.CoordinatesToTile(longitude, latitude, zoom, out mx, out my);
 
         double ttlx, ttly, tbrx, tbry;
-        OnlineMapsUtils.LatLongToTiled(tlx, tly, zoom, out ttlx, out ttly);
-        OnlineMapsUtils.LatLongToTiled(brx, bry, zoom, out tbrx, out tbry);
+        api.projection.CoordinatesToTile(tlx, tly, zoom, out ttlx, out ttly);
+        api.projection.CoordinatesToTile(brx, bry, zoom, out tbrx, out tbry);
 
         int maxX = (2 << zoom) / 2;
 
-        OnlineMaps api = OnlineMaps.instance;
         Bounds bounds = api.GetComponent<Collider>().bounds;
 
         double sx = tbrx - ttlx;

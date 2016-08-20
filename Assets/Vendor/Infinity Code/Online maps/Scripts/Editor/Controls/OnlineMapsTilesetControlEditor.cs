@@ -1,24 +1,61 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-using System;
+#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#define UNITY_5_3P
+#endif
+
 using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
+#if UNITY_5_3P
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+#endif
+
 [CustomEditor(typeof (OnlineMapsTileSetControl))]
 public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
 {
     private bool showShaders;
-    private OnlineMapsTileSetControl tilesetControl;
     private Shader defaultTilesetShader;
+    private SerializedProperty pCheckMarker2DVisibility;
+    private SerializedProperty pTileMaterial;
+    private SerializedProperty pMarkerMaterial;
+    private SerializedProperty pTilesetShader;
+    private SerializedProperty pMarkerShader;
+    private SerializedProperty pDrawingShader;
+    private SerializedProperty pSmoothZoom;
+    private SerializedProperty pColliderType;
+    private SerializedProperty pUseElevation;
+    private SerializedProperty pElevationScale;
+    private SerializedProperty pElevationZoomRange;
+    private SerializedProperty pBingAPI;
+
+    protected override void CacheSerializedProperties()
+    {
+        base.CacheSerializedProperties();
+
+        pCheckMarker2DVisibility = serializedObject.FindProperty("checkMarker2DVisibility");
+        pTileMaterial = serializedObject.FindProperty("tileMaterial");
+        pMarkerMaterial = serializedObject.FindProperty("markerMaterial");
+        pTilesetShader = serializedObject.FindProperty("tilesetShader");
+        pMarkerShader = serializedObject.FindProperty("markerShader");
+        pDrawingShader = serializedObject.FindProperty("drawingShader");
+        pSmoothZoom = serializedObject.FindProperty("smoothZoom");
+        pColliderType = serializedObject.FindProperty("colliderType");
+        pUseElevation = serializedObject.FindProperty("useElevation");
+        pElevationScale = serializedObject.FindProperty("elevationScale");
+        pElevationZoomRange = serializedObject.FindProperty("elevationZoomRange");
+        pBingAPI = serializedObject.FindProperty("bingAPI");
+    }
 
     private void CheckCameraDistance(OnlineMaps api)
     {
         if (api == null) return;
 
-        Camera tsCamera = (tilesetControl.activeCamera != null) ? tilesetControl.activeCamera : Camera.main;
+        Camera tsCamera = pActiveCamera.objectReferenceValue != null ? pActiveCamera.objectReferenceValue as Camera : Camera.main;
 
         if (tsCamera == null) return;
 
@@ -28,56 +65,41 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
 
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        EditorGUILayout.HelpBox(
-            "Potential problem detected:\n\"Camera - Clipping Planes - Far\" is too small.",
-            MessageType.Warning);
+        EditorGUILayout.HelpBox("Potential problem detected:\n\"Camera - Clipping Planes - Far\" is too small.", MessageType.Warning);
 
-        if (GUILayout.Button("Fix Clipping Planes - Far"))
-        {
-            tsCamera.farClipPlane = distance;
-        }
+        if (GUILayout.Button("Fix Clipping Planes - Far")) tsCamera.farClipPlane = distance;
 
         EditorGUILayout.EndVertical();
     }
 
-    private void DrawElevationGUI(OnlineMapsTileSetControl tilesetControl, ref bool dirty)
+    private void DrawElevationGUI(ref bool dirty)
     {
-        bool useElevation = tilesetControl.useElevation;
+        bool useElevation = pUseElevation.boolValue;
 
         if (useElevation) EditorGUILayout.BeginVertical(GUI.skin.box);
 
         EditorGUI.BeginChangeCheck();
-        tilesetControl.useElevation = EditorGUILayout.Toggle("Use elevation", tilesetControl.useElevation);
+        EditorGUILayout.PropertyField(pUseElevation);
         if (EditorGUI.EndChangeCheck())
         {
             dirty = true;
             if (EditorApplication.isPlaying) control.UpdateControl();
         }
 
-        if (tilesetControl.useElevation)
+        if (pUseElevation.boolValue)
         {
             EditorGUI.BeginChangeCheck();
-            tilesetControl.elevationScale = EditorGUILayout.FloatField("Elevation Scale:", tilesetControl.elevationScale);
+            EditorGUILayout.PropertyField(pElevationScale);
             if (EditorGUI.EndChangeCheck())
             {
                 dirty = true;
                 if (EditorApplication.isPlaying) OnlineMaps.instance.Redraw();
             }
 
-            if (tilesetControl.elevationZoomRange == null) tilesetControl.elevationZoomRange = new OnlineMapsRange(11, 20);
+            EditorGUILayout.PropertyField(pElevationZoomRange, new GUIContent("Zoom"));
+            EditorGUILayout.PropertyField(pBingAPI, new GUIContent("Bing Maps API key"));
+            EditorGUILayout.HelpBox("Public Windows App or Public Windows Phone App have the 50.000 transaction within 24 hours. With the other chooses there's only 125.000 transactions within a year and the key will expire if exceeding it.", MessageType.Info);
 
-            float min = tilesetControl.elevationZoomRange.min;
-            float max = tilesetControl.elevationZoomRange.max;
-
-            EditorGUI.BeginChangeCheck();
-
-            EditorGUILayout.MinMaxSlider(new GUIContent(string.Format("Zoom ({0}-{1}): ", min, max)), ref min, ref max, 3, 20);
-            tilesetControl.elevationZoomRange.min = Mathf.Clamp(Mathf.RoundToInt(min), 3, 20);
-            tilesetControl.elevationZoomRange.max = Mathf.Clamp(Mathf.RoundToInt(max), 3, 20);
-
-            tilesetControl.bingAPI = EditorGUILayout.TextField("Bing Maps API key:", tilesetControl.bingAPI);
-
-            if (EditorGUI.EndChangeCheck()) dirty = true;
             if (GUILayout.Button("Create Bing Maps API Key")) Process.Start("https://msdn.microsoft.com/en-us/library/ff428642.aspx");
         }
 
@@ -88,27 +110,21 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
     {
         base.DrawMarker2DPropsGUI();
 
-        if (tilesetControl.marker2DMode == OnlineMapsMarker2DMode.flat)
-        {
-            tilesetControl.checkMarker2DVisibility = (OnlineMapsTilesetCheckMarker2DVisibility)EditorGUILayout.EnumPopup("Check marker 2D visibility",
-                tilesetControl.checkMarker2DVisibility);
-        }
+        if (pMarker2DMode.enumValueIndex == (int)OnlineMapsMarker2DMode.flat) EditorGUILayout.PropertyField(pCheckMarker2DVisibility);
     }
 
-    private void DrawMaterialsAndShaders(ref bool dirty)
+    private void DrawMaterialsAndShaders()
     {
         EditorGUILayout.BeginVertical(GUI.skin.box);
         showShaders = GUILayout.Toggle(showShaders, "Materials & Shaders", EditorStyles.foldout);
 
         if (showShaders)
         {
-            EditorGUI.BeginChangeCheck();
-            tilesetControl.tileMaterial = (Material)EditorGUILayout.ObjectField("Tile material: ", tilesetControl.tileMaterial, typeof (Material), false);
-            tilesetControl.markerMaterial = EditorGUILayout.ObjectField("Marker Material:", tilesetControl.markerMaterial, typeof(Material), false) as Material;
-            tilesetControl.tilesetShader = EditorGUILayout.ObjectField("Tileset Shader:", tilesetControl.tilesetShader, typeof (Shader), true) as Shader;
-            tilesetControl.markerShader = EditorGUILayout.ObjectField("Marker Shader:", tilesetControl.markerShader, typeof (Shader), false) as Shader;
-            tilesetControl.drawingShader = EditorGUILayout.ObjectField("Drawing Shader:", tilesetControl.drawingShader, typeof (Shader), false) as Shader;
-            if (EditorGUI.EndChangeCheck()) dirty = true;
+            EditorGUILayout.PropertyField(pTileMaterial);
+            EditorGUILayout.PropertyField(pMarkerMaterial);
+            EditorGUILayout.PropertyField(pTilesetShader);
+            EditorGUILayout.PropertyField(pMarkerShader);
+            EditorGUILayout.PropertyField(pDrawingShader);
         }
 
         EditorGUILayout.EndVertical();
@@ -119,7 +135,7 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
         if (!GUILayout.Button("Move camera to center of Tileset")) return;
         if (api == null) return;
 
-        Camera tsCamera = (tilesetControl.activeCamera != null) ? tilesetControl.activeCamera : Camera.main;
+        Camera tsCamera = pActiveCamera.objectReferenceValue != null ? pActiveCamera.objectReferenceValue as Camera : Camera.main;
 
         if (tsCamera == null)
         {
@@ -128,8 +144,8 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
         }
 
         GameObject go = tsCamera.gameObject;
-        float minSide = Mathf.Min(api.tilesetSize.x, api.tilesetSize.y);
-        Vector3 position = api.transform.position + api.transform.rotation * new Vector3(api.tilesetSize.x / -2, minSide, api.tilesetSize.y / 2);
+        float minSide = Mathf.Min(api.tilesetSize.x * api.transform.lossyScale.x, api.tilesetSize.y * api.transform.lossyScale.z);
+        Vector3 position = api.transform.position + api.transform.rotation * new Vector3(api.tilesetSize.x / -2 * api.transform.lossyScale.x, minSide, api.tilesetSize.y / 2 * api.transform.lossyScale.z);
         go.transform.position = position;
         go.transform.rotation = api.transform.rotation * Quaternion.Euler(90, 180, 0);
     }
@@ -138,17 +154,13 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
     {
         base.DrawZoomLate();
 
-        tilesetControl.smoothZoom = EditorGUILayout.Toggle("Smooth Zoom", tilesetControl.smoothZoom);
-        if (tilesetControl.smoothZoom)
-        {
-            tilesetControl.smoothZoomMode = (OnlineMapsTileSetControl.OnlineMapsSmoothZoomMode)EditorGUILayout.EnumPopup("Smooth Zoom Mode:", tilesetControl.smoothZoomMode);
-        }
+        EditorGUILayout.PropertyField(pSmoothZoom);
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        control = (OnlineMapsControlBase3D)target;
-        tilesetControl = (OnlineMapsTileSetControl)control;
+        base.OnEnable();
+        control = target as OnlineMapsControlBase3D;
         defaultTilesetShader = Shader.Find("Infinity Code/Online Maps/Tileset");
     }
 
@@ -156,57 +168,67 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
     {
         bool dirty = false;
 
+        serializedObject.Update();
+
+        float oldWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 170;
+
         OnlineMapsControlBaseEditor.CheckMultipleInstances(control, ref dirty);
 
         OnlineMaps api = OnlineMapsControlBaseEditor.GetOnlineMaps(control);
         OnlineMapsControlBaseEditor.CheckTarget(api, OnlineMapsTarget.tileset, ref dirty);
 
-        if (tilesetControl.tilesetShader == null) tilesetControl.tilesetShader = defaultTilesetShader;
-        if (tilesetControl.markerShader == null) tilesetControl.markerShader = Shader.Find("Transparent/Diffuse");
-        if (tilesetControl.drawingShader == null) tilesetControl.drawingShader = Shader.Find("Infinity Code/Online Maps/Tileset DrawingElement");
+        if (pTilesetShader.objectReferenceValue == null) pTilesetShader.objectReferenceValue = defaultTilesetShader;
+        if (pMarkerShader.objectReferenceValue == null) pMarkerShader.objectReferenceValue = Shader.Find("Transparent/Diffuse");
+        if (pDrawingShader.objectReferenceValue == null) pDrawingShader.objectReferenceValue = Shader.Find("Infinity Code/Online Maps/Tileset DrawingElement");
 
-        CheckCameraDistance(api);
+        if (!EditorApplication.isPlaying) CheckCameraDistance(api);
 
         DrawPropsGUI(ref dirty);
 
         EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
-        EditorGUI.BeginChangeCheck();
-        tilesetControl.colliderType = (OnlineMapsTileSetControl.OnlineMapsColliderType)EditorGUILayout.EnumPopup("Collider Type", tilesetControl.colliderType);
-        if (EditorGUI.EndChangeCheck()) dirty = true;
 
-        if (tilesetControl.colliderType == OnlineMapsTileSetControl.OnlineMapsColliderType.box &&
-            tilesetControl.useElevation)
+        EditorGUILayout.PropertyField(pColliderType);
+
+        if (!EditorApplication.isPlaying && pColliderType.enumValueIndex == (int)OnlineMapsTileSetControl.OnlineMapsColliderType.box && pUseElevation.boolValue)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
             EditorGUILayout.HelpBox("Potential problem detected:\nWhen using BoxCollider, can be a problem in interaction with a map with elevation.", MessageType.Warning);
-
-            if (GUILayout.Button("Set Collider Type - Mesh"))
-            {
-                tilesetControl.colliderType = OnlineMapsTileSetControl.OnlineMapsColliderType.mesh;
-                dirty = true;
-            }
+            if (GUILayout.Button("Set Collider Type - Mesh")) pColliderType.enumValueIndex = (int)OnlineMapsTileSetControl.OnlineMapsColliderType.mesh;
 
             EditorGUILayout.EndVertical();
         }
-
         
         EditorGUI.EndDisabledGroup();
 
         DrawMarkersGUI(ref dirty);
-        DrawMaterialsAndShaders(ref dirty);
-        DrawElevationGUI(tilesetControl, ref dirty);
+        DrawMaterialsAndShaders();
+        DrawElevationGUI(ref dirty);
         DrawMoveCameraGUI(api);
+
+        EditorGUIUtility.labelWidth = oldWidth;
+
+        serializedObject.ApplyModifiedProperties();
 
         if (dirty)
         {
             EditorUtility.SetDirty(api);
-            Repaint();
+            EditorUtility.SetDirty(control);
+            if (!Application.isPlaying)
+            {
+#if UNITY_5_3P
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+#endif
+            }
+            else api.Redraw();
         }
     }
 
     private void OnSceneGUI()
     {
+        if (Application.isPlaying) return;
+
         OnlineMaps api = control.GetComponent<OnlineMaps>();
         if (api == null) return;
         Quaternion rotation = api.transform.rotation;
@@ -217,9 +239,11 @@ public class OnlineMapsTilesetControlEditor : OnlineMapsTextureControlEditor
         points[3] = points[0] + rotation * new Vector3(0, 0, api.tilesetSize.y);
         Handles.DrawSolidRectangleWithOutline(points, new Color(1, 1, 1, 0.3f), Color.black);
 
-        GUIStyle style = new GUIStyle(EditorStyles.label);
-        style.alignment = TextAnchor.MiddleCenter;
-        style.normal.textColor = Color.black;
+        GUIStyle style = new GUIStyle(EditorStyles.label)
+        {
+            alignment = TextAnchor.MiddleCenter,
+            normal = {textColor = Color.black}
+        };
 
         Handles.Label(points[0] + rotation * new Vector3(api.tilesetSize.x / -2, 0, api.tilesetSize.y / 2), "Tileset Map", style);
     }

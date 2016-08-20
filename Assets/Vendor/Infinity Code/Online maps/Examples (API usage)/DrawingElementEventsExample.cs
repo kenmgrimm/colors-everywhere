@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of using the events of DrawingElement.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DrawingElementEventsExample")]
     public class DrawingElementEventsExample : MonoBehaviour
     {
@@ -47,22 +50,22 @@ namespace InfinityCode.OnlineMapsExamples
             polyElement.tooltip = "Drawing Element";
         }
 
-        private void OnDoubleClick(OnlineMapsDrawingElement onlineMapsDrawingElement)
+        private void OnDoubleClick(OnlineMapsDrawingElement drawingElement)
         {
             Debug.Log("OnDoubleClick");
         }
 
-        private void OnRelease(OnlineMapsDrawingElement onlineMapsDrawingElement)
+        private void OnRelease(OnlineMapsDrawingElement drawingElement)
         {
             Debug.Log("OnRelease");
         }
 
-        private void OnPress(OnlineMapsDrawingElement onlineMapsDrawingElement)
+        private void OnPress(OnlineMapsDrawingElement drawingElement)
         {
             Debug.Log("OnPress");
         }
 
-        private void OnClick(OnlineMapsDrawingElement onlineMapsDrawingElement)
+        private void OnClick(OnlineMapsDrawingElement drawingElement)
         {
             Debug.Log("OnClick");
         }

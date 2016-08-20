@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
@@ -13,7 +14,6 @@ using UnityEngine;
 /// </summary>
 [Serializable]
 [AddComponentMenu("Infinity Code/Online Maps/Plugins/Location Service")]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsLocationService : MonoBehaviour
 {
     private static OnlineMapsLocationService _instance;
@@ -29,9 +29,19 @@ public class OnlineMapsLocationService : MonoBehaviour
     public Action<Vector2> OnLocationChanged;
 
     /// <summary>
+    /// This event is called when the GPS is initialized (the first value is received).
+    /// </summary>
+    public Action OnLocationInited;
+
+    /// <summary>
     /// Update stop position when user input.
     /// </summary>
     public bool autoStopUpdateOnInput = true;
+
+    /// <summary>
+    /// Threshold of compass.
+    /// </summary>
+    public float compassThreshold = 8;
 
     /// <summary>
     /// Specifies the need to create a marker that indicates the current GPS coordinates.
@@ -56,6 +66,11 @@ public class OnlineMapsLocationService : MonoBehaviour
     /// Use OnlineMapsLocationService.position.
     /// </summary>
     public Vector2 emulatorPosition;
+
+    /// <summary>
+    /// Specifies whether to search for a location by IP.
+    /// </summary>
+    public bool findLocationByIP = true;
 
     /// <summary>
     /// Tooltip of the marker.
@@ -129,17 +144,20 @@ public class OnlineMapsLocationService : MonoBehaviour
     public bool useGPSEmulator = false;
 
     private OnlineMaps api;
-    private bool allowUpdatePosition = true;
+
+    private bool _allowUpdatePosition = true; 
     private long lastPositionChangedTime;
     private bool lockDisable;
+    private bool isPositionInited = false;
     
-    private OnlineMapsMarkerBase _marker;
+    private OnlineMapsMarkerBase _marker; 
     private List<LastPositionItem> lastPositions;
     private double lastLocationInfoTimestamp;
     private float _speed = 0;
     private bool started = false;
 
-    private string errorMessage = "";
+    //private string errorMessage = "";
+    private OnlineMapsWWW findByIPRequest;
 
     /// <summary>
     /// Instance of LocationService.
@@ -158,6 +176,16 @@ public class OnlineMapsLocationService : MonoBehaviour
         set { _instance._marker = value; }
     }
 
+    public bool allowUpdatePosition
+    {
+        get { return _allowUpdatePosition; }
+        set
+        {
+            _allowUpdatePosition = true;
+            UpdatePosition();
+        }
+    }
+
     /// <summary>
     /// Speed km/h.
     /// Note: in Unity Editor will always be zero.
@@ -172,19 +200,19 @@ public class OnlineMapsLocationService : MonoBehaviour
         if (lockDisable) return;
 
         lastPositionChangedTime = DateTime.Now.Ticks;
-        if (autoStopUpdateOnInput) allowUpdatePosition = false;
+        if (autoStopUpdateOnInput) _allowUpdatePosition = false;
     }
 
-// ReSharper disable once UnusedMember.Local
     private void OnEnable()
     {
         _instance = this;
+        if (api != null) api.OnChangePosition += OnChangePosition;
     }
 
-    private void OnGUI()
+    /*private void OnGUI()
     {
         if (!string.IsNullOrEmpty(errorMessage)) GUI.Label(new Rect(5, 5, Screen.width, 300), errorMessage);
-    }
+    }*/
 
     public OnlineMapsXML Save(OnlineMapsXML parent)
     {
@@ -225,15 +253,54 @@ public class OnlineMapsLocationService : MonoBehaviour
     {
         api = OnlineMaps.instance;
         api.OnChangePosition += OnChangePosition;
+
+        if (findLocationByIP)
+        {
+#if UNITY_EDITOR || !UNITY_WEBGL
+            findByIPRequest = OnlineMapsUtils.GetWWW("http://www.geoplugin.net/php.gp");
+#else
+            findByIPRequest = OnlineMapsUtils.GetWWW("http://service.infinity-code.com/getlocation.php");
+#endif
+        }
     }
 
-// ReSharper disable once UnusedMember.Local
-	private void Update () 
+    /// <summary>
+    /// Starts location service updates. Last location coordinates could be.
+    /// </summary>
+    /// <param name="desiredAccuracyInMeters">
+    /// Desired service accuracy in meters. \n
+    /// Using higher value like 500 usually does not require to turn GPS chip on and thus saves battery power. \n
+    /// Values like 5-10 could be used for getting best accuracy. Default value is 10 meters.</param>
+    /// <param name="updateDistanceInMeters">
+    /// The minimum distance (measured in meters) a device must move laterally before Input.location property is updated. \n
+    /// Higher values like 500 imply less overhead.
+    /// </param>
+    public void StartLocationService(float? desiredAccuracyInMeters = null, float? updateDistanceInMeters = null)
     {
-	    try
-	    {
-            if (OnlineMaps.instance == null) return;
+        if (!desiredAccuracyInMeters.HasValue) desiredAccuracyInMeters = desiredAccuracy;
+        if (!updateDistanceInMeters.HasValue) updateDistanceInMeters = updateDistance;
 
+        Input.location.Start(desiredAccuracyInMeters.Value, updateDistanceInMeters.Value);
+    }
+
+    /// <summary>
+    /// Stops location service updates. This could be useful for saving battery life.
+    /// </summary>
+    public void StopLocationService()
+    {
+        Input.location.Stop();
+    }
+
+    private void Update () 
+    {
+	    if (api == null)
+	    {
+            api = OnlineMaps.instance;
+            if (api == null) return; 
+        }
+
+	    try
+	    { 
             if (!started)
             {
 #if !UNITY_EDITOR
@@ -248,10 +315,35 @@ public class OnlineMapsLocationService : MonoBehaviour
 #if !UNITY_EDITOR
             useGPSEmulator = false;
 #endif
+            bool positionChanged = false;
 
-            if (!useGPSEmulator && Input.location.status != LocationServiceStatus.Running) return;
+            if (findByIPRequest != null && findByIPRequest.isDone)
+            {
+                if (string.IsNullOrEmpty(findByIPRequest.error))
+                {
+                    string response = findByIPRequest.text;
+                    Match latMath = Regex.Match(response, "geoplugin_latitude\";.*?\"(\\d*\\.\\d*)\"");
+                    Match lngMath = Regex.Match(response, "geoplugin_longitude\";.*?\"(\\d*\\.\\d*)\"");
+
+                    if (latMath.Success && lngMath.Success)
+                    {
+                        float lng = float.Parse(lngMath.Groups[1].Value);
+                        float lat = float.Parse(latMath.Groups[1].Value);
+
+                        if (useGPSEmulator) emulatorPosition = new Vector2(lng, lat);
+                        else if (position == Vector2.zero)
+                        {
+                            position = new Vector2(lng, lat);
+                            positionChanged = true;
+                        }
+                    }
+                }
+                findByIPRequest = null;
+            }
 
             if (createMarkerInUserPosition && _marker == null && (useGPSEmulator || position != Vector2.zero)) UpdateMarker();
+
+            if (!useGPSEmulator && Input.location.status != LocationServiceStatus.Running) return;
 
             bool compassChanged = false;
 
@@ -262,8 +354,6 @@ public class OnlineMapsLocationService : MonoBehaviour
             else UpdateCompassFromInput(ref compassChanged);
 #endif
 
-            bool positionChanged = false;
-
 #if !UNITY_EDITOR
             UpdateSpeed();
             UpdatePositionFromInput(ref positionChanged);
@@ -272,26 +362,34 @@ public class OnlineMapsLocationService : MonoBehaviour
             else UpdatePositionFromInput(ref positionChanged);
 #endif
 
-            if (positionChanged && OnLocationChanged != null) OnLocationChanged(position);
+            if (positionChanged)
+            {
+                if (!isPositionInited)
+                {
+                    isPositionInited = true;
+                    if (OnLocationInited != null) OnLocationInited();
+                }
+                if (OnLocationChanged != null) OnLocationChanged(position);
+            }
 
-            if (createMarkerInUserPosition && (positionChanged || compassChanged)) UpdateMarker();
+	        if (createMarkerInUserPosition && (positionChanged || compassChanged)) UpdateMarker();
 
             if (updatePosition)
             {
-                if (allowUpdatePosition)
+                if (_allowUpdatePosition)
                 {
                     UpdatePosition();
                 }
                 else if (restoreAfter > 0 && DateTime.Now.Ticks > lastPositionChangedTime + OnlineMapsUtils.second * restoreAfter)
                 {
-                    allowUpdatePosition = true;
+                    _allowUpdatePosition = true;
                     UpdatePosition();
                 }
             } 
 	    }
-	    catch (Exception exception)
+        catch /*(Exception exception)*/
 	    {
-	        errorMessage = exception.Message + "\n" + exception.StackTrace;
+	        //errorMessage = exception.Message + "\n" + exception.StackTrace;
 	    }
     }
 
@@ -307,10 +405,16 @@ public class OnlineMapsLocationService : MonoBehaviour
 
     private void UpdateCompassFromInput(ref bool compassChanged)
     {
-        if (trueHeading != Input.compass.trueHeading)
+        float heading = Input.compass.trueHeading;
+        float offset = trueHeading - heading;
+
+        if (offset > 360) offset -= 360;
+        else if (offset < -360) offset += 360;
+
+        if (Mathf.Abs(offset) > compassThreshold)
         {
             compassChanged = true;
-            trueHeading = Input.compass.trueHeading;
+            trueHeading = heading;
             if (OnCompassChanged != null) OnCompassChanged(trueHeading / 360);
         }
     }
@@ -344,8 +448,7 @@ public class OnlineMapsLocationService : MonoBehaviour
 
         if (useCompassForMarker)
         {
-            if (markerType == OnlineMapsLocationServiceMarkerType.twoD)
-                (_marker as OnlineMapsMarker).rotation = trueHeading / 360;
+            if (markerType == OnlineMapsLocationServiceMarkerType.twoD) (_marker as OnlineMapsMarker).rotation = trueHeading / 360;
             else (_marker as OnlineMapsMarker3D).rotation = Quaternion.Euler(0, trueHeading, 0);
         }
 

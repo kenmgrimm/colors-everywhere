@@ -237,7 +237,8 @@ public class OnlineMapsUpdater : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    [MenuItem("Component/Infinity Code/Online Maps/Check Updates", true)]
+    [MenuItem("GameObject/Infinity Code/Online Maps/Check Updates", false, 2)]
+    //[MenuItem("Component/Infinity Code/Online Maps/Check Updates")]
     public static void OpenWindow()
     {
         GetWindow<OnlineMapsUpdater>(false, "Online Maps Updater", true);

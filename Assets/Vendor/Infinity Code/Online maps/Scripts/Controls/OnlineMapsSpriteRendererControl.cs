@@ -9,7 +9,6 @@ using Sprite = UnityEngine.Sprite;
 /// </summary>
 [AddComponentMenu("Infinity Code/Online Maps/Controls/SpriteRenderer")]
 [RequireComponent(typeof(SpriteRenderer))]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 {
     private Collider _cl;
@@ -31,7 +30,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         {
             if (_cl == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
                 _cl = collider;
 #else
                 _cl = GetComponent<Collider>();
@@ -47,7 +46,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         {
             if (_cl2D == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
                 _cl2D = collider2D;
 #else
                 _cl2D = GetComponent<Collider2D>();
@@ -70,20 +69,24 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         if (hit.collider == null || hit.collider.gameObject != gameObject) return Vector2.zero;
         if (cl2D == null) return Vector2.zero;
 
-        Vector3 size = (cl2D.bounds.max - new Vector3(hit.point.x, hit.point.y));
+        Vector3 size = cl2D.bounds.max - new Vector3(hit.point.x, hit.point.y);
         size.x = size.x / cl2D.bounds.size.x;
         size.y = size.y / cl2D.bounds.size.y;
 
-        Vector2 r = new Vector3((size.x - .5f), (size.y - .5f));
+        Vector2 r = new Vector3(size.x - .5f, size.y - .5f);
 
         int countX = api.width / OnlineMapsUtils.tileSize;
         int countY = api.height / OnlineMapsUtils.tileSize;
 
-        Vector2 p = OnlineMapsUtils.LatLongToTilef(api.position, api.zoom);
-        p.x -= countX * r.x;
-        p.y += countY * r.y;
+        double px, py;
+        api.GetPosition(out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        //Vector2 p = OnlineMapsUtils.LatLongToTilef(api.position, api.zoom);
+        px -= countX * r.x;
+        py += countY * r.y;
 
-        return OnlineMapsUtils.TileToLatLong(p, api.zoom);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        return new Vector2((float)px, (float)py);
     }
 #else
     public override Vector2 GetCoords(Vector2 position)
@@ -111,11 +114,11 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
         px -= countX * r.x;
         py += countY * r.y;
         
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -131,18 +134,18 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         size.x = size.x / cl.bounds.size.x;
         size.y = size.y / cl.bounds.size.y;
 
-        Vector2 r = new Vector3((size.x - .5f), (size.y - .5f));
+        Vector2 r = new Vector3(size.x - .5f, size.y - .5f);
 
         int countX = api.width / OnlineMapsUtils.tileSize;
         int countY = api.height / OnlineMapsUtils.tileSize;
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
         px -= countX * r.x;
         py += countY * r.y;
 
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
         return true;
     }
 
@@ -152,7 +155,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         if (spriteRenderer == null)
         {
             Debug.LogError("Can not find SpriteRenderer.");
-            Destroy(this);
+            OnlineMapsUtils.DestroyImmediate(this);
         }
     }
 
@@ -160,7 +163,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
     {
         base.SetTexture(texture);
         MaterialPropertyBlock props = new MaterialPropertyBlock();
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
         props.AddTexture("_MainTex", texture);
 #else
         props.SetTexture("_MainTex", texture);

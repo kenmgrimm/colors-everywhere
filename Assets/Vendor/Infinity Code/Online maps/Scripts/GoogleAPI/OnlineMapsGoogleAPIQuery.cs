@@ -9,8 +9,7 @@ using UnityEngine;
 /// <summary>
 /// The base class of queries to Google API.
 /// </summary>
-[Serializable]
-public class OnlineMapsGoogleAPIQuery
+public abstract class OnlineMapsGoogleAPIQuery
 {
     /// <summary>
     /// Event that occurs when a response is received from Google API.
@@ -33,7 +32,7 @@ public class OnlineMapsGoogleAPIQuery
     public object customData;
 
     protected OnlineMapsQueryStatus _status;
-    protected WWW www;
+    protected OnlineMapsWWW www;
 
     private string _response;
 
@@ -85,7 +84,7 @@ public class OnlineMapsGoogleAPIQuery
 
             if (OnComplete != null) OnComplete(_response);
             if (OnFinish != null) OnFinish(this);
-            www.Dispose();
+
             www = null;
             customData = null;
         }
@@ -156,11 +155,7 @@ public class OnlineMapsGoogleAPIQuery
     public void Destroy()
     {
         if (OnDispose != null) OnDispose(this);
-        if (www != null)
-        {
-            www.Dispose();
-            www = null;
-        }
+        www = null;
         _response = string.Empty;
         _status = OnlineMapsQueryStatus.disposed;
         customData = null;

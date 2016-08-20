@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to calculate the size of downloaded tiles.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ControlDataTrafficExample")]
     public class ControlDataTrafficExample : MonoBehaviour
     {
@@ -16,8 +19,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void OnGUI()
         {
             // Showing the counter of downloaded data.
-            GUI.Label(new Rect(5, 5, Screen.width - 10, 30),
-                "Total downloaded tiles: " + totalTileTraffic.ToString("N0") + " bytes");
+            GUI.Label(new Rect(5, 5, Screen.width - 10, 30), "Total downloaded tiles: " + totalTileTraffic.ToString("N0") + " bytes");
         }
 
         private void Start()

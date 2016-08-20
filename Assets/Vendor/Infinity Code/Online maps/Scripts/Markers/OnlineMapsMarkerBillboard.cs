@@ -7,7 +7,6 @@ using UnityEngine;
 /// <summary>
 /// Instance of Billboard marker.
 /// </summary>
-[Serializable]
 [AddComponentMenu("")]
 public class OnlineMapsMarkerBillboard : OnlineMapsMarkerInstanceBase
 {
@@ -15,6 +14,15 @@ public class OnlineMapsMarkerBillboard : OnlineMapsMarkerInstanceBase
     /// Indicates whether to display the marker.
     /// </summary>
     public bool used;
+
+    public override OnlineMapsMarkerBase marker
+    {
+        get { return _marker; }
+        set { _marker = value as OnlineMapsMarker; }
+    }
+
+    [SerializeField] 
+    private OnlineMapsMarker _marker;
 
     /// <summary>
     /// Creates a new instance of the billboard marker.
@@ -30,7 +38,13 @@ public class OnlineMapsMarkerBillboard : OnlineMapsMarkerInstanceBase
         billboard.marker = marker;
         Texture2D texture = marker.texture;
         if (marker.texture == null) texture = OnlineMaps.instance.defaultMarkerTexture;
-        if (texture != null) spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0));
+        if (texture != null)
+        {
+            spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0));
+#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+            spriteRenderer.flipX = true;
+#endif
+        }
         
         return billboard;
     }
@@ -40,18 +54,16 @@ public class OnlineMapsMarkerBillboard : OnlineMapsMarkerInstanceBase
     /// </summary>
     public void Dispose()
     {
-        DestroyImmediate(gameObject);
+        if (gameObject != null) OnlineMapsUtils.DestroyImmediate(gameObject);
         marker = null;
     }
 
 #if !UNITY_ANDROID
-    // ReSharper disable once UnusedMember.Global
     protected void OnMouseDown()
     {
         OnlineMapsControlBase.instance.InvokeBasePress();
     }
 
-    // ReSharper disable once UnusedMember.Global
     protected void OnMouseUp()
     {
         OnlineMapsControlBase.instance.InvokeBaseRelease();

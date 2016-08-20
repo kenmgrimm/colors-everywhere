@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of grouping markers.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/GroupMarkersExample")]
     public class GroupMarkersExample : MonoBehaviour
     {
@@ -37,19 +40,22 @@ namespace InfinityCode.OnlineMapsExamples
         {
             markers = new List<OnlineMapsMarker>();
 
+            // Create a random markers.
             for (int i = 0; i < countMarkers; i++)
             {
-                OnlineMapsMarker marker =
-                    OnlineMaps.instance.AddMarker(new Vector2(Random.Range(-180f, 180f), Random.Range(-90, 90)));
+                OnlineMapsMarker marker = OnlineMaps.instance.AddMarker(new Vector2(Random.Range(-180f, 180f), Random.Range(-90, 90)));
                 marker.label = "Marker " + i;
                 markers.Add(marker);
             }
 
+            // Group markers.
             GroupMarkers();
         }
 
         private void GroupMarkers()
         {
+            OnlineMapsProjection projection = OnlineMaps.instance.projection;
+
             List<MarkerGroup> groups = new List<MarkerGroup>();
 
             for (int zoom = 20; zoom >= 3; zoom--)
@@ -60,15 +66,25 @@ namespace InfinityCode.OnlineMapsExamples
                 {
                     OnlineMapsMarker marker = ms[j];
                     MarkerGroup group = null;
-                    Vector2 pos = OnlineMapsUtils.LatLongToTilef(marker.position, zoom);
+                    double mx, my;
+                    marker.GetPosition(out mx, out my);
+
+                    double px, py;
+                    projection.CoordinatesToTile(mx, my, zoom, out px, out py);
 
                     int k = j + 1;
 
                     while (k < ms.Count)
                     {
                         OnlineMapsMarker marker2 = ms[k];
-                        Vector2 pos2 = OnlineMapsUtils.LatLongToTilef(marker2.position, zoom);
-                        if ((pos - pos2).magnitude < distance)
+
+                        double m2x, m2y;
+                        marker2.GetPosition(out m2x, out m2y);
+
+                        double p2x, p2y;
+                        projection.CoordinatesToTile(m2x, m2y, zoom, out p2x, out p2y);
+
+                        if (OnlineMapsUtils.Magnitude(px, py, p2x, p2y) < distance)
                         {
                             if (group == null)
                             {
@@ -80,7 +96,8 @@ namespace InfinityCode.OnlineMapsExamples
                             group.Add(marker2);
                             if (marker2.range.min == 3) marker2.range.min = zoom + 1;
                             ms.RemoveAt(k);
-                            pos = group.tilePosition;
+                            px = group.tilePositionX;
+                            py = group.tilePositionY;
                         }
                         else k++;
                     }
@@ -96,7 +113,7 @@ namespace InfinityCode.OnlineMapsExamples
             public OnlineMapsMarker instance;
 
             public Vector2 center;
-            public Vector2 tilePosition;
+            public double tilePositionX, tilePositionY;
 
             public int zoom;
 
@@ -114,7 +131,7 @@ namespace InfinityCode.OnlineMapsExamples
                 markers.Add(marker);
                 center = markers.Aggregate(Vector2.zero, (current, m) => current + m.position) / markers.Count;
                 instance.position = center;
-                tilePosition = OnlineMapsUtils.LatLongToTilef(center, zoom);
+                OnlineMaps.instance.projection.CoordinatesToTile(center.x, center.y, zoom, out tilePositionX, out tilePositionY);
                 instance.label = "Group. Count: " + markers.Count;
             }
 

@@ -6,13 +6,15 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to change the sort order of the markers.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/TilesetMarkerDepthExample")]
     public class TilesetMarkerDepthExample : MonoBehaviour
     {
-        private OnlineMapsMarker mapMarkerMiddle;
-        private OnlineMapsMarker mapMarkerTop;
-        private OnlineMapsMarker mapMarkerBottom;
-
+        /// <summary>
+        /// Defines a new comparer.
+        /// </summary>
         public class MarkerComparer : IComparer<OnlineMapsMarker>
         {
             public int Compare(OnlineMapsMarker m1, OnlineMapsMarker m2)
@@ -27,26 +29,22 @@ namespace InfinityCode.OnlineMapsExamples
         {
             OnlineMaps api = OnlineMaps.instance;
 
-            mapMarkerMiddle = api.AddMarker(new Vector2(0, 0));
-            mapMarkerTop = api.AddMarker(new Vector2(0, 0.01f));
-            mapMarkerBottom = api.AddMarker(new Vector2(0, -0.01f));
+            // Create markers.
+            api.AddMarker(new Vector2(0, 0));
+            api.AddMarker(new Vector2(0, 0.01f));
+            api.AddMarker(new Vector2(0, -0.01f));
 
+            // Sets a new comparer.
             OnlineMapsTileSetControl.instance.markerComparer = new MarkerComparer();
 
+            // Get the center point and zoom the best for all markers.
             Vector2 center;
             int zoom;
             OnlineMapsUtils.GetCenterPointAndZoom(api.markers, out center, out zoom);
 
+            // Change the position and zoom of the map.
             api.position = center;
             api.zoom = zoom;
-        }
-
-        private float OnGetFlatMarkerOffsetY(OnlineMapsMarker marker)
-        {
-            if (marker == mapMarkerTop) return 1;
-            if (marker == mapMarkerMiddle) return 0.5f;
-            if (marker == mapMarkerBottom) return 0;
-            return 0;
         }
     }
 }

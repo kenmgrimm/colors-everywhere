@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of runtime saving 2D markers to PlayerPrefs, and loading of 2D markers from PlayerPrefs.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/SaveMarkersExample")]
     public class SaveMarkersExample : MonoBehaviour
     {

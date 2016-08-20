@@ -8,7 +8,6 @@ using UnityEngine;
 /// <summary>
 /// Class that draws a line on the map.
 /// </summary>
-[Serializable]
 public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
 {
     /// <summary>
@@ -70,16 +69,16 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
         this.weight = weight;
     }
 
-    public override void Draw(Color[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom)
+    public override void Draw(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, bool invertY = false)
     {
         if (!visible) return;
 
-        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, color, weight, false);
+        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, color, weight, false, invertY);
     }
 
-    public override void DrawOnTileset(OnlineMapsTileSetControl control)
+    public override void DrawOnTileset(OnlineMapsTileSetControl control, int index)
     {
-        base.DrawOnTileset(control);
+        base.DrawOnTileset(control, index);
 
         if (!visible)
         {
@@ -100,5 +99,15 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
         mesh.normals = normals.ToArray();
         mesh.uv = uv.ToArray();
         mesh.SetTriangles(triangles.ToArray(), 0);
+
+        UpdateMaterialsQuote(control, index);
+    }
+
+    protected override void DisposeLate()
+    {
+        base.DisposeLate();
+
+        points = null;
+        texture = null;
     }
 }

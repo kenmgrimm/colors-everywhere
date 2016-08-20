@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of runtime saving 3D markers to PlayerPrefs, and loading of 3D markers from PlayerPrefs.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/SaveMarker3DExample")]
     public class SaveMarker3DExample : MonoBehaviour
     {

@@ -22,7 +22,7 @@ public class OnlineMapsDirectionStep
     public int duration;
 
     /// <summary>
-    /// Location of the endpoint of this step (lat, lng). 
+    /// Location of the endpoint of this step (lng, lat). 
     /// </summary>
     public Vector2 end;
 
@@ -42,7 +42,7 @@ public class OnlineMapsDirectionStep
     public List<Vector2> points;
 
     /// <summary>
-    /// Location of the startpoint of this step (lat, lng). 
+    /// Location of the startpoint of this step (lng, lat). 
     /// </summary>
     public Vector2 start;
 
@@ -58,7 +58,6 @@ public class OnlineMapsDirectionStep
 
     /// <summary>
     /// Constructor. \n
-    /// <strong>Please do not use. </strong>\n
     /// Use OnlineMapsDirectionStep.TryParse.
     /// </summary>
     /// <param name="node">XMLNode of route</param>
@@ -105,7 +104,7 @@ public class OnlineMapsDirectionStep
         stringInstructions = Regex.Replace(stringInstructions, "<.*?>", string.Empty);
     }
 
-    private string StrReplace(string str, string[] origin, string[] replace)
+    public static string StrReplace(string str, string[] origin, string[] replace)
     {
         if (origin == null || replace == null) return str;
 

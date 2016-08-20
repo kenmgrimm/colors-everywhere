@@ -1,6 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,7 +12,6 @@ using UnityEngine;
 /// Open Street Map Overpass API documentation: http://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide \n
 /// You can test your queries using: http://overpass-turbo.eu/ \n
 /// </summary>
-[System.Serializable]
 public class OnlineMapsOSMAPIQuery: OnlineMapsGoogleAPIQuery
 {
     /// <summary>
@@ -30,7 +30,7 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsGoogleAPIQuery
     private OnlineMapsOSMAPIQuery(string data)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://overpass-api.de/api/interpreter?data=" + WWW.EscapeURL(data);
+        string url = "https://overpass-api.de/api/interpreter?data=" + OnlineMapsWWW.EscapeURL(data);
         www = OnlineMapsUtils.GetWWW(url);
     }
 
@@ -70,7 +70,8 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsGoogleAPIQuery
                 else if (node.name == "relation") relations.Add(new OnlineMapsOSMRelation(node));
             }
         }
-        catch {
+        catch
+        {
             Debug.Log(response);
         }
     }
@@ -84,9 +85,9 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsGoogleAPIQuery
     /// <param name="relations">List of relations</param>
     public static void ParseOSMResponse(string response, out Dictionary<string, OnlineMapsOSMNode> nodes, out List<OnlineMapsOSMWay> ways, out List<OnlineMapsOSMRelation> relations)
     {
-        nodes = new Dictionary<string, OnlineMapsOSMNode>();
-        ways = new List<OnlineMapsOSMWay>();
-        relations = new List<OnlineMapsOSMRelation>();
+        nodes = new Dictionary<string, OnlineMapsOSMNode>(64);
+        ways = new List<OnlineMapsOSMWay>(64);
+        relations = new List<OnlineMapsOSMRelation>(64);
 
         try
         {
@@ -99,8 +100,16 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsGoogleAPIQuery
                     OnlineMapsOSMNode osmNode = new OnlineMapsOSMNode(node);
                     nodes.Add(osmNode.id, osmNode);
                 }
-                else if (node.name == "way") ways.Add(new OnlineMapsOSMWay(node));
-                else if (node.name == "relation") relations.Add(new OnlineMapsOSMRelation(node));
+                else if (node.name == "way")
+                {
+                    if (ways.Count == ways.Capacity) ways.Capacity += 64;
+                    ways.Add(new OnlineMapsOSMWay(node));
+                }
+                else if (node.name == "relation")
+                {
+                    if (relations.Count == relations.Capacity) relations.Capacity += 64;
+                    relations.Add(new OnlineMapsOSMRelation(node));
+                }
             }
         }
         catch
@@ -144,9 +153,9 @@ public class OnlineMapsOSMBase
     /// <returns>Tag value</returns>
     public string GetTagValue(string key)
     {
-        List<OnlineMapsOSMTag> curTags = tags.Where(tag => tag.key == key).ToList();
-        if (curTags.Count > 0) return curTags[0].value;
-        return string.Empty;
+        if (tags == null) return null;
+        foreach (OnlineMapsOSMTag tag in tags) if (tag.key == key) return tag.value;
+        return null;
     }
 
     /// <summary>
@@ -167,7 +176,14 @@ public class OnlineMapsOSMBase
     /// <returns>True - if successful, False - otherwise.</returns>
     public bool HasTagKey(params string[] keys)
     {
-        return keys.Any(key => tags.Any(t => t.key == key));
+        foreach (OnlineMapsOSMTag tag in tags)
+        {
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] == tag.key) return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -217,7 +233,7 @@ public class OnlineMapsOSMNode : OnlineMapsOSMBase
         lat = node.A<float>("lat");
         lon = node.A<float>("lon");
 
-        tags = new List<OnlineMapsOSMTag>();
+        tags = new List<OnlineMapsOSMTag>(node.count);
 
         foreach (OnlineMapsXML subNode in node) tags.Add(new OnlineMapsOSMTag(subNode));
     }
@@ -278,12 +294,34 @@ public class OnlineMapsOSMWay : OnlineMapsOSMBase
     /// <returns>List of nodes related to that way</returns>
     public List<OnlineMapsOSMNode> GetNodes(Dictionary<string, OnlineMapsOSMNode> nodes)
     {
-        List<OnlineMapsOSMNode> _nodes = new List<OnlineMapsOSMNode>();
+        List<OnlineMapsOSMNode> _nodes = new List<OnlineMapsOSMNode>(10);
         foreach (string nRef in nodeRefs)
         {
-            if (nodes.ContainsKey(nRef)) _nodes.Add(nodes[nRef]);
+            if (nodes.ContainsKey(nRef))
+            {
+                if (_nodes.Capacity == _nodes.Count) _nodes.Capacity += 10;
+                _nodes.Add(nodes[nRef]);
+            }
         }
         return _nodes;
+    }
+
+    /// <summary>
+    /// Gets a list of nodes related to that way.
+    /// </summary>
+    /// <param name="nodes">General dictionary of nodes</param>
+    /// <param name="usedNodes">List of nodes related to that way</param>
+    public void GetNodes(Dictionary<string, OnlineMapsOSMNode> nodes, List<OnlineMapsOSMNode> usedNodes)
+    {
+        usedNodes.Clear();
+        foreach (string nRef in nodeRefs)
+        {
+            if (nodes.ContainsKey(nRef))
+            {
+                if (usedNodes.Capacity == usedNodes.Count) usedNodes.Capacity += 10;
+                usedNodes.Add(nodes[nRef]);
+            }
+        }
     }
 }
 
@@ -304,8 +342,8 @@ public class OnlineMapsOSMRelation : OnlineMapsOSMBase
     public OnlineMapsOSMRelation(OnlineMapsXML node)
     {
         id = node.A("id");
-        members = new List<OnlineMapsOSMRelationMember>();
-        tags = new List<OnlineMapsOSMTag>();
+        members = new List<OnlineMapsOSMRelationMember>(16);
+        tags = new List<OnlineMapsOSMTag>(4);
 
         foreach (OnlineMapsXML subNode in node)
         {
@@ -370,5 +408,10 @@ public class OnlineMapsOSMTag
     {
         key = node.A("k");
         value = node.A("v");
+    }
+
+    public override string ToString()
+    {
+        return key + ": " + value;
     }
 }

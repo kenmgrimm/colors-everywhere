@@ -5,10 +5,12 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to draw tooltip without a background.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/TooltipWithoutBackgroundExample")]
     public class TooltipWithoutBackgroundExample : MonoBehaviour
     {
-
         private void Start()
         {
             // Subscribe to the event preparation of tooltip style.

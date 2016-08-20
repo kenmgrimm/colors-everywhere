@@ -8,7 +8,6 @@ using UnityEngine;
 /// </summary>
 [AddComponentMenu("Infinity Code/Online Maps/Controls/GUITexture")]
 [RequireComponent(typeof(GUITexture))]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
 {
     private GUITexture _gTexture;
@@ -27,7 +26,7 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
         {
             if (_gTexture == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
                 _gTexture = guiTexture;
 #else
                 _gTexture = GetComponent<GUITexture>();
@@ -44,12 +43,12 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
         int countY = api.texture.height / OnlineMapsUtils.tileSize;
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
         float rx = (rect.center.x - position.x) / rect.width * 2;
         float ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -60,12 +59,12 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
         int countY = api.texture.height / OnlineMapsUtils.tileSize;
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
         double rx = (rect.center.x - position.x) / rect.width * 2;
         double ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
         return true;
     }
 
@@ -76,7 +75,12 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
 
     protected override bool HitTest()
     {
-        return gTexture.HitTest(Input.mousePosition);
+        return gTexture.HitTest(GetInputPosition());
+    }
+
+    protected override bool HitTest(Vector2 position)
+    {
+        return gTexture.HitTest(position);
     }
 
     protected override void OnEnableLate()
@@ -84,7 +88,7 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
         if (gTexture == null)
         {
             Debug.LogError("Can not find GUITexture.");
-            Destroy(this);
+            OnlineMapsUtils.DestroyImmediate(this);
         }
     }
 

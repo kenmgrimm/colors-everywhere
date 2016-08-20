@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of a dynamic change texture, which will draw maps for GUITexture.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ChangeMapTextureExample")]
     public class ChangeMapTextureExample : MonoBehaviour
     {

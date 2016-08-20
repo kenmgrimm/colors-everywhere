@@ -16,7 +16,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 [Serializable]
 [AddComponentMenu("")]
-public class OnlineMapsControlBase : MonoBehaviour
+public abstract class OnlineMapsControlBase : MonoBehaviour
 {
     /// <summary>
     /// Delay before invoking event OnMapLongPress.
@@ -24,9 +24,24 @@ public class OnlineMapsControlBase : MonoBehaviour
     public static float longPressDelay = 1;
 
     /// <summary>
+    /// Distance (pixels) after which will start drag the map.
+    /// </summary>
+    public static float startDragDistance = 4;
+
+    /// <summary>
     /// Singleton of control
     /// </summary>
     protected static OnlineMapsControlBase _instance;
+
+    /// <summary>
+    /// Event intercepts getting current cursor position.
+    /// </summary>
+    public Func<Vector2> OnGetInputPosition;
+
+    /// <summary>
+    /// Event intercepts getting number of touches.
+    /// </summary>
+    public Func<int> OnGetTouchCount;
 
     /// <summary>
     /// Event that occurs when you click on the map.
@@ -62,6 +77,22 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// Event that occurs when you zoom the map.
     /// </summary>
     public Action OnMapZoom;
+
+    /// <summary>
+    /// Event that occurs at end Update.
+    /// </summary>
+    public Action OnUpdateAfter;
+
+    /// <summary>
+    /// Event that occurs at start Update.
+    /// </summary>
+    public Action OnUpdateBefore;
+
+    /// <summary>
+    /// Event validating that on current GameObject allowed zoom on wheel.\n
+    /// True - zoom is allowed, false - forbidden.
+    /// </summary>
+    public Predicate<GameObject> OnValidateMouseWheel;
 
     /// <summary>
     /// Texture, which will draw the map. \n
@@ -101,22 +132,32 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// </summary>
     public bool zoomInOnDoubleClick = true;
 
+    /// <summary>
+    /// Mode of zoom.
+    /// </summary>
+    public OnlineMapsZoomMode zoomMode = OnlineMapsZoomMode.target;
+
     protected Rect _screenRect;
+
+    /// <summary>
+    /// Reference to map instance.
+    /// </summary>
     protected OnlineMaps api;
     
     protected float lastGestureDistance;
-    protected Vector2 lastMousePosition;
-    //protected Vector2 lastPosition;
+    protected Vector2 lastInputPosition;
     protected int lastTouchCount;
     protected bool waitZeroTouches = false;
 
     private OnlineMapsMarkerBase _dragMarker;
     private long[] lastClickTimes = {0, 0};
-    private Vector3 pressPoint;
+    private Vector2 pressPoint;
     private IEnumerator longPressEnumenator;
     protected Vector2 lastGestureCenter = Vector2.zero;
     private double lastPositionLng;
     private double lastPositionLat;
+    private bool isMapPress;
+    private bool mapDragStarted;
 
     /// <summary>
     /// Singleton instance of map control.
@@ -197,9 +238,10 @@ public class OnlineMapsControlBase : MonoBehaviour
             texture = api.defaultMarkerTexture
         };
         m.Init();
-        List<OnlineMapsMarker> markerList = api.markers.ToList();
-        markerList.Add(m);
-        api.markers = markerList.ToArray();
+
+        if (api.markers == null) api.markers = new OnlineMapsMarker[0];
+        Array.Resize(ref api.markers, api.markers.Length + 1);
+        api.markers[api.markers.Length - 1] = m;
         api.Redraw();
     }
 
@@ -218,11 +260,13 @@ public class OnlineMapsControlBase : MonoBehaviour
 
             if (offsetX != 0 || offsetY != 0)
             {
-                Vector2 pos = dragMarker.position;
-                pos.x = (float) (pos.x + offsetX);
-                pos.y = (float) (pos.y + offsetY);
+                double px, py;
+                dragMarker.GetPosition(out px, out py);
+                
+                px = px + offsetX;
+                py = py + offsetY;
 
-                dragMarker.position = pos;
+                dragMarker.SetPosition(px, py);
                 if (dragMarker.OnDrag != null) dragMarker.OnDrag(dragMarker);
                 if (dragMarker is OnlineMapsMarker) api.Redraw();
             }
@@ -237,7 +281,7 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// <returns>Geographical coordinates</returns>
     public virtual Vector2 GetCoords()
     {
-        return GetCoords(Input.mousePosition);
+        return GetCoords(GetInputPosition());
     }
 
     /// <summary>
@@ -258,7 +302,7 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// <returns>True - success, False - otherwise.</returns>
     public virtual bool GetCoords(out double lng, out double lat)
     {
-        return GetCoords(out lng, out lat, Input.mousePosition);
+        return GetCoords(out lng, out lat, GetInputPosition());
     }
 
     /// <summary>
@@ -274,18 +318,33 @@ public class OnlineMapsControlBase : MonoBehaviour
     }
 
     /// <summary>
+    /// Returns the current cursor position.
+    /// </summary>
+    /// <returns>Current cursor position</returns>
+    public Vector2 GetInputPosition()
+    {
+        if (OnGetInputPosition != null) return OnGetInputPosition();
+
+        return Input.mousePosition;
+    }
+
+    /// <summary>
     /// Converts geographical coordinate to position in the scene relative to the top-left corner of the map in map space.
     /// </summary>
-    /// <param name="coords">Geographical coordinate</param>
+    /// <param name="coords">Geographical coordinate (X - Longitude, Y - Latitude)</param>
     /// <returns>Scene position (in map space)</returns>
     public virtual Vector2 GetPosition(Vector2 coords)
     {
-        Vector2 pos = OnlineMapsUtils.LatLongToTilef(coords, api.zoom);
-        Vector2 topLeft = OnlineMapsUtils.LatLongToTilef(api.topLeftPosition, api.zoom);
-        pos -= topLeft;
+        double px, py, tlx, tly;
+        api.projection.CoordinatesToTile(coords.x, coords.y, api.zoom, out px, out py);
+        api.GetTopLeftPosition(out tlx, out tly);
+        api.projection.CoordinatesToTile(tlx, tly, api.zoom, out tlx, out tly);
+        px -= tlx;
+        py -= tly;
+
         int maxX = 1 << api.zoom;
-        if (pos.x < -maxX / 2) pos.x += maxX;
-        return new Vector2(pos.x * OnlineMapsUtils.tileSize, pos.y * OnlineMapsUtils.tileSize);
+        if (px < maxX / -2) px += maxX;
+        return new Vector2((float)(px * OnlineMapsUtils.tileSize), (float)(py * OnlineMapsUtils.tileSize));
     }
 
     /// <summary>
@@ -299,21 +358,30 @@ public class OnlineMapsControlBase : MonoBehaviour
     {
         double tx, ty;
         double dx, dy, dtx, dty;
-        OnlineMapsUtils.LatLongToTiled(lng, lat, api.zoom, out dx, out dy);
+        api.projection.CoordinatesToTile(lng, lat, api.zoom, out dx, out dy);
         api.GetTopLeftPosition(out tx, out ty);
-        OnlineMapsUtils.LatLongToTiled(tx, ty, api.zoom, out dtx, out dty);
+        api.projection.CoordinatesToTile(tx, ty, api.zoom, out dtx, out dty);
         dx -= dtx;
         dy -= dty;
         int maxX = 1 << api.zoom;
-        if (dx < -maxX / 2) dx += maxX;
+        if (dx < maxX / -2) dx += maxX;
         px = dx * OnlineMapsUtils.tileSize;
         py = dy * OnlineMapsUtils.tileSize;
     }
 
     /// <summary>
+    /// Screen area occupied by the map.
+    /// </summary>
+    /// <returns>Screen rectangle</returns>
+    public virtual Rect GetRect()
+    {
+        return new Rect();
+    }
+
+    /// <summary>
     /// Converts geographical coordinate to position in screen space.
     /// </summary>
-    /// <param name="coords">Geographical coordinate</param>
+    /// <param name="coords">Geographical coordinate (X - longitude, Y - latitude)</param>
     /// <returns>Screen space position</returns>
     public virtual Vector2 GetScreenPosition(Vector2 coords)
     {
@@ -345,12 +413,27 @@ public class OnlineMapsControlBase : MonoBehaviour
     }
 
     /// <summary>
-    /// Screen area occupied by the map.
+    /// Returns the current number of touches.
     /// </summary>
-    /// <returns>Screen rectangle</returns>
-    public virtual Rect GetRect()
+    /// <returns>Number of touches</returns>
+    public int GetTouchCount()
     {
-        return new Rect();
+        if (OnGetTouchCount != null) return OnGetTouchCount();
+
+#if UNITY_4_3 || UNITY_4_5
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+        return Input.touchCount;
+#else
+        return Input.GetMouseButton(0) ? 1 : 0;
+#endif
+#else
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return Input.GetMouseButton(0) ? 1 : 0;
+#else
+        if (Input.touchSupported) return Input.touchCount;
+        return Input.GetMouseButton(0) ? 1 : 0;
+#endif
+#endif
     }
 
     /// <summary>
@@ -358,6 +441,11 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// </summary>
     /// <returns>True - if the cursor over the map, false - if not.</returns>
     protected virtual bool HitTest()
+    {
+        return true;
+    }
+
+    protected virtual bool HitTest(Vector2 position)
     {
         return true;
     }
@@ -388,6 +476,20 @@ public class OnlineMapsControlBase : MonoBehaviour
 
     private void OnDestroy()
     {
+        OnMapClick = null;
+        OnMapDoubleClick = null;
+        OnMapDrag = null;
+        OnMapLongPress = null;
+        OnMapPress = null;
+        OnMapRelease = null;
+        OnMapZoom = null;
+        lastClickTimes = null;
+        api = null;
+        _dragMarker = null;
+        activeTexture = null;
+        longPressEnumenator = null;
+        _instance = null;
+
         OnDestroyLate();
     }
 
@@ -408,7 +510,7 @@ public class OnlineMapsControlBase : MonoBehaviour
         if (api == null)
         {
             Debug.LogError("Can not find a script OnlineMaps.");
-            Destroy(this);
+            OnlineMapsUtils.DestroyImmediate(this);
             return;
         }
         api.control = this;
@@ -438,9 +540,11 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// </summary>
     protected void OnMapBasePress()
     {
+        isMapPress = false;
+
         if (waitZeroTouches)
         {
-            if (Input.touchCount <= 1) waitZeroTouches = false;
+            if (GetTouchCount() <= 1) waitZeroTouches = false;
             else return;
         }
 
@@ -451,11 +555,13 @@ public class OnlineMapsControlBase : MonoBehaviour
         if (api.notInteractUnderGUI && GUIUtility.hotControl != 0) return;
 #endif
 
+        Vector2 inputPosition = GetInputPosition();
+
 #if !UNITY_4_3 && !UNITY_4_5
         if (EventSystem.current != null)
         {
             PointerEventData pe = new PointerEventData(EventSystem.current);
-            pe.position = Input.mousePosition;
+            pe.position = inputPosition;
             List<RaycastResult> hits = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pe, hits);
             if (hits.Count > 0 && hits[0].gameObject != gameObject) return;
@@ -468,22 +574,26 @@ public class OnlineMapsControlBase : MonoBehaviour
         lastClickTimes[1] = DateTime.Now.Ticks;
 
         bool hit = GetCoords(out lastPositionLng, out lastPositionLat);
-        lastMousePosition = pressPoint = Input.mousePosition;
+        lastInputPosition = pressPoint = inputPosition;
         if (!hit) return;
+
+        isMapPress = true;
 
         OnlineMapsMarker marker = null;
 
-        if (this is OnlineMapsControlBase3D &&
-            OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
+        if (this is OnlineMapsControlBase3D && OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
         {
-            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(Input.mousePosition);
+            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(inputPosition);
             if (instanceBase != null) marker = instanceBase.marker as OnlineMapsMarker;
         }
-        else marker = api.GetMarkerFromScreen(Input.mousePosition);
+        else marker = api.GetMarkerFromScreen(inputPosition);
+
+        bool allowMapLongPress = true;
 
         if (marker != null)
         {
             if (marker.OnPress != null) marker.OnPress(marker);
+            if (marker.OnLongPress != null) allowMapLongPress = false;
             if (api.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onPress)
             {
                 api.tooltipMarker = marker;
@@ -493,7 +603,7 @@ public class OnlineMapsControlBase : MonoBehaviour
         }
         else
         {
-            OnlineMapsDrawingElement drawingElement = api.GetDrawingElement(Input.mousePosition);
+            OnlineMapsDrawingElement drawingElement = api.GetDrawingElement(inputPosition);
             if (drawingElement != null)
             {
                 if (drawingElement.OnPress != null) drawingElement.OnPress(drawingElement);
@@ -509,8 +619,11 @@ public class OnlineMapsControlBase : MonoBehaviour
         {
             isMapDrag = true;
 
-            longPressEnumenator = WaitLongPress();
-            StartCoroutine("WaitLongPress");
+            if (allowMapLongPress)
+            {
+                longPressEnumenator = WaitLongPress();
+                StartCoroutine("WaitLongPress");
+            }
         }
         else lastClickTimes[0] = 0;
 
@@ -522,11 +635,13 @@ public class OnlineMapsControlBase : MonoBehaviour
     /// </summary>
     protected void OnMapBaseRelease()
     {
-        if (waitZeroTouches && Input.touchCount == 0) waitZeroTouches = false;
+        if (waitZeroTouches && GetTouchCount() == 0) waitZeroTouches = false;
         if (GUIUtility.hotControl != 0) return;
 
-        bool isClick = (pressPoint - Input.mousePosition).magnitude < 20;
+        Vector2 inputPosition = GetInputPosition();
+        bool isClick = (pressPoint - inputPosition).sqrMagnitude < 400;
         isMapDrag = false;
+        mapDragStarted = false;
         dragMarker = null;
 
         if (longPressEnumenator != null)
@@ -535,7 +650,11 @@ public class OnlineMapsControlBase : MonoBehaviour
             longPressEnumenator = null;
         }
 
+        lastInputPosition = Vector2.zero;
         OnlineMaps.isUserControl = false;
+
+        if (!isMapPress) return;
+        isMapPress = false;
         if (OnMapRelease != null) OnMapRelease();
 
         OnlineMapsMarker marker = null;
@@ -543,10 +662,10 @@ public class OnlineMapsControlBase : MonoBehaviour
         if (this is OnlineMapsControlBase3D &&
             OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
         {
-            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(Input.mousePosition);
+            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(inputPosition);
             if (instanceBase != null) marker = instanceBase.marker as OnlineMapsMarker;
         }
-        else marker = api.GetMarkerFromScreen(Input.mousePosition);
+        else marker = api.GetMarkerFromScreen(inputPosition);
 
         OnlineMapsDrawingElement drawingElement = null;
 
@@ -564,7 +683,7 @@ public class OnlineMapsControlBase : MonoBehaviour
         }
         else
         {
-            drawingElement = api.GetDrawingElement(Input.mousePosition);
+            drawingElement = api.GetDrawingElement(inputPosition);
             if (drawingElement != null && drawingElement.OnRelease != null) drawingElement.OnRelease(drawingElement);
         }
 
@@ -576,7 +695,7 @@ public class OnlineMapsControlBase : MonoBehaviour
             {
                 if (OnMapDoubleClick != null) OnMapDoubleClick();
 
-                if (allowZoom && zoomInOnDoubleClick) ZoomOnPoint(1, Input.mousePosition);
+                if (allowZoom && zoomInOnDoubleClick) ZoomOnPoint(1, inputPosition);
             }
             
             lastClickTimes[0] = 0;
@@ -590,20 +709,6 @@ public class OnlineMapsControlBase : MonoBehaviour
 
         if (api.bufferStatus == OnlineMapsBufferStatus.wait) api.needRedraw = true;
     }
-
-#if !UNITY_ANDROID
-// ReSharper disable once UnusedMember.Global
-    protected void OnMouseDown()
-    {
-        OnMapBasePress();
-    }
-
-// ReSharper disable once UnusedMember.Global
-    protected void OnMouseUp()
-    {
-        OnMapBaseRelease();
-    }
-#endif
 
     public virtual OnlineMapsXML SaveSettings(OnlineMapsXML parent)
     {
@@ -624,30 +729,23 @@ public class OnlineMapsControlBase : MonoBehaviour
         activeTexture = texture;
     }
 
-    // ReSharper disable once UnusedMember.Local
     protected void Update()
     {
+        if (OnUpdateBefore != null) OnUpdateBefore();
+
         BeforeUpdate();
         _screenRect = GetRect();
         if (allowAddMarkerByM && Input.GetKeyUp(KeyCode.M)) CreateMarker();
-#if UNITY_ANDROID
-#if !UNITY_EDITOR
-        if (allowTouchZoom && Input.touchCount != lastTouchCount)
-        {
-            if (Input.touchCount == 1) OnMapBasePress();
-            else if (Input.touchCount == 0) OnMapBaseRelease();
-        }
-        lastTouchCount = Input.touchCount;
-#else
-        int touchCount = Input.GetMouseButton(0) ? 1 : 0;
+
+        int touchCount = GetTouchCount();
+
         if (allowTouchZoom && touchCount != lastTouchCount)
         {
             if (touchCount == 1) OnMapBasePress();
             else if (touchCount == 0) OnMapBaseRelease();
         }
         lastTouchCount = touchCount;
-#endif
-#endif
+
         if (isMapDrag) UpdatePosition();
 
         if (allowZoom)
@@ -657,13 +755,15 @@ public class OnlineMapsControlBase : MonoBehaviour
         }
 
         if (dragMarker != null) DragMarker();
-        else if (HitTest()) api.ShowMarkersTooltip(Input.mousePosition);
+        else if (HitTest()) api.ShowMarkersTooltip(GetInputPosition());
         else
         {
             api.tooltip = string.Empty;
             api.tooltipMarker = null;
         }
         AfterUpdate();
+
+        if (OnUpdateAfter != null) OnUpdateAfter();
     }
 
     /// <summary>
@@ -673,7 +773,7 @@ public class OnlineMapsControlBase : MonoBehaviour
     {
         if (!allowUserControl) return;
 
-        if (Input.touchCount == 2)
+        if (GetTouchCount() == 2)
         {
             Vector2 p1 = Input.GetTouch(0).position;
             Vector2 p2 = Input.GetTouch(1).position;
@@ -695,7 +795,15 @@ public class OnlineMapsControlBase : MonoBehaviour
 
             if (invertTouchZoom) z *= -1;
 
-            if (ZoomOnPoint(z, center)) lastGestureDistance = distance;
+            if (zoomMode == OnlineMapsZoomMode.target)
+            {
+                if (ZoomOnPoint(z, center)) lastGestureDistance = distance;
+            }
+            else if (z != 0)
+            {
+                api.zoom += z;
+                lastGestureDistance = distance;
+            }
 
             lastGestureCenter = center;
         }
@@ -721,13 +829,16 @@ public class OnlineMapsControlBase : MonoBehaviour
     {
         if (!allowUserControl) return;
 
-        if (Input.touchCount > 1) return;
+        if (GetTouchCount() > 1) return;
 
         double lat, lng;
         bool hit = GetCoords(out lng, out lat);
 
-        Vector2 mousePosition = Input.mousePosition;
-        if (hit && lastMousePosition != mousePosition)
+        Vector2 inputPosition = GetInputPosition();
+        if (!mapDragStarted && (lastInputPosition - inputPosition).magnitude < startDragDistance) return;
+        mapDragStarted = true;
+
+        if (hit && lastInputPosition != inputPosition)
         {
             double offsetX = lng - lastPositionLng;
             double offsetY = lat - lastPositionLat;
@@ -753,7 +864,7 @@ public class OnlineMapsControlBase : MonoBehaviour
 
             GetCoords(out lastPositionLng, out lastPositionLat);
 
-            lastMousePosition = mousePosition;
+            lastInputPosition = inputPosition;
         }
     }
 
@@ -763,11 +874,39 @@ public class OnlineMapsControlBase : MonoBehaviour
     protected void UpdateZoom()
     {
         if (!allowUserControl) return;
+        if (!HitTest()) return;
+
+#if !IGUI && ((!UNITY_ANDROID && !UNITY_IOS) || UNITY_EDITOR)
+        if (api.notInteractUnderGUI && GUIUtility.hotControl != 0) return;
+#endif
+
+        Vector2 inputPosition = GetInputPosition();
+
+#if !UNITY_4_3 && !UNITY_4_5
+        if (EventSystem.current != null)
+        {
+            PointerEventData pe = new PointerEventData(EventSystem.current);
+            pe.position = inputPosition;
+            List<RaycastResult> hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pe, hits);
+            if (hits.Count > 0)
+            {
+                if (OnValidateMouseWheel != null)
+                {
+                    if (!OnValidateMouseWheel(hits[0].gameObject)) return;
+                }
+                else if (hits[0].gameObject != gameObject) return;
+            }
+        }
+#endif
+
+        if (inputPosition.x <= 0 || inputPosition.x >= Screen.width || inputPosition.y <= 0 || inputPosition.y >= Screen.height) return;
 
         float wheel = Input.GetAxis("Mouse ScrollWheel");
         if (wheel == 0) return;
 
-        ZoomOnPoint((wheel > 0) ? 1 : -1, Input.mousePosition);
+        if (zoomMode == OnlineMapsZoomMode.target) ZoomOnPoint(wheel > 0 ? 1 : -1, inputPosition);
+        else api.zoom += wheel > 0 ? 1 : -1;
     }
 
     private IEnumerator WaitLongPress()
@@ -775,14 +914,14 @@ public class OnlineMapsControlBase : MonoBehaviour
         yield return new WaitForSeconds(longPressDelay);
 
         OnlineMapsMarker marker = null;
+        Vector2 inputPosition = GetInputPosition();
 
-        if (this is OnlineMapsControlBase3D &&
-            OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
+        if (this is OnlineMapsControlBase3D && OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
         {
-            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(Input.mousePosition);
+            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(inputPosition);
             if (instanceBase != null) marker = instanceBase.marker as OnlineMapsMarker;
         }
-        else marker = api.GetMarkerFromScreen(Input.mousePosition);
+        else marker = api.GetMarkerFromScreen(inputPosition);
 
         if (marker != null && marker.OnLongPress != null) marker.OnLongPress(marker);
 

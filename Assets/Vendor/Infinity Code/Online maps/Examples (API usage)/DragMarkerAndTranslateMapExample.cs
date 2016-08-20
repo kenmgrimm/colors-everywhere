@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of moving the map, at the approach of a 3D marker to the map border.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DragMarkerAndTranslateMapExample")]
     public class DragMarkerAndTranslateMapExample : MonoBehaviour
     {

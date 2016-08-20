@@ -12,12 +12,38 @@ using System.Threading;
 /// This class manages the background threads.\n
 /// <strong>Please do not use it if you do not know what you're doing.</strong>
 /// </summary>
-public static class OnlineMapsThreadManager
+public class OnlineMapsThreadManager
 {
 #if !UNITY_WEBGL
-    private static Thread thread;
-    private static List<Action> threadActions;
+    private static OnlineMapsThreadManager instance;
+
+    private bool isAlive;
+
+#if !NETFX_CORE
+    private Thread thread;
+#else
+    private OnlineMapsThreadWINRT thread;
 #endif
+    private List<Action> threadActions;
+#endif
+
+    private OnlineMapsThreadManager(Action action)
+    {
+#if !UNITY_WEBGL
+        instance = this;
+        threadActions = new List<Action>();
+        Add(action);
+
+        isAlive = true;
+
+#if !NETFX_CORE
+        thread = new Thread(StartNextAction);
+#else
+        thread = new OnlineMapsThreadWINRT(StartNextAction);
+#endif
+        thread.Start();
+#endif
+    }
 
     /// <summary>
     /// Adds action queued for execution in a separate thread.
@@ -26,20 +52,20 @@ public static class OnlineMapsThreadManager
     public static void AddThreadAction(Action action)
     {
 #if !UNITY_WEBGL
-        if (threadActions == null) threadActions = new List<Action>();
+        if (instance == null) instance = new OnlineMapsThreadManager(action);
+        else instance.Add(action);
+#else
+        throw new Exception("AddThreadAction not supported for WebGL.");
+#endif
+    }
 
+    private void Add(Action action)
+    {
+#if !UNITY_WEBGL
         lock (threadActions)
         {
             threadActions.Add(action);
         }
-
-        if (thread == null)
-        {
-            thread = new Thread(StartNextAction);
-            thread.Start();
-        }
-#else
-        throw new Exception("AddThreadAction not supported for WebGL.");
 #endif
     }
 
@@ -49,23 +75,19 @@ public static class OnlineMapsThreadManager
     public static void Dispose()
     {
 #if !UNITY_WEBGL
-        if (thread != null)
+        if (instance != null)
         {
-#if UNITY_IOS
-            thread.Interrupt();
-#else
-            thread.Abort();
-#endif
+            instance.isAlive = false;
+            instance.thread = null;
+            instance = null;
         }
-        thread = null;
-        threadActions = null;
 #endif
     }
 
-    private static void StartNextAction()
+    private void StartNextAction()
     {
 #if !UNITY_WEBGL
-        while (true)
+        while (isAlive)
         {
             bool actionInvoked = false;
             lock (threadActions)
@@ -78,8 +100,16 @@ public static class OnlineMapsThreadManager
                     actionInvoked = true;
                 }
             }
-            if (!actionInvoked) Thread.Sleep(1);
+            if (!actionInvoked)
+            {
+#if !NETFX_CORE
+                Thread.Sleep(1);
+#else
+                OnlineMapsThreadWINRT.Sleep(1);
+#endif
+            }
         }
+        threadActions = null;
 #endif
     }
 }

@@ -37,17 +37,17 @@ namespace InfinityCode.OnlineMapsExamples
                     tooltip = Instantiate(tooltipPrefab);
                     (tooltip.transform as RectTransform).SetParent(container.transform);
                 }
-                Rect rect = marker.screenRect;
-                Vector2 pos = new Vector2(rect.center.x, rect.yMin + 30);
+                Vector2 screenPosition = OnlineMapsControlBase.instance.GetScreenPosition(marker.position);
+                screenPosition.y += marker.height;
                 Vector2 point;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(container.transform as RectTransform, pos, null, out point);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(container.transform as RectTransform, screenPosition, null, out point);
                 (tooltip.transform as RectTransform).localPosition = point;
                 tooltip.GetComponentInChildren<Text>().text = marker.label;
 
             }
             else if (tooltip != null)
             {
-                DestroyImmediate(tooltip);
+                OnlineMapsUtils.DestroyImmediate(tooltip);
                 tooltip = null;
             }
         }

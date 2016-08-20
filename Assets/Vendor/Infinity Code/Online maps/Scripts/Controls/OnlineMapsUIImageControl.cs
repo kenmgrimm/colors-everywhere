@@ -14,7 +14,6 @@ using Sprite = UnityEngine.Sprite;
 /// Class control the map for the uGUI UI Image.
 /// </summary>
 [AddComponentMenu("Infinity Code/Online Maps/Controls/UI Image")]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 {
     private Image image;
@@ -38,7 +37,7 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
     protected override void BeforeUpdate()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBPLAYER
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL
         int touchCount = Input.GetMouseButton(0) ? 1 : 0;
         if (touchCount != lastTouchCount)
         {
@@ -65,23 +64,23 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
         Rect rect = image.GetPixelAdjustedRect();
 
-        Vector2 size = (rect.max - point);
+        Vector2 size = rect.max - point;
         size.x = size.x / rect.size.x;
         size.y = size.y / rect.size.y;
 
-        Vector2 r = new Vector2((size.x - .5f), (size.y - .5f));
+        Vector2 r = new Vector2(size.x - .5f, size.y - .5f);
 
         int countX = api.width / OnlineMapsUtils.tileSize;
         int countY = api.height / OnlineMapsUtils.tileSize;
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         px -= countX * r.x;
         py += countY * r.y;
 
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -95,23 +94,23 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
         Rect rect = image.GetPixelAdjustedRect();
 
-        Vector2 size = (rect.max - point);
+        Vector2 size = rect.max - point;
         size.x = size.x / rect.size.x;
         size.y = size.y / rect.size.y;
 
-        Vector2 r = new Vector2((size.x - .5f), (size.y - .5f));
+        Vector2 r = new Vector2(size.x - .5f, size.y - .5f);
 
         int countX = api.width / OnlineMapsUtils.tileSize;
         int countY = api.height / OnlineMapsUtils.tileSize;
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         px -= countX * r.x;
         py += countY * r.y;
 
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
         return true;
     }
 
@@ -135,14 +134,28 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
     protected override bool HitTest()
     {
+        Vector2 inputPosition = GetInputPosition();
+
         PointerEventData pe = new PointerEventData(EventSystem.current);
-        pe.position = Input.mousePosition;
+        pe.position = inputPosition;
         List<RaycastResult> hits = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pe, hits);
 
         if (hits.Count > 0 && hits[0].gameObject != gameObject) return false;
 
-        return RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, Input.mousePosition, worldCamera);
+        return RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, inputPosition, worldCamera);
+    }
+
+    protected override bool HitTest(Vector2 position)
+    {
+        PointerEventData pe = new PointerEventData(EventSystem.current);
+        pe.position = position;
+        List<RaycastResult> hits = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pe, hits);
+
+        if (hits.Count > 0 && hits[0].gameObject != gameObject) return false;
+
+        return RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera);
     }
 
     protected override void OnEnableLate()
@@ -151,7 +164,7 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
         if (image == null)
         {
             Debug.LogError("Can not find Image.");
-            Destroy(this);
+            OnlineMapsUtils.DestroyImmediate(this);
         }
     }
 

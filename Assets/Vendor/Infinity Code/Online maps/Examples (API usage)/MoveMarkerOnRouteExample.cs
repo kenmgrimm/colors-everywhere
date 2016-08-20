@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of simulation movement marker on the route.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/MoveMarkerOnRouteExample")]
     public class MoveMarkerOnRouteExample : MonoBehaviour
     {
@@ -128,7 +131,7 @@ namespace InfinityCode.OnlineMapsExamples
             }
 
             if (lookToMarker) OnlineMaps.instance.position = marker.position;
-            if (OnlineMaps.instance.target != OnlineMapsTarget.tileset) OnlineMaps.instance.Redraw();
+            OnlineMaps.instance.Redraw();
         }
     }
 }

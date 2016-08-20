@@ -2,7 +2,12 @@
 /*   http://www.infinity-code.com   */
 
 using System.Collections;
+
+#if !NETFX_CORE
 using System.Xml;
+#else
+using Windows.Data.Xml.Dom;
+#endif
 
 /// <summary>
 /// Wrapper for XmlNodeList.
@@ -16,7 +21,7 @@ public class OnlineMapsXMLList : IEnumerable
     /// </summary>
     public int count
     {
-        get { return (_list != null) ? _list.Count: 0; }
+        get { return _list != null ? _list.Count: 0; }
     }
 
     /// <summary>

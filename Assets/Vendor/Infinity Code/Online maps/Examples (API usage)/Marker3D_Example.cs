@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of dynamic creating 3d marker, and change the position of 3D marker.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/Marker3D_Example")]
     public class Marker3D_Example : MonoBehaviour
     {

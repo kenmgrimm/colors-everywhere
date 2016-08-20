@@ -7,12 +7,27 @@ using UnityEngine;
 [CustomEditor(typeof(OnlineMapsLocationService))]
 public class OnlineMapsLocationServiceEditor:Editor
 {
-    public static OnlineMapsLocationService ls;
-
     private static GUIStyle _toggleStyle;
     private bool showCreateMarker = true;
     private bool showGPSEmulator = true;
     private bool showUpdatePosition = true;
+    private SerializedProperty pCreateMarkerInUserPosition;
+    private SerializedProperty pMarkerType;
+    private SerializedProperty pMarker3DPrefab;
+    private SerializedProperty pMarker2DTexture;
+    private SerializedProperty pMarker2DAlign;
+    private SerializedProperty pMarkerTooltip;
+    private SerializedProperty pUseCompassForMarker;
+    private SerializedProperty pUseGPSEmulator;
+    private SerializedProperty pEmulatorPosition;
+    private SerializedProperty pEmulatorCompass;
+    private SerializedProperty pDesiredAccuracy;
+    private SerializedProperty pCompassThreshold;
+    private SerializedProperty pFindLocationByIP;
+    private SerializedProperty pUpdatePosition;
+    private SerializedProperty pUpdateDistance;
+    private SerializedProperty pAutoStopUpdateOnInput;
+    private SerializedProperty pRestoreAfter;
 
     private static GUIStyle toggleStyle
     {
@@ -27,40 +42,57 @@ public class OnlineMapsLocationServiceEditor:Editor
         }
     }
 
+    private void CacheSerializedProperties()
+    {
+        pCreateMarkerInUserPosition = serializedObject.FindProperty("createMarkerInUserPosition");
+        pMarkerType = serializedObject.FindProperty("markerType");
+        pMarker3DPrefab = serializedObject.FindProperty("marker3DPrefab");
+        pMarker2DTexture = serializedObject.FindProperty("marker2DTexture");
+        pMarker2DAlign = serializedObject.FindProperty("marker2DAlign");
+        pMarkerTooltip = serializedObject.FindProperty("markerTooltip");
+        pUseCompassForMarker = serializedObject.FindProperty("useCompassForMarker");
+        pUseGPSEmulator = serializedObject.FindProperty("useGPSEmulator");
+        pEmulatorPosition = serializedObject.FindProperty("emulatorPosition");
+        pEmulatorCompass = serializedObject.FindProperty("emulatorCompass");
+        pDesiredAccuracy = serializedObject.FindProperty("desiredAccuracy");
+        pCompassThreshold = serializedObject.FindProperty("compassThreshold");
+        pFindLocationByIP = serializedObject.FindProperty("findLocationByIP");
+        pUpdatePosition = serializedObject.FindProperty("updatePosition");
+        pUpdateDistance = serializedObject.FindProperty("updateDistance");
+        pAutoStopUpdateOnInput = serializedObject.FindProperty("autoStopUpdateOnInput");
+        pRestoreAfter = serializedObject.FindProperty("restoreAfter");
+    }
+
     private void OnCreateMarkerGUI()
     {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        bool createMarker = ls.createMarkerInUserPosition;
+        bool createMarker = pCreateMarkerInUserPosition.boolValue;
         if (createMarker)
         {
             EditorGUILayout.BeginHorizontal();
-            showCreateMarker = GUILayout.Toggle(showCreateMarker, "", EditorStyles.foldout, GUILayout.ExpandWidth(false),
-                GUILayout.Height(16));
+            showCreateMarker = GUILayout.Toggle(showCreateMarker, "", EditorStyles.foldout, GUILayout.ExpandWidth(false), GUILayout.Height(16));
         }
 
-        ls.createMarkerInUserPosition = GUILayout.Toggle(ls.createMarkerInUserPosition, "Create Marker", toggleStyle);
+        pCreateMarkerInUserPosition.boolValue = GUILayout.Toggle(pCreateMarkerInUserPosition.boolValue, "Create Marker", toggleStyle);
 
         if (createMarker) EditorGUILayout.EndHorizontal();
 
-        if (ls.createMarkerInUserPosition && showCreateMarker)
+        if (pCreateMarkerInUserPosition.boolValue && showCreateMarker)
         {
-            ls.markerType = (OnlineMapsLocationServiceMarkerType)EditorGUILayout.Popup("Type", (int)ls.markerType, new[] {"2D", "3D"});
+            pMarkerType.enumValueIndex = EditorGUILayout.Popup("Type", pMarkerType.enumValueIndex, new[] {"2D", "3D"});
 
-            if (ls.markerType == OnlineMapsLocationServiceMarkerType.threeD)
-            {
-                ls.marker3DPrefab = EditorGUILayout.ObjectField("Prefab", ls.marker3DPrefab, typeof (GameObject), false) as GameObject;
-            }
+            if (pMarkerType.enumValueIndex == (int)OnlineMapsLocationServiceMarkerType.threeD) EditorGUILayout.PropertyField(pMarker3DPrefab, new GUIContent("Prefab"));
             else
             {
                 EditorGUI.BeginChangeCheck();
-                ls.marker2DTexture = EditorGUILayout.ObjectField("Texture", ls.marker2DTexture, typeof (Texture2D), false) as Texture2D;
-                if (EditorGUI.EndChangeCheck() && ls.marker2DTexture != null) OnlineMapsEditor.CheckMarkerTextureImporter(ls.marker2DTexture);
-                ls.marker2DAlign = (OnlineMapsAlign)EditorGUILayout.EnumPopup("Align", ls.marker2DAlign);
+                EditorGUILayout.PropertyField(pMarker2DTexture, new GUIContent("Texture"));
+                if (EditorGUI.EndChangeCheck() && pMarker2DTexture.objectReferenceValue != null) OnlineMapsEditor.CheckMarkerTextureImporter(pMarker2DTexture);
+                EditorGUILayout.PropertyField(pMarker2DAlign, new GUIContent("Align"));
             }
 
-            ls.markerTooltip = EditorGUILayout.TextField("Tooltip", ls.markerTooltip);
-            ls.useCompassForMarker = EditorGUILayout.Toggle("Use Compass", ls.useCompassForMarker);
+            EditorGUILayout.PropertyField(pMarkerTooltip, new GUIContent("Tooltip"));
+            EditorGUILayout.PropertyField(pUseCompassForMarker, new GUIContent("Use Compass"));
         }
 
         EditorGUILayout.EndVertical();
@@ -68,28 +100,36 @@ public class OnlineMapsLocationServiceEditor:Editor
 
     private void OnEnable()
     {
-        ls = target as OnlineMapsLocationService;
+        CacheSerializedProperties();
     }
 
     private void OnGPSEmulatorGUI()
     {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        bool useGPSEmulator = ls.useGPSEmulator;
+        bool useGPSEmulator = pUseGPSEmulator.boolValue;
         if (useGPSEmulator)
         {
             EditorGUILayout.BeginHorizontal();
             showGPSEmulator = GUILayout.Toggle(showGPSEmulator, "", EditorStyles.foldout, GUILayout.ExpandWidth(false));
         }
 
-        ls.useGPSEmulator = GUILayout.Toggle(ls.useGPSEmulator, "Use GPS Emulator", toggleStyle);
+        pUseGPSEmulator.boolValue = GUILayout.Toggle(pUseGPSEmulator.boolValue, "Use GPS Emulator", toggleStyle);
 
         if (useGPSEmulator) EditorGUILayout.EndHorizontal();
 
-        if (ls.useGPSEmulator && showGPSEmulator)
+        if (pUseGPSEmulator.boolValue && showGPSEmulator)
         {
-            ls.emulatorPosition = EditorGUILayout.Vector2Field("Position (Lng/Lat)", ls.emulatorPosition);
-            ls.emulatorCompass = EditorGUILayout.FloatField("Compass (0-360)", ls.emulatorCompass);
+            EditorGUILayout.HelpBox("The emulator is automatically disabled on the devices and use the data from the sensors.", MessageType.Info);
+
+            if (GUILayout.Button("Copy position from Online Maps"))
+            {
+                OnlineMaps api = (target as OnlineMapsLocationService).GetComponent<OnlineMaps>();
+                if (api != null) pEmulatorPosition.vector2Value = api.position;
+            }
+
+            EditorGUILayout.PropertyField(pEmulatorPosition, new GUIContent("Position (Lng/Lat)"));
+            EditorGUILayout.PropertyField(pEmulatorCompass, new GUIContent("Compass (0-360)"));
         }
 
         EditorGUILayout.EndVertical();
@@ -97,48 +137,55 @@ public class OnlineMapsLocationServiceEditor:Editor
 
     public override void OnInspectorGUI()
     {
-        bool dirty = false;
+        serializedObject.Update();
 
         EditorGUI.BeginChangeCheck();
-        ls.desiredAccuracy = EditorGUILayout.FloatField("Desired Accuracy (meters)", ls.desiredAccuracy);
+        float labelWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 160;
+
+        EditorGUILayout.PropertyField(pDesiredAccuracy, new GUIContent("Desired Accuracy (meters)"));
+        EditorGUIUtility.labelWidth = labelWidth;
+
+        EditorGUILayout.PropertyField(pCompassThreshold);
+        EditorGUILayout.PropertyField(pFindLocationByIP);
 
         OnUpdatePositionGUI();
         OnCreateMarkerGUI();
         OnGPSEmulatorGUI();
 
-        if (EditorGUI.EndChangeCheck()) dirty = true;
+        serializedObject.ApplyModifiedProperties();
 
-        if (dirty) EditorUtility.SetDirty(ls);
+        EditorUtility.SetDirty(target);
     }
 
     private void OnUpdatePositionGUI()
     {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        bool updatePosition = ls.updatePosition;
+        
+        bool updatePosition = pUpdatePosition.boolValue;
         if (updatePosition)
         {
             EditorGUILayout.BeginHorizontal();
-            showUpdatePosition = GUILayout.Toggle(showUpdatePosition, "", EditorStyles.foldout, GUILayout.ExpandWidth(false),
-                GUILayout.Height(16));
+            showUpdatePosition = GUILayout.Toggle(showUpdatePosition, "", EditorStyles.foldout, GUILayout.ExpandWidth(false), GUILayout.Height(16));
         }
 
-        ls.updatePosition = GUILayout.Toggle(ls.updatePosition, "Update Map Position", toggleStyle);
+        pUpdatePosition.boolValue = GUILayout.Toggle(pUpdatePosition.boolValue, "Update Map Position", toggleStyle);
 
         if (updatePosition) EditorGUILayout.EndHorizontal();
 
-        if (ls.updatePosition && showUpdatePosition)
+        if (pUpdatePosition.boolValue && showUpdatePosition)
         {
-            ls.updateDistance = EditorGUILayout.FloatField("Update Distance", ls.updateDistance);
-            ls.autoStopUpdateOnInput = EditorGUILayout.Toggle("Auto Stop On Input", ls.autoStopUpdateOnInput);
+            EditorGUILayout.PropertyField(pUpdateDistance);
+            EditorGUILayout.PropertyField(pAutoStopUpdateOnInput, new GUIContent("Auto Stop On Input"));
 
-            bool restoreAfter = ls.restoreAfter != 0;
+            bool restoreAfter = pRestoreAfter.intValue != 0;
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
             restoreAfter = GUILayout.Toggle(restoreAfter, "", GUILayout.ExpandWidth(false));
-            if (EditorGUI.EndChangeCheck()) ls.restoreAfter = restoreAfter ? 10 : 0;
+            if (EditorGUI.EndChangeCheck()) pRestoreAfter.intValue = restoreAfter ? 10 : 0;
             EditorGUI.BeginDisabledGroup(!restoreAfter);
-            ls.restoreAfter = EditorGUILayout.IntField("Restore After (sec)", ls.restoreAfter);
+            EditorGUILayout.PropertyField(pRestoreAfter, new GUIContent("Restore After (sec)"));
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
         }

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of get elevation value in the coordinate using Google Elevation API.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/GetElevationExample")]
     public class GetElevationExample : MonoBehaviour
     {
@@ -17,9 +20,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void OnMapClick()
         {
             // Get elevation on click point
-            OnlineMapsGoogleAPIQuery elevationRequest =
-                OnlineMapsGetElevation.Find(OnlineMapsControlBase.instance.GetCoords());
-            elevationRequest.OnComplete += OnComplete;
+            OnlineMapsGetElevation.Find(OnlineMapsControlBase.instance.GetCoords()).OnComplete += OnComplete;
         }
 
         private void OnComplete(string response)

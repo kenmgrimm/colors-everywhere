@@ -47,10 +47,11 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void Start()
         {
-            Vector2 position = new Vector2(0, 0);
+            Vector2 position = new Vector2(-122.67f, 45.52f);
             AddMarker(position);
 
             OnlineMaps.instance.OnMapUpdated += OnMapUpdated;
+            OnlineMaps.instance.position = position;
             OnMapUpdated();
         }
 
@@ -69,9 +70,7 @@ namespace InfinityCode.OnlineMapsExamples
 
                 if (!rect.Contains(p))
                 {
-                    p.x += 360;
-
-                    if (!rect.Contains(p))
+                    if (!rect.Contains(p + new Vector2(360, 0)))
                     {
                         if (go.activeSelf) go.SetActive(false);
                         continue;
@@ -81,8 +80,13 @@ namespace InfinityCode.OnlineMapsExamples
                 if (!go.activeSelf) go.SetActive(true);
 
                 Vector2 screenPosition = OnlineMapsControlBase.instance.GetScreenPosition(p);
-                screenPosition.x -= Screen.width / 2;
-                screenPosition.y -= Screen.height / 2;
+                
+                float ratio = (float)marker.widget.root.activeHeight / Screen.height;
+                float width = Mathf.Ceil(Screen.width * ratio);
+
+                screenPosition.x = (screenPosition.x / Screen.width - 0.5f) * width;
+                screenPosition.y = (screenPosition.y / Screen.height - 0.5f) * marker.widget.root.activeHeight;
+
                 Vector2 buttonOffset = new Vector2(-marker.size.x / 2, 0);
                 marker.widget.SetRect(screenPosition.x + buttonOffset.x, screenPosition.y + buttonOffset.y, marker.size.x, marker.size.y);
             }

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Search for a location by name, calculates best position and zoom to show it.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/FindLocationExample")]
     public class FindLocationExample : MonoBehaviour
     {

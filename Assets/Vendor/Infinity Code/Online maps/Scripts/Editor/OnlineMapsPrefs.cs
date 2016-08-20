@@ -129,7 +129,12 @@ public static class OnlineMapsPrefs
         foreach (OnlineMapsXML m in el)
         {
             OnlineMapsMarker marker = new OnlineMapsMarker();
-            marker.position = m.Get<Vector2>("Position");
+
+            double mx = m.Get<double>("Longitude");
+            double my = m.Get<double>("Latitude");
+
+            marker.SetPosition(mx, my);
+
             marker.range = m.Get<OnlineMapsRange>("Range");
             marker.label = m.Get<string>("Label");
             marker.texture = GetObject(m.Get<int>("Texture")) as Texture2D;
@@ -149,7 +154,13 @@ public static class OnlineMapsPrefs
         foreach (OnlineMapsXML m in el)
         {
             OnlineMapsMarker3D marker = new OnlineMapsMarker3D();
-            marker.position = m.Get<Vector2>("Position");
+
+            double mx = m.Get<double>("Longitude");
+            double my = m.Get<double>("Latitude");
+
+            marker.SetPosition(mx, my);
+            
+            Debug.Log(m["Range"].outerXml);
             marker.range = m.Get<OnlineMapsRange>("Range");
             marker.label = m.Get<string>("Label");
             marker.prefab = GetObject(m.Get<int>("Prefab")) as GameObject;
@@ -176,16 +187,16 @@ public static class OnlineMapsPrefs
         }
 
         api.source = (OnlineMapsSource) el.Get<int>("Source");
-        api.provider = (OnlineMapsProviderEnum) el.Get<int>("Provider");
-        if (api.provider == OnlineMapsProviderEnum.custom) api.customProviderURL = el.Get<string>("CustomProviderURL");
-        api.type = el.Get<int>("Prefs");
+        api.mapType = el.Get("MapType");
+        OnlineMapsProvider.MapType activeType = OnlineMapsProvider.FindMapType(api.mapType);
+        if (activeType.isCustom) api.customProviderURL = el.Get<string>("CustomProviderURL");
         api.labels = el.Get<bool>("Labels");
         api.traffic = el.Get<bool>("Traffic");
         api.redrawOnPlay = el.Get<bool>("RedrawOnPlay");
         api.useSmartTexture = el.Get<bool>("UseSmartTexture");
         api.emptyColor = el.Get<Color>("EmptyColor");
         api.defaultTileTexture = GetObject(el.Get<int>("DefaultTileTexture")) as Texture2D;
-        api.skin = GetObject(el.Get<int>("Skin")) as GUISkin;
+        api.tooltipBackgroundTexture = GetObject(el.Get<int>("TooltipTexture")) as Texture2D;
         api.defaultMarkerTexture = GetObject(el.Get<int>("DefaultMarkerTexture")) as Texture2D;
         api.defaultMarkerAlign = (OnlineMapsAlign) el.Get<int>("DefaultMarkerAlign");
         api.showMarkerTooltip = (OnlineMapsShowMarkerTooltip) el.Get<int>("ShowMarkerTooltip");
@@ -199,7 +210,7 @@ public static class OnlineMapsPrefs
             if (Exists())
             {
 #pragma warning disable 618
-                OnlineMaps api = ((OnlineMaps[]) Object.FindSceneObjectsOfType(typeof (OnlineMaps))).FirstOrDefault();
+                OnlineMaps api = ((OnlineMaps[])Object.FindSceneObjectsOfType(typeof(OnlineMaps))).FirstOrDefault();
 #pragma warning restore 618
                 if (api != null)
                 {
@@ -207,6 +218,15 @@ public static class OnlineMapsPrefs
                     EditorUtility.SetDirty(api);
                 }
             }
+
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#else
+            if (EditorPrefs.HasKey("OnlineMapsRefreshAssets"))
+            {
+                EditorPrefs.DeleteKey("OnlineMapsRefreshAssets");
+                AssetDatabase.Refresh();
+            }
+#endif
         }
     }
 

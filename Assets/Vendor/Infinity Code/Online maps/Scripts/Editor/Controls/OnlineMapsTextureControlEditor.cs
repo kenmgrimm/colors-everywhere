@@ -1,10 +1,17 @@
 /*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-using System.Collections.Generic;
-using System.Linq;
+#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#define UNITY_5_3P
+#endif
+
 using UnityEditor;
 using UnityEngine;
+
+#if UNITY_5_3P
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+#endif
 
 [CustomEditor(typeof(OnlineMapsTextureControl))]
 public class OnlineMapsTextureControlEditor : Editor
@@ -12,25 +19,63 @@ public class OnlineMapsTextureControlEditor : Editor
     protected OnlineMapsControlBase3D control;
     private bool showMarkers;
 
-    private void DrawAllowsGUI()
+    protected SerializedProperty pAllowUserControl;
+    protected SerializedProperty pAllowAddMarkerByM;
+    protected SerializedProperty pAllowAddMarker3DByN;
+    protected SerializedProperty pAllowZoom;
+    protected SerializedProperty pZoomInOnDoubleClick;
+    protected SerializedProperty pInvertTouchZoom;
+    protected SerializedProperty pAllowCameraControl;
+    protected SerializedProperty pCameraDistance;
+    protected SerializedProperty pCameraRotation;
+    protected SerializedProperty pCameraSpeed;
+    protected SerializedProperty pCameraAdjustTo;
+    protected SerializedProperty pMarker2DMode;
+    protected SerializedProperty pMarker2DSize;
+    protected SerializedProperty pMarker3DScale;
+    protected SerializedProperty pAllowDefaultMarkerEvents;
+    protected SerializedProperty pMarkers3D;
+    protected SerializedProperty pActiveCamera;
+    protected SerializedProperty pZoomMode;
+    protected SerializedProperty pDefault3DMarker;
+
+    protected virtual void CacheSerializedProperties()
     {
-        control.allowUserControl = EditorGUILayout.Toggle("Allow User Control", control.allowUserControl);
-        control.allowAddMarkerByM = EditorGUILayout.Toggle("Allow Add 2D marker by M", control.allowAddMarkerByM);
-        control.allowAddMarker3DByN = EditorGUILayout.Toggle("Allow Add 3D marker by N", control.allowAddMarker3DByN);
+        pAllowUserControl = serializedObject.FindProperty("allowUserControl");
+        pAllowAddMarkerByM = serializedObject.FindProperty("allowAddMarkerByM");
+        pAllowAddMarker3DByN = serializedObject.FindProperty("allowAddMarker3DByN");
+        pAllowZoom = serializedObject.FindProperty("allowZoom");
+        pZoomInOnDoubleClick = serializedObject.FindProperty("zoomInOnDoubleClick");
+        pInvertTouchZoom = serializedObject.FindProperty("invertTouchZoom");
+        pAllowCameraControl = serializedObject.FindProperty("allowCameraControl");
+        pCameraDistance = serializedObject.FindProperty("cameraDistance");
+        pCameraRotation = serializedObject.FindProperty("cameraRotation");
+        pCameraSpeed = serializedObject.FindProperty("cameraSpeed");
+        pCameraAdjustTo = serializedObject.FindProperty("cameraAdjustTo");
+        pMarker2DMode = serializedObject.FindProperty("marker2DMode");
+        pMarker2DSize = serializedObject.FindProperty("marker2DSize");
+        pMarker3DScale = serializedObject.FindProperty("marker3DScale");
+        pAllowDefaultMarkerEvents = serializedObject.FindProperty("allowDefaultMarkerEvents");
+        pMarkers3D = serializedObject.FindProperty("markers3D");
+        pActiveCamera = serializedObject.FindProperty("activeCamera");
+        pZoomMode = serializedObject.FindProperty("zoomMode");
+        pDefault3DMarker = serializedObject.FindProperty("default3DMarker");
     }
 
     private void DrawCameraControlGUI()
     {
-        bool allowCameraControl = control.allowCameraControl;
+        
+        bool allowCameraControl = pAllowCameraControl.boolValue;
         if (allowCameraControl) EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        control.allowCameraControl = EditorGUILayout.Toggle("Allow Camera Control", control.allowCameraControl);
+        EditorGUILayout.PropertyField(pAllowCameraControl);
 
-        if (control.allowCameraControl)
+        if (pAllowCameraControl.boolValue)
         {
-            control.cameraDistance = EditorGUILayout.FloatField("Camera distance", control.cameraDistance);
-            control.cameraRotation = EditorGUILayout.Vector2Field("Camera rotation", control.cameraRotation);
-            control.cameraSpeed = EditorGUILayout.Vector2Field("Camera rotation speed", control.cameraSpeed);
+            EditorGUILayout.PropertyField(pCameraDistance);
+            EditorGUILayout.PropertyField(pCameraRotation);
+            EditorGUILayout.PropertyField(pCameraSpeed, new GUIContent("Camera Rotation Speed"));
+            EditorGUILayout.PropertyField(pCameraAdjustTo);
         }
 
         if (allowCameraControl) EditorGUILayout.EndVertical();
@@ -39,116 +84,76 @@ public class OnlineMapsTextureControlEditor : Editor
     public virtual void DrawMarker2DPropsGUI()
     {
         EditorGUI.BeginChangeCheck();
-        control.marker2DMode = (OnlineMapsMarker2DMode) EditorGUILayout.EnumPopup("Marker 2D Mode: ", control.marker2DMode);
-        if (control.marker2DMode == OnlineMapsMarker2DMode.billboard)
+
+        int oldMode = pMarker2DMode.enumValueIndex;
+        EditorGUILayout.PropertyField(pMarker2DMode);
+        if (pMarker2DMode.enumValueIndex == (int)OnlineMapsMarker2DMode.billboard)
         {
-            control.marker2DSize = EditorGUILayout.FloatField("Marker 2D size: ", control.marker2DSize);
-            if (control.marker2DSize < 1) control.marker2DSize = 1;
+            EditorGUILayout.PropertyField(pMarker2DSize);
+            if (pMarker2DSize.floatValue < 1) pMarker2DSize.floatValue = 1;
         }
         if (EditorGUI.EndChangeCheck() && EditorApplication.isPlaying)
         {
-            control.Clear2DMarkerInstances();
+            control.Clear2DMarkerInstances((OnlineMapsMarker2DMode)oldMode);
             OnlineMaps.instance.Redraw();
         }
     }
 
-    private void DrawMarkerGUI(int i, ref int index, ref bool hasDeleted, OnlineMaps map, ref bool dirty)
-    {
-        EditorGUILayout.BeginVertical(GUI.skin.box);
-
-        OnlineMapsMarker3D marker = control.markers3D[i];
-        GUILayout.Label("Marker " + index);
-        Vector2 oldPosition = marker.position;
-
-        EditorGUI.BeginChangeCheck();
-
-        marker.allowDefaultMarkerEvents = control.allowDefaultMarkerEvents;
-
-        marker.position.y = EditorGUILayout.FloatField("Latitude: ", marker.position.y);
-        marker.position.x = EditorGUILayout.FloatField("Longitude: ", marker.position.x);
-
-        float min = marker.range.min;
-        float max = marker.range.max;
-        EditorGUILayout.MinMaxSlider(new GUIContent(string.Format("Zooms ({0}-{1}): ", marker.range.min, marker.range.max)), ref min, ref max, 3, 20);
-        if (marker.range.Update(Mathf.RoundToInt(min), Mathf.RoundToInt(max)) && EditorApplication.isPlaying)
-            marker.Update(map.topLeftPosition, map.bottomRightPosition, map.zoom);
-
-        if (Application.isPlaying && marker.position != oldPosition) marker.Update(map.topLeftPosition, map.bottomRightPosition, map.zoom);
-
-        marker.label = EditorGUILayout.TextField("Label: ", marker.label);
-        marker.scale = EditorGUILayout.FloatField("Scale: ", marker.scale);
-        GameObject prefab = marker.prefab;
-        marker.prefab = (GameObject)EditorGUILayout.ObjectField("Prefab: ", marker.prefab, typeof(GameObject), false);
-
-        if (Application.isPlaying && marker.prefab != prefab) marker.Reinit(map.topLeftPosition, map.bottomRightPosition, map.zoom);
-
-        if (EditorGUI.EndChangeCheck()) dirty = true;
-
-        if (GUILayout.Button("Remove"))
-        {
-            control.markers3D[i] = null;
-            hasDeleted = true;
-            if (Application.isPlaying) Destroy(marker.instance);
-        }
-        index++;
-        EditorGUILayout.EndVertical();
-    }
-
     protected void DrawMarkersGUI(ref bool dirty)
     {
-        if (control.markers3D == null)
-        {
-            control.markers3D = new OnlineMapsMarker3D[0];
-            dirty = true;
-        }
-
         EditorGUILayout.BeginVertical(GUI.skin.box);
-        showMarkers = OnlineMapsEditor.Foldout(showMarkers, "3D markers");
+        showMarkers = OnlineMapsEditor.Foldout(showMarkers, string.Format("3D markers (Count: {0})", pMarkers3D.arraySize));
 
         if (showMarkers)
         {
+            EditorGUILayout.PropertyField(pDefault3DMarker);
+            EditorGUILayout.PropertyField(pMarker3DScale);
+            EditorGUILayout.PropertyField(pAllowDefaultMarkerEvents);
+
+            int removedIndex = -1;
+
             EditorGUI.BeginChangeCheck();
-            control.marker3DScale = EditorGUILayout.FloatField("Marker3D Scale: ", control.marker3DScale);
-            control.allowDefaultMarkerEvents = EditorGUILayout.Toggle("Allow Default Marker Events: ", control.allowDefaultMarkerEvents);
+            for (int i = 0; i < pMarkers3D.arraySize; i++)
+            {
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                OnlineMapsMarker3DPropertyDrawer.isRemoved = false;
+                OnlineMapsMarker3DPropertyDrawer.isEnabledChanged = null;
+
+                EditorGUILayout.PropertyField(pMarkers3D.GetArrayElementAtIndex(i), new GUIContent("Marker " + (i + 1)));
+
+                if (OnlineMapsMarker3DPropertyDrawer.isRemoved) removedIndex = i;
+                if (OnlineMapsMarker3DPropertyDrawer.isEnabledChanged.HasValue) control.markers3D[i].enabled = OnlineMapsMarker3DPropertyDrawer.isEnabledChanged.Value;
+
+                EditorGUILayout.EndHorizontal();
+            }
             if (EditorGUI.EndChangeCheck()) dirty = true;
 
-            int index = 1;
-            bool hasDeleted = false;
-
-            OnlineMaps map = control.GetComponent<OnlineMaps>();
-
-            for (int i = 0; i < control.markers3D.Length; i++) DrawMarkerGUI(i, ref index, ref hasDeleted, map, ref dirty);
-
-            if (hasDeleted)
+            if (removedIndex != -1)
             {
-                List<OnlineMapsMarker3D> markers = control.markers3D.ToList();
-                markers.RemoveAll(m => m == null);
-                control.markers3D = markers.ToArray();
-                if (Application.isPlaying) OnlineMaps.instance.Redraw();
+                ArrayUtility.RemoveAt(ref control.markers3D, removedIndex);
                 dirty = true;
             }
 
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Add marker"))
+            if (GUILayout.Button("Add Marker"))
             {
                 if (!Application.isPlaying)
                 {
                     OnlineMapsMarker3D marker = new OnlineMapsMarker3D
                     {
                         position = control.GetComponent<OnlineMaps>().position,
-                        scale = control.marker3DScale
+                        scale = pMarker3DScale.floatValue
                     };
-                    List<OnlineMapsMarker3D> markers = new List<OnlineMapsMarker3D>(control.markers3D) { marker };
-                    control.markers3D = markers.ToArray();
+                    ArrayUtility.Add(ref control.markers3D, marker);
                 }
                 else
                 {
                     GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     control.AddMarker3D(OnlineMaps.instance.position, prefab);
-                    DestroyImmediate(prefab);
+                    OnlineMapsUtils.DestroyImmediate(prefab);
                 }
-                EditorUtility.SetDirty(control);
+                dirty = true;
             }
         }
 
@@ -159,11 +164,14 @@ public class OnlineMapsTextureControlEditor : Editor
     {
         EditorGUI.BeginChangeCheck();
 
-        DrawAllowsGUI();
+        EditorGUILayout.PropertyField(pAllowUserControl);
+        EditorGUILayout.PropertyField(pAllowAddMarkerByM);
+        EditorGUILayout.PropertyField(pAllowAddMarker3DByN);
+
         DrawZoomGUI();
         DrawCameraControlGUI();
 
-        control.activeCamera = (Camera) EditorGUILayout.ObjectField("Camera:", control.activeCamera, typeof (Camera), true);
+        EditorGUILayout.PropertyField(pActiveCamera, new GUIContent("Camera"));
         DrawMarker2DPropsGUI();
 
         if (EditorGUI.EndChangeCheck()) dirty = true;
@@ -171,13 +179,16 @@ public class OnlineMapsTextureControlEditor : Editor
 
     private void DrawZoomGUI()
     {
-        bool allowZoom = control.allowZoom;
+        bool allowZoom = pAllowZoom.boolValue;
         if (allowZoom) EditorGUILayout.BeginVertical(GUI.skin.box);
-        control.allowZoom = EditorGUILayout.Toggle("Allow Zoom", control.allowZoom);
-        if (control.allowZoom)
+        EditorGUILayout.PropertyField(pAllowZoom);
+        
+        if (pAllowZoom.boolValue)
         {
-            control.zoomInOnDoubleClick = EditorGUILayout.Toggle("Zoom In On Double Click", control.zoomInOnDoubleClick);
-            control.invertTouchZoom = EditorGUILayout.Toggle("Invert Touch Zoom", control.invertTouchZoom);
+            EditorGUILayout.PropertyField(pZoomInOnDoubleClick);
+            EditorGUILayout.PropertyField(pInvertTouchZoom);
+            EditorGUILayout.PropertyField(pZoomMode);
+
             DrawZoomLate();
         }
         if (allowZoom) EditorGUILayout.EndVertical();
@@ -188,14 +199,20 @@ public class OnlineMapsTextureControlEditor : Editor
         
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
-        control = (OnlineMapsControlBase3D) target;
+        control = target as OnlineMapsControlBase3D;
+        CacheSerializedProperties();
     }
 
     public override void OnInspectorGUI()
     {
         bool dirty = false;
+
+        serializedObject.Update();
+
+        float oldWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 170;
 
         OnlineMaps api = OnlineMapsControlBaseEditor.GetOnlineMaps(control);
         OnlineMapsControlBaseEditor.CheckTarget(api, OnlineMapsTarget.texture, ref dirty);
@@ -205,10 +222,21 @@ public class OnlineMapsTextureControlEditor : Editor
         DrawPropsGUI(ref dirty);
         DrawMarkersGUI(ref dirty);
 
+        EditorGUIUtility.labelWidth = oldWidth;
+
+        serializedObject.ApplyModifiedProperties();
+
         if (dirty)
         {
             EditorUtility.SetDirty(api);
-            Repaint();
+            EditorUtility.SetDirty(control);
+            if (!Application.isPlaying)
+            {
+#if UNITY_5_3P
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+#endif
+            }
+            else api.Redraw();
         }
     }
 }

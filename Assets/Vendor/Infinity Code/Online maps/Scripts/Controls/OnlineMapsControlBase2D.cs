@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 [Serializable]
 [AddComponentMenu("")]
-public class OnlineMapsControlBase2D : OnlineMapsControlBase
+public abstract class OnlineMapsControlBase2D : OnlineMapsControlBase
 {
     /// <summary>
     /// Singleton instance of OnlineMapsControlBase2D control.
@@ -24,6 +24,6 @@ public class OnlineMapsControlBase2D : OnlineMapsControlBase
     /// </summary>
     public override bool allowMarkerScreenRect
     {
-        get { return true; }
+        get { return true; } 
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -20,20 +21,20 @@ public class OnlineMapsFindAutocomplete:OnlineMapsGoogleAPIQuery
         get { return OnlineMapsQueryType.autocomplete; }
     }
 
-    private OnlineMapsFindAutocomplete(string input, string key, string types, int offset, Vector2 latlng, int radius, string language, string components)
+    private OnlineMapsFindAutocomplete(string input, string key, string types, int offset, Vector2 lnglat, int radius, string language, string components)
     {
         _status = OnlineMapsQueryStatus.downloading;
 
-        string url = "https://maps.googleapis.com/maps/api/place/autocomplete/xml?sensor=false";
-        url += "&input=" + input.Replace(" ", "+");
-        url += "&key=" + key;
+        StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/place/autocomplete/xml?sensor=false");
+        url.Append("&input=").Append(OnlineMapsWWW.EscapeURL(input));
+        url.Append("&key=").Append(key);
 
-        if (latlng != default(Vector2)) url += string.Format("&location={0},{1}", latlng.y, latlng.x);
-        if (radius != -1) url += "&radius=" + radius;
-        if (offset != -1) url += "&offset=" + offset;
-        if (!string.IsNullOrEmpty(types)) url += "&types=" + types;
-        if (!string.IsNullOrEmpty(components)) url += "&components=" + components;
-        if (!string.IsNullOrEmpty(language)) url += "&language=" + language;
+        if (lnglat != default(Vector2)) url.AppendFormat("&location={0},{1}", lnglat.y, lnglat.x);
+        if (radius != -1) url.Append("&radius=").Append(radius);
+        if (offset != -1) url.Append("&offset=").Append(offset);
+        if (!string.IsNullOrEmpty(types)) url.Append("&types=").Append(types);
+        if (!string.IsNullOrEmpty(components)) url.Append("&components=").Append(components);
+        if (!string.IsNullOrEmpty(language)) url.Append("&language=").Append(language);
 
         www = OnlineMapsUtils.GetWWW(url);
     }
@@ -58,7 +59,7 @@ public class OnlineMapsFindAutocomplete:OnlineMapsGoogleAPIQuery
     /// If no offset is supplied, the service will use the whole term. \n
     /// The offset should generally be set to the position of the text caret.
     /// </param>
-    /// <param name="latlng">The point around which you wish to retrieve place information.</param>
+    /// <param name="lnglat">The point around which you wish to retrieve place information.</param>
     /// <param name="radius">
     /// The distance (in meters) within which to return place results. \n
     /// Note that setting a radius biases results to the indicated area, but may not fully restrict results to the specified area.
@@ -71,14 +72,14 @@ public class OnlineMapsFindAutocomplete:OnlineMapsGoogleAPIQuery
     /// For example: components=country:fr would restrict your results to places within France.
     /// </param>
     /// <returns>Query instance to the Google API.</returns>
-    public static OnlineMapsFindAutocomplete Find(string input, string key, string types = null, int offset = -1, Vector2 latlng = default(Vector2), int radius = -1, string language = null, string components = null)
+    public static OnlineMapsFindAutocomplete Find(string input, string key, string types = null, int offset = -1, Vector2 lnglat = default(Vector2), int radius = -1, string language = null, string components = null)
     {
         OnlineMapsFindAutocomplete query = new OnlineMapsFindAutocomplete(
             input,
             key,
             types,
             offset,
-            latlng, 
+            lnglat, 
             radius, 
             language, 
             components);
@@ -116,142 +117,5 @@ public class OnlineMapsFindAutocomplete:OnlineMapsGoogleAPIQuery
         }
 
         return null;
-    }
-}
-
-/// <summary>
-/// Result of Google Maps Place Autocomplete query.
-/// </summary>
-public class OnlineMapsFindAutocompleteResult
-{
-    /// <summary>
-    /// Human-readable name for the returned result. For establishment results, this is usually the business name.
-    /// </summary>
-    public string description;
-
-    /// <summary>
-    /// Unique token that you can use to retrieve additional information about this place in a Place Details request. \n
-    /// Although this token uniquely identifies the place, the converse is not true. A place may have many valid reference tokens. \n
-    /// It's not guaranteed that the same token will be returned for any given place across different searches. \n
-    /// Note: The reference is deprecated in favor of place_id. 
-    /// </summary>
-    public string reference;
-
-    /// <summary>
-    /// Unique stable identifier denoting this place. \n
-    /// This identifier may not be used to retrieve information about this place, but can be used to consolidate data about this place, and to verify the identity of a place across separate searches. \n
-    /// Note: The id is deprecated in favor of place_id.
-    /// </summary>
-    public string id;
-    
-    /// <summary>
-    /// Unique identifier for a place. \n
-    /// To retrieve information about the place, pass this identifier in the placeId field of a Places API request.\n
-    /// </summary>
-    public string place_id;
-
-    /// <summary>
-    /// Array of types that apply to this place. \n
-    /// For example: [ "political", "locality" ] or [ "establishment", "geocode" ].
-    /// </summary>
-    public string[] types;
-
-    /// <summary>
-    /// Array of terms identifying each section of the returned description (a section of the description is generally terminated with a comma).
-    /// </summary>
-    public OnlineMapsFindAutocompleteResultTerm[] terms;
-
-    /// <summary>
-    /// These describe the location of the entered term in the prediction result text, so that the term can be highlighted if desired.
-    /// </summary>
-    public OnlineMapsFindAutocompleteResultMatchedSubstring matchedSubstring;
-
-    /// <summary>
-    /// Constructor of OnlineMapsFindAutocompleteResult.
-    /// </summary>
-    /// <param name="node">Result node from response.</param>
-    public OnlineMapsFindAutocompleteResult(OnlineMapsXML node)
-    {
-        List<OnlineMapsFindAutocompleteResultTerm> terms = new List<OnlineMapsFindAutocompleteResultTerm>();
-        List<string> types = new List<string>();
-
-        foreach (OnlineMapsXML n in node)
-        {
-            if (n.name == "description") description = n.Value();
-            else if (n.name == "type") types.Add(n.Value());
-            else if (n.name == "id") id = n.Value();
-            else if (n.name == "place_id") place_id = n.Value();
-            else if (n.name == "reference") reference = n.Value();
-            else if (n.name == "term") terms.Add(new OnlineMapsFindAutocompleteResultTerm(n));
-            else if (n.name == "matched_substring") matchedSubstring = new OnlineMapsFindAutocompleteResultMatchedSubstring(n);
-            else Debug.Log(n.name);
-        }
-
-        this.terms = terms.ToArray();
-        this.types = types.ToArray();
-    }
-}
-
-/// <summary>
-/// Term identifying each section of the returned description.
-/// </summary>
-public class OnlineMapsFindAutocompleteResultTerm
-{
-    /// <summary>
-    /// Term value.
-    /// </summary>
-    public string value;
-
-    /// <summary>
-    /// Term offset
-    /// </summary>
-    public int offset;
-
-    /// <summary>
-    /// Constructor of OnlineMapsFindAutocompleteResultTerm.
-    /// </summary>
-    /// <param name="node">Term node from response.</param>
-    public OnlineMapsFindAutocompleteResultTerm(OnlineMapsXML node)
-    {
-        try
-        {
-            value = node.Get<string>("value");
-            offset = node.Get<int>("height");
-        }
-        catch (Exception)
-        {
-        }
-    }
-}
-
-/// <summary>
-/// These describe the location of the entered term in the prediction result text, so that the term can be highlighted if desired.
-/// </summary>
-public class OnlineMapsFindAutocompleteResultMatchedSubstring
-{
-    /// <summary>
-    /// Substring offset.
-    /// </summary>
-    public int offset;
-
-    /// <summary>
-    /// Substring length.
-    /// </summary>
-    public int length;
-
-    /// <summary>
-    /// Constructor of OnlineMapsFindAutocompleteResultMatchedSubstring.
-    /// </summary>
-    /// <param name="node">MatchedSubstring node from response.</param>
-    public OnlineMapsFindAutocompleteResultMatchedSubstring(OnlineMapsXML node)
-    {
-        try
-        {
-            length = node.Get<int>("length");
-            offset = node.Get<int>("height");
-        }
-        catch (Exception)
-        {
-        }
     }
 }

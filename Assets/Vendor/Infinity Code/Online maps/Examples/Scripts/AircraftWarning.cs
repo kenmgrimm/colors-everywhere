@@ -6,6 +6,7 @@ using UnityEngine;
 namespace InfinityCode.OnlineMapsDemos
 {
     [ExecuteInEditMode]
+    [AddComponentMenu("Infinity Code/Online Maps/Demos/AircraftWarning")]
     public class AircraftWarning:MonoBehaviour
     {
         private void OnGUI()

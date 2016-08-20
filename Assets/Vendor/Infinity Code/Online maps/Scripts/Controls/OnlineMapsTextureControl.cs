@@ -9,7 +9,6 @@ using UnityEngine;
 [System.Serializable]
 [AddComponentMenu("Infinity Code/Online Maps/Controls/Texture")]
 [RequireComponent(typeof(MeshRenderer))]
-// ReSharper disable once UnusedMember.Global
 public class OnlineMapsTextureControl : OnlineMapsControlBase3D
 {
     /// <summary>
@@ -23,16 +22,10 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
     public override Vector2 GetCoords(Vector2 position)
     {
         RaycastHit hit;
-        if (!Physics.Raycast(activeCamera.ScreenPointToRay(position), out hit))
-            return Vector2.zero;
-
-        if (hit.collider.gameObject != gameObject) return Vector2.zero;
+        if (!cl.Raycast(activeCamera.ScreenPointToRay(position), out hit, OnlineMapsUtils.maxRaycastDistance)) return Vector2.zero;
 
         Renderer render = hit.collider.GetComponent<Renderer>();
-        MeshCollider meshCollider = hit.collider as MeshCollider;
-        if (render == null || render.sharedMaterial == null || render.sharedMaterial.mainTexture == null ||
-            meshCollider == null)
-            return Vector2.zero;
+        if (render == null || render.sharedMaterial == null || render.sharedMaterial.mainTexture == null) return Vector2.zero;
 
         Vector2 r = hit.textureCoord;
 
@@ -44,11 +37,11 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         px += countX * r.x;
         py -= countY * r.y;
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out px, out py);
+        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -57,13 +50,10 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
         RaycastHit hit;
 
         lng = lat = 0;
-        if (!Physics.Raycast(activeCamera.ScreenPointToRay(position), out hit)) return false;
+        if (!cl.Raycast(activeCamera.ScreenPointToRay(position), out hit, OnlineMapsUtils.maxRaycastDistance)) return false;
 
-        if (hit.collider.gameObject != gameObject) return false;
-
-        Renderer render = hit.collider.GetComponent<Renderer>();
-        MeshCollider meshCollider = hit.collider as MeshCollider;
-        if (render == null || render.sharedMaterial == null || render.sharedMaterial.mainTexture == null || meshCollider == null) return false;
+        Renderer render = cl.GetComponent<Renderer>();
+        if (render == null || render.sharedMaterial == null || render.sharedMaterial.mainTexture == null) return false;
 
         Vector2 r = hit.textureCoord;
 
@@ -75,11 +65,11 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
 
         double px, py;
         api.GetPosition(out px, out py);
-        OnlineMapsUtils.LatLongToTiled(px, py, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
 
         px += countX * r.x;
         py -= countY * r.y;
-        OnlineMapsUtils.TileToLatLong(px, py, api.zoom, out lng, out lat);
+        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
         return true;
     }
 

@@ -2,6 +2,8 @@
 /*   http://www.infinity-code.com   */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -13,56 +15,67 @@ public class OnlineMapsMarkerBase
     /// <summary>
     /// Default event caused to draw tooltip.
     /// </summary>
+    [NonSerialized]
     public static Action<OnlineMapsMarkerBase> OnMarkerDrawTooltip;
 
     /// <summary>
     /// Events that occur when user click on the marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnClick;
 
     /// <summary>
     /// Events that occur when user double click on the marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnDoubleClick;
 
     /// <summary>
     /// Events that occur when user drag the marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnDrag;
 
     /// <summary>
     /// Event caused to draw tooltip.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnDrawTooltip;
 
     /// <summary>
     /// Event occurs when the marker enabled change.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnEnabledChange;
 
     /// <summary>
     /// Events that occur when user long press on the marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnLongPress;
 
     /// <summary>
     /// Events that occur when user press on the marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnPress;
 
     /// <summary>
     /// Events that occur when user release on the marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnRelease;
 
     /// <summary>
     /// Events that occur when user roll out marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnRollOut;
 
     /// <summary>
     /// Events that occur when user roll over marker.
     /// </summary>
+    [NonSerialized]
     public Action<OnlineMapsMarkerBase> OnRollOver;
 
     /// <summary>
@@ -76,22 +89,21 @@ public class OnlineMapsMarkerBase
     public string label = "";
 
     /// <summary>
-    /// Marker coordinates.
-    /// </summary>
-    public Vector2 position;
-
-    /// <summary>
     /// Zoom range, in which the marker will be displayed.
     /// </summary>
     public OnlineMapsRange range;
 
-    /// <summary>
-    /// Scale of marker.\n
-    /// <strong>Note: </strong>It's works for 3D markers and Billboard markers in 3D controls, and Flat markers in tileset.
-    /// </summary>
-    public float scale = 1;
-
+    [SerializeField]
     protected bool _enabled = true;
+
+    [SerializeField]
+    protected double latitude;
+
+    [SerializeField]
+    protected double longitude;
+
+    [SerializeField]
+    protected float _scale = 1;
 
     /// <summary>
     /// Gets or sets marker enabled.
@@ -113,6 +125,31 @@ public class OnlineMapsMarkerBase
     }
 
     /// <summary>
+    /// Marker coordinates.
+    /// </summary>
+    public Vector2 position
+    {
+        get
+        {
+            return new Vector2((float)longitude, (float)latitude);
+        }
+        set
+        {
+            longitude = value.x;
+            latitude = value.y;
+        }
+    }
+
+    /// <summary>
+    /// Scale of marker.
+    /// </summary>
+    public virtual float scale
+    {
+        get { return _scale; }
+        set { _scale = value; }
+    }
+
+    /// <summary>
     /// Checks to display marker in current map view.
     /// </summary>
     public virtual bool inMapView
@@ -129,9 +166,42 @@ public class OnlineMapsMarkerBase
             api.GetTopLeftPosition(out tlx, out tly);
             api.GetBottomRightPosition(out brx, out bry);
 
-            if (position.x >= tlx && position.x <= brx && position.y >= bry && position.y <= tly) return true;
+            if (longitude >= tlx && longitude <= brx && latitude >= bry && latitude <= tly) return true;
             return false;
         }
+    }
+
+    public OnlineMapsMarkerBase()
+    {
+        range = new OnlineMapsRange(3, 20);
+    }
+
+    /// <summary>
+    /// Disposes marker
+    /// </summary>
+    public void Dispose()
+    {
+        OnClick = null;
+        OnDoubleClick = null;
+        OnDrag = null;
+        OnDrawTooltip = null;
+        OnEnabledChange = null;
+        OnLongPress = null;
+        OnPress = null;
+        OnRelease = null;
+        OnRollOut = null;
+        OnRollOver = null;
+    }
+
+    /// <summary>
+    /// Gets location of marker.
+    /// </summary>
+    /// <param name="lng">Longitude</param>
+    /// <param name="lat">Latitude</param>
+    public void GetPosition(out double lng, out double lat)
+    {
+        lng = longitude;
+        lat = latitude;
     }
 
     /// <summary>
@@ -153,10 +223,22 @@ public class OnlineMapsMarkerBase
     public virtual OnlineMapsXML Save(OnlineMapsXML parent)
     {
         OnlineMapsXML element = parent.Create("Marker");
-        element.Create("Position", position);
+        element.Create("Longitude", longitude);
+        element.Create("Latitude", latitude);
         element.Create("Range", range);
         element.Create("Label", label);
         return element;
+    }
+
+    /// <summary>
+    /// Set location of marker.
+    /// </summary>
+    /// <param name="lng">Longitude</param>
+    /// <param name="lat">Latitude</param>
+    public void SetPosition(double lng, double lat)
+    {
+        longitude = lng;
+        latitude = lat;
     }
 
     /// <summary>

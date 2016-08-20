@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class OnlineMapsPackageManager
 {
-    [MenuItem("Component/Infinity Code/Online Maps/Packages/Playmaker Integration Kit")]
+    [MenuItem("GameObject/Infinity Code/Online Maps/Playmaker Integration Kit", false, 1)]
     public static void ImportPlayMakerIntegrationKit()
     {
         if (EditorUtility.DisplayDialog("Playmaker Integration Kit", "You have Playmaker in your project?", "Yes, I have a Playmaker", "Cancel"))

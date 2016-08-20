@@ -1,6 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -8,7 +9,6 @@ using UnityEngine;
 /// You can create a new instance using OnlineMapsFindDirection.Find.\n
 /// https://developers.google.com/maps/documentation/directions/intro
 /// </summary>
-[System.Serializable]
 public class OnlineMapsFindDirection : OnlineMapsGoogleAPIQuery
 {
     /// <summary>
@@ -25,9 +25,9 @@ public class OnlineMapsFindDirection : OnlineMapsGoogleAPIQuery
     private OnlineMapsFindDirection(string origin, string destination, bool alternatives = false)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://maps.google.com/maps/api/directions/xml?origin={0}&destination={1}&sensor=false";
-        if (alternatives) url += "&alternatives=true";
-        url = string.Format(url, origin.Replace(" ", "+"), destination.Replace(" ", "+"));
+        StringBuilder url = new StringBuilder();
+        url.AppendFormat("https://maps.googleapis.com/maps/api/directions/xml?origin={0}&destination={1}&sensor=false", OnlineMapsWWW.EscapeURL(origin), OnlineMapsWWW.EscapeURL(destination));
+        if (alternatives) url.Append("&alternatives=true");
         www = OnlineMapsUtils.GetWWW(url);
         OnlineMaps.instance.AddGoogleAPIQuery(this);
     }

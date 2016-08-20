@@ -9,46 +9,71 @@ public class OnlineMapsBuildingsEditor:Editor
 {
     private OnlineMapsBuildings buildings;
     private bool showMaterials;
+    private SerializedProperty pZoomRange;
+    private SerializedProperty pLevelsRange;
+    private SerializedProperty pLevelHeight;
+    private SerializedProperty pMinHeight;
+    private SerializedProperty pHeightScale;
+    private SerializedProperty pMaxBuilding;
+    private SerializedProperty pMaxActiveBuildings;
+    private SerializedProperty pMaterials;
+    private GUIContent cMinHeight;
+    private GUIContent cMaxBuilding;
+    private GUIContent cMaxActiveBuildings;
+
+    protected void CacheSerializedProperties()
+    {
+        pZoomRange = serializedObject.FindProperty("zoomRange");
+        pLevelsRange = serializedObject.FindProperty("levelsRange");
+        pLevelHeight = serializedObject.FindProperty("levelHeight");
+        pMinHeight = serializedObject.FindProperty("minHeight");
+        pHeightScale = serializedObject.FindProperty("heightScale");
+        pMaxBuilding = serializedObject.FindProperty("maxBuilding");
+        pMaxActiveBuildings = serializedObject.FindProperty("maxActiveBuildings");
+        pMaterials = serializedObject.FindProperty("materials");
+
+        cMinHeight = new GUIContent("Min Building Height");
+        cMaxBuilding = new GUIContent("Max Number of Buildings (0-unlimited)");
+        cMaxActiveBuildings = new GUIContent("Max Number of Active Buildings (0-unlimited)");
+    }
 
     public void OnEnable()
     {
         buildings = target as OnlineMapsBuildings;
+        if (buildings.materials == null) buildings.materials = new OnlineMapsBuildingMaterial[0];
+
+        CacheSerializedProperties();
     }
 
     public override void OnInspectorGUI()
     {
         bool dirty = false;
 
-        if (buildings.zoomRange == null) buildings.zoomRange = new OnlineMapsRange(18, 20);
-        float min = buildings.zoomRange.min;
-        float max = buildings.zoomRange.max;
+        serializedObject.Update();
 
-        EditorGUI.BeginChangeCheck();
-        EditorGUILayout.MinMaxSlider(new GUIContent(string.Format("Zoom ({0}-{1}): ", min, max)), ref min, ref max, 3, 20);
-        buildings.zoomRange.min = Mathf.Clamp(Mathf.RoundToInt(min), 3, 20);
-        buildings.zoomRange.max = Mathf.Clamp(Mathf.RoundToInt(max), 3, 20);
-
-        if (buildings.zoomRange.min > buildings.zoomRange.max) buildings.zoomRange.min = buildings.zoomRange.max;
+        
+        EditorGUILayout.PropertyField(pZoomRange, new GUIContent("Zoom"));
         if (buildings.zoomRange.min < 17) EditorGUILayout.HelpBox("Can create a very large number of buildings. This may work slowly.", MessageType.Warning);
+        
+        EditorGUILayout.PropertyField(pLevelsRange, new GUIContent("Levels"));
 
-        float levelsMin = buildings.levelsRange.min;
-        float levelsMax = buildings.levelsRange.max;
-        EditorGUILayout.MinMaxSlider(new GUIContent(string.Format("Levels ({0}-{1}): ", levelsMin, levelsMax)), ref levelsMin, ref levelsMax, 1, 100);
-        buildings.levelsRange.min = Mathf.Clamp(Mathf.RoundToInt(levelsMin), 1, 100);
-        buildings.levelsRange.max = Mathf.Clamp(Mathf.RoundToInt(levelsMax), 1, 100);
-        if (buildings.levelsRange.min > buildings.levelsRange.max) buildings.levelsRange.min = buildings.levelsRange.max;
+        EditorGUILayout.PropertyField(pLevelHeight);
+        
+        EditorGUILayout.PropertyField(pMinHeight, cMinHeight);
+        EditorGUILayout.PropertyField(pHeightScale);
 
-        buildings.levelHeight = EditorGUILayout.FloatField("Level Height:", buildings.levelHeight);
-        buildings.minHeight = EditorGUILayout.FloatField("Min Building Height:", buildings.minHeight);
-        buildings.heightScale = EditorGUILayout.FloatField("Height Scale:", buildings.heightScale);
-        buildings.maxBuilding = EditorGUILayout.IntField("Max Number of Buildings (0-unlimited):", buildings.maxBuilding);
-        buildings.maxActiveBuildings = EditorGUILayout.IntField("Max Number of Active Buildings (0-unlimited):", buildings.maxActiveBuildings);
+        float labelWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 270;
 
-        if (EditorGUI.EndChangeCheck()) dirty = true;
+        
+        EditorGUILayout.PropertyField(pMaxBuilding, cMaxBuilding);
+        EditorGUILayout.PropertyField(pMaxActiveBuildings, cMaxActiveBuildings);
+
+        EditorGUIUtility.labelWidth = labelWidth;
 
         OnMaterialsGUI(ref dirty);
 
-        if (dirty) EditorUtility.SetDirty(buildings);
+        serializedObject.ApplyModifiedProperties();
     }
 
     private void OnMaterialsGUI(ref bool dirty)
@@ -56,33 +81,22 @@ public class OnlineMapsBuildingsEditor:Editor
         bool showMaterialGroup = showMaterials;
         if (showMaterialGroup) EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        if (buildings.materials == null) buildings.materials = new OnlineMapsBuildingMaterial[0];
-
         showMaterials = OnlineMapsEditor.Foldout(showMaterials, "Materials");
         if (showMaterials)
         {
-            int deleteIndex = -1;
-            for (int i = 0; i < buildings.materials.Length; i++)
+            int removedIndex = -1;
+            for (int i = 0; i < pMaterials.arraySize; i++)
             {
-                OnlineMapsBuildingMaterial material = buildings.materials[i];
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("X", GUILayout.ExpandWidth(false))) deleteIndex = i;
-                GUILayout.Label((i + 1) + ": ");
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                OnlineMapsBuildingMaterialPropertyDrawer.isRemoved = false;
+                EditorGUILayout.PropertyField(pMaterials.GetArrayElementAtIndex(i), new GUIContent("Material " + (i + 1)));
+                if (OnlineMapsBuildingMaterialPropertyDrawer.isRemoved) removedIndex = i;
                 EditorGUILayout.EndHorizontal();
-
-                EditorGUI.BeginChangeCheck();
-                material.wall =
-                    EditorGUILayout.ObjectField("Wall material", material.wall, typeof (Material), false) as Material;
-                material.roof =
-                    EditorGUILayout.ObjectField("Roof material", material.roof, typeof (Material), false) as Material;
-                material.scale = EditorGUILayout.Vector2Field("Scale", material.scale);
-
-                if (EditorGUI.EndChangeCheck()) dirty = true;
             }
 
-            if (deleteIndex != -1)
+            if (removedIndex != -1)
             {
-                ArrayUtility.RemoveAt(ref buildings.materials, deleteIndex);
+                ArrayUtility.RemoveAt(ref buildings.materials, removedIndex);
                 dirty = true;
             }
 

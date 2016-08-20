@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to test the connection to the Internet.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/CheckIntenetConnectionExample")]
     public class CheckIntenetConnectionExample : MonoBehaviour
     {

@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of use Online Maps Drawing API.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DrawingAPI_Example")]
     public class DrawingAPI_Example : MonoBehaviour
     {

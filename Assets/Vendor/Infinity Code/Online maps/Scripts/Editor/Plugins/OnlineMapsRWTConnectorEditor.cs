@@ -10,7 +10,11 @@ public class OnlineMapsRWTConnectorEditor : Editor
     public override void OnInspectorGUI()
     {
 #if !RWT
-        if (GUILayout.Button("Enable Real World Terrain")) OnlineMapsEditor.AddCompilerDirective("RWT");
+        if (GUILayout.Button("Enable Real World Terrain"))
+        {
+            if (EditorUtility.DisplayDialog("Enable Real World Terrain", "You have Real World Terrain in your project?", "Yes, I have Real World Terrain", "Cancel")) OnlineMapsEditor.AddCompilerDirective("RWT");
+        }
+            
 #else
         OnlineMapsRWTConnector connector = (OnlineMapsRWTConnector)target;
 

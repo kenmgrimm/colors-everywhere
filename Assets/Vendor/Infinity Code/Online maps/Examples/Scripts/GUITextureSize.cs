@@ -5,11 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsDemos
 {
-    [AddComponentMenu("")]
-    // ReSharper disable once UnusedMember.Global
+    [AddComponentMenu("Infinity Code/Online Maps/Demos/GUITextureSize")]
     public class GUITextureSize : MonoBehaviour
     {
-        // ReSharper disable once UnusedMember.Local
         private void Start()
         {
 #if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
@@ -18,7 +16,7 @@ namespace InfinityCode.OnlineMapsDemos
 #else
             GUITexture gt = GetComponent<GUITexture>();
             Rect pi = gt.pixelInset;
-    #endif
+#endif
             float sw = Screen.width / (float) gt.texture.width;
             float sh = Screen.height / (float) gt.texture.height;
 

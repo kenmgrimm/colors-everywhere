@@ -11,12 +11,34 @@ using UnityEngine;
 /// </summary>
 [Serializable]
 [AddComponentMenu("")]
-public class OnlineMapsControlBase3D: OnlineMapsControlBase
+public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
 {
+    /// <summary>
+    /// Intercepts creates a 3d marker.\n
+    /// Return null to create 3d marker using built-in manager.\n
+    /// Return instance of 3d marker to prevent using built-in manager.
+    /// </summary>
+    public Func<double, double, GameObject, OnlineMapsMarker3D> OnAddMarker3D;
+
     /// <summary>
     /// The event, which occurs when controls the camera.
     /// </summary>
+    [NonSerialized]
     public Action OnCameraControl;
+
+    /// <summary>
+    /// Intercepts removes a 3d marker.\n
+    /// Return FALSE to remove 3d marker using built-in manager.\n
+    /// Return TRUE to prevent using built-in manager.
+    /// </summary>
+    public Predicate<OnlineMapsMarker3D> OnRemoveMarker3D;
+
+    /// <summary>
+    /// Intercepts removes a 3d marker.\n
+    /// Return FALSE to remove 3d marker using built-in manager.\n
+    /// Return TRUE to prevent using built-in manager.
+    /// </summary>
+    public Predicate<int> OnRemoveMarker3DAt;
 
     /// <summary>
     /// The camera you are using to display the map.
@@ -40,6 +62,11 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     public bool allowCameraControl = false;
 
     /// <summary>
+    /// Indicates the point at which the camera should look.
+    /// </summary>
+    public OnlineMapsCameraAdjust cameraAdjustTo = OnlineMapsCameraAdjust.maxElevationInArea;
+
+    /// <summary>
     /// The distance from the camera to the center point of the map.\n
     /// Used when the allowCameraControl.
     /// </summary>
@@ -56,6 +83,11 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// Used when the allowCameraControl.
     /// </summary>
     public Vector2 cameraSpeed = Vector2.one;
+
+    /// <summary>
+    /// Default 3D marker.
+    /// </summary>
+    public GameObject default3DMarker;
 
     /// <summary>
     /// Mode of 2D markers. Bake in texture or Billboard.
@@ -95,7 +127,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
         {
             if (_cl == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
                 _cl = collider;
 #else
                 _cl = GetComponent<Collider>();
@@ -111,7 +143,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
         {
             if (_renderer == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
                 _renderer = renderer;
 #else
                 _renderer = GetComponent<Renderer>();
@@ -137,15 +169,35 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// <returns>Marker instance.</returns>
     public OnlineMapsMarker3D AddMarker3D(Vector2 markerPosition, GameObject prefab)
     {
-        List<OnlineMapsMarker3D> ms = markers3D.ToList();
-        OnlineMapsMarker3D marker = new OnlineMapsMarker3D
+        return AddMarker3D(markerPosition.x, markerPosition.y, prefab);
+    }
+
+    /// <summary>
+    /// Adds a new 3D marker on the map.
+    /// </summary>
+    /// <param name="markerLng">Marker longitude.</param>
+    /// <param name="markerLat">Marker latitude.</param>
+    /// <param name="prefab">Marker prefab.</param>
+    /// <returns>Marker instance.</returns>
+    public OnlineMapsMarker3D AddMarker3D(double markerLng, double markerLat, GameObject prefab)
+    {
+        OnlineMapsMarker3D marker;
+
+        if (OnAddMarker3D != null)
         {
-            position = markerPosition, 
-            prefab = prefab, 
+            marker = OnAddMarker3D(markerLng, markerLat, prefab);
+            if (marker != null) return marker;
+        }
+
+        List<OnlineMapsMarker3D> ms = markers3D.ToList();
+        marker = new OnlineMapsMarker3D
+        {
+            prefab = prefab,
             control = this,
             scale = marker3DScale,
             allowDefaultMarkerEvents = allowDefaultMarkerEvents
         };
+        marker.SetPosition(markerLng, markerLat);
         marker.Init(transform);
         ms.Add(marker);
         markers3D = ms.ToArray();
@@ -169,38 +221,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     {
         base.AfterUpdate();
 
-        if (api.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onHover)
-        {
-            OnlineMapsMarkerInstanceBase markerInstance = GetBillboardMarkerFromScreen(Input.mousePosition);
-            if (markerInstance != null)
-            {
-                api.tooltip = markerInstance.marker.label;
-                api.tooltipMarker = markerInstance.marker;
-            }
-        }
-
-        if (allowAddMarker3DByN && Input.GetKeyUp(KeyCode.N))
-        {
-            OnlineMapsMarker3D m = new OnlineMapsMarker3D
-            {
-                position = GetCoords(),
-                scale = marker3DScale,
-                control = this
-            };
-            m.Init(transform);
-            double tlx, tly, brx, bry;
-            api.GetTopLeftPosition(out tlx, out tly);
-            api.GetBottomRightPosition(out brx, out bry);
-            m.Update(tlx, tly, brx, bry, api.zoom);
-            List<OnlineMapsMarker3D> markerList = markers3D.ToList();
-            markerList.Add(m);
-            markers3D = markerList.ToArray();
-        }
-    }
-
-    protected override void BeforeUpdate()
-    {
-        base.BeforeUpdate();
+        Vector2 inputPosition = GetInputPosition();
 
         if (allowCameraControl)
         {
@@ -208,18 +229,17 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
             if (Input.GetMouseButton(1))
             {
                 isCameraControl = true;
-                Vector2 mousePosition = Input.mousePosition;
-                if (lastMousePosition != mousePosition && lastMousePosition != Vector2.zero)
+                if (lastInputPosition != inputPosition && lastInputPosition != Vector2.zero)
                 {
-                    Vector2 offset = lastMousePosition - mousePosition;
+                    Vector2 offset = lastInputPosition - inputPosition;
                     cameraRotation.x -= offset.y / 10f * cameraSpeed.x;
                     cameraRotation.y -= offset.x / 10f * cameraSpeed.y;
                 }
-                lastMousePosition = mousePosition;
+                lastInputPosition = inputPosition;
             }
             else if (isCameraControl)
             {
-                lastMousePosition = Vector2.zero;
+                lastInputPosition = Vector2.zero;
                 isCameraControl = false;
             }
 #else
@@ -240,7 +260,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
                         lastGestureCenter = center;
                     }
 
-                    lastMousePosition = center;
+                    lastInputPosition = center;
                 }
                 else
                 {
@@ -251,6 +271,41 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
 
             UpdateCameraPosition();
         }
+
+        if (api.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onHover)
+        {
+            OnlineMapsMarkerInstanceBase markerInstance = GetBillboardMarkerFromScreen(inputPosition);
+            if (markerInstance != null)
+            {
+                api.tooltip = markerInstance.marker.label;
+                api.tooltipMarker = markerInstance.marker;
+            }
+        }
+
+        if (allowAddMarker3DByN && Input.GetKeyUp(KeyCode.N))
+        {
+            OnlineMapsMarker3D m = new OnlineMapsMarker3D
+            {
+                position = GetCoords(),
+                scale = marker3DScale,
+                prefab = default3DMarker != null? Instantiate(default3DMarker) as GameObject: null,
+                control = this
+            };
+            m.Init(transform);
+            double tlx, tly, brx, bry;
+            api.GetTopLeftPosition(out tlx, out tly);
+            api.GetBottomRightPosition(out brx, out bry);
+            m.Update(tlx, tly, brx, bry, api.zoom);
+
+            if (markers3D == null) markers3D = new OnlineMapsMarker3D[0];
+            Array.Resize(ref markers3D, markers3D.Length + 1);
+            markers3D[markers3D.Length - 1] = m;
+        }
+    }
+
+    protected override void BeforeUpdate()
+    {
+        base.BeforeUpdate();
     }
 
     protected void Clear2DMarkerBillboards()
@@ -258,21 +313,20 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
         if (markerBillboards != null)
         {
             foreach (KeyValuePair<int, OnlineMapsMarkerBillboard> pair in markerBillboards)
-                DestroyImmediate(pair.Value.gameObject);
+            {
+                if (pair.Value != null) pair.Value.Dispose();
+            }
         }
         
         markerBillboards = null;
-        DestroyImmediate(markersGameObject);
+        OnlineMapsUtils.DestroyImmediate(markersGameObject);
         markersGameObject = null;
     }
 
-    public virtual void Clear2DMarkerInstances()
+    public virtual void Clear2DMarkerInstances(OnlineMapsMarker2DMode mode)
     {
-        if (marker2DMode == OnlineMapsMarker2DMode.billboard) OnlineMaps.instance.Redraw();
-        else
-        {
-            Clear2DMarkerBillboards();
-        }
+        if (mode == OnlineMapsMarker2DMode.billboard) Clear2DMarkerBillboards();
+        else OnlineMaps.instance.Redraw(); 
     }
 
     /// <summary>
@@ -354,7 +408,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
 
         if (this is OnlineMapsTileSetControl)
         {
-            worldPos = transform.position + transform.rotation * new Vector3(-api.tilesetSize.x * mapPos.x * transform.localScale.x, 0, api.tilesetSize.y * mapPos.y * transform.localScale.z);
+            worldPos = transform.position + transform.rotation * new Vector3(-api.tilesetSize.x * mapPos.x * transform.lossyScale.x, 0, api.tilesetSize.y * mapPos.y * transform.lossyScale.z);
         }
         else
         {
@@ -391,7 +445,9 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     {
         base.OnDestroyLate();
 
-        if (markersGameObject != null) DestroyImmediate(markersGameObject);
+        OnCameraControl = null;
+
+        if (markersGameObject != null) OnlineMapsUtils.DestroyImmediate(markersGameObject);
         markersGameObject = null;
 
         markers3D = null;
@@ -418,7 +474,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
                 cameraRotation.x -= offset.y / 10f * cameraSpeed.x;
                 cameraRotation.y -= offset.x / 10f * cameraSpeed.y;
             }
-            lastMousePosition = center;
+            lastInputPosition = center;
         }
     }
 
@@ -427,7 +483,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// </summary>
     public void RemoveAllMarker3D()
     {
-        foreach (OnlineMapsMarker3D marker in markers3D) if (marker.instance != null) Destroy(marker.instance);
+        foreach (OnlineMapsMarker3D marker in markers3D) if (marker.instance != null) OnlineMapsUtils.DestroyImmediate(marker.instance);
         markers3D = new OnlineMapsMarker3D[0];
     }
 
@@ -437,10 +493,12 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// <param name="marker">3D marker</param>
     public void RemoveMarker3D(OnlineMapsMarker3D marker)
     {
+        if (OnRemoveMarker3D != null && OnRemoveMarker3D(marker)) return;
+
         List<OnlineMapsMarker3D> ms = markers3D.ToList();
         ms.Remove(marker);
         markers3D = ms.ToArray();
-        if (marker.instance != null) Destroy(marker.instance);
+        if (marker.instance != null) OnlineMapsUtils.DestroyImmediate(marker.instance);
     }
 
     /// <summary>
@@ -449,13 +507,15 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// <param name="markerIndex">Marker index.</param>
     public void RemoveMarker3DAt(int markerIndex)
     {
+        if (OnRemoveMarker3DAt != null && OnRemoveMarker3DAt(markerIndex)) return;
+
         if (markerIndex < 0 || markerIndex >= markers3D.Length) return;
 
         OnlineMapsMarker3D marker = markers3D[markerIndex];
         List<OnlineMapsMarker3D> ms = markers3D.ToList();
         ms.Remove(marker);
         markers3D = ms.ToArray();
-        if (marker.instance != null) Destroy(marker.instance);
+        if (marker.instance != null) OnlineMapsUtils.DestroyImmediate(marker.instance);
     }
 
     public OnlineMapsXML SaveMarkers3D(OnlineMapsXML parent)
@@ -526,11 +586,12 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
                 double tlx, tly, brx, bry;
                 api.GetTopLeftPosition(out tlx, out tly);
                 api.GetBottomRightPosition(out brx, out bry);
-
                 float yScale = control.GetBestElevationYScale(tlx, tly, brx, bry);
-                offset.y = control.GetMaxElevationValue(yScale);
+                if (cameraAdjustTo == OnlineMapsCameraAdjust.maxElevationInArea) offset.y = control.GetMaxElevationValue(yScale);
+                else offset.y = control.GetElevationValue(targetPosition.x, targetPosition.z, yScale, tlx, tly, brx, bry);
             }
             
+            offset.Scale(control.smoothZoomStarted? control.originalScale: transform.lossyScale);
             targetPosition += transform.rotation * offset;
         }
 
@@ -580,7 +641,7 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
         int maxX = (2 << api.buffer.apiZoom) / 2;
 
         double px, py;
-        OnlineMapsUtils.LatLongToTiled(tlx, tly, api.zoom, out px, out py);
+        api.projection.CoordinatesToTile(tlx, tly, api.zoom, out px, out py);
 
         float yScale = GetBestElevationYScale(tlx, tly, brx, bry);
 
@@ -595,10 +656,13 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
         foreach (OnlineMapsMarker marker in api.markers)
         {
             if (!marker.enabled || !marker.range.InRange(api.zoom)) continue;
-            float mx = marker.position.x;
+
+            double mx, my;
+            marker.GetPosition(out mx, out my);
+            
             if (!(((mx > tlx && mx < brx) || (mx + 360 > tlx && mx + 360 < brx) ||
                  (mx - 360 > tlx && mx - 360 < brx)) &&
-                marker.position.y < tly && marker.position.y > bry)) continue;
+                my < tly && my > bry)) continue;
 
             int markerHashCode = marker.GetHashCode();
             OnlineMapsMarkerBillboard markerBillboard = null;
@@ -612,18 +676,26 @@ public class OnlineMapsControlBase3D: OnlineMapsControlBase
             }
             else markerBillboard = markerBillboards[markerHashCode];
 
+            if (markerBillboard == null) continue;
+
             float sx = size.x / api.width * marker2DSize * marker.scale;
             float sz = size.z / api.height * marker2DSize * marker.scale;
             float s = Mathf.Max(sx, sz);
+
+#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+            markerBillboard.transform.localScale = new Vector3(s, s, s);
+#else
             markerBillboard.transform.localScale = new Vector3(-s, s, s);
+#endif
 
-            Vector2 p = OnlineMapsUtils.LatLongToTilef(marker.position, api.buffer.apiZoom);
+            double mpx, mpy;
+            api.projection.CoordinatesToTile(mx, my, api.buffer.apiZoom, out mpx, out mpy);
 
-            p.x = Mathf.Repeat(p.x - (float)px, maxX);
-            p.y -= (float) py;
+            mpx = OnlineMapsUtils.Repeat(mpx - px, 0, maxX);
+            mpy -= py;
 
-            float x = -p.x / api.width * OnlineMapsUtils.tileSize *  size.x + positionOffset.x;
-            float z = p.y / api.height * OnlineMapsUtils.tileSize * size.z - positionOffset.z;
+            float x = (float)(-mpx / api.width * OnlineMapsUtils.tileSize *  size.x + positionOffset.x);
+            float z = (float)(mpy / api.height * OnlineMapsUtils.tileSize * size.z - positionOffset.z);
 
             float y = GetElevationValue(x, z, yScale, tlx, tly, brx, bry);
 

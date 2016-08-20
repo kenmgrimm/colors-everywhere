@@ -7,12 +7,10 @@ using UnityEngine;
 /// Base class for instance of marker. 
 /// This class is used when for each marker create a separate GameObject.
 /// </summary>
-[System.Serializable]
-[AddComponentMenu("")]
-public class OnlineMapsMarkerInstanceBase:MonoBehaviour
+public abstract class OnlineMapsMarkerInstanceBase:MonoBehaviour 
 {
     /// <summary>
     /// Reference to marker.
     /// </summary>
-    public OnlineMapsMarkerBase marker;
+    public abstract OnlineMapsMarkerBase marker { get; set; }
 }

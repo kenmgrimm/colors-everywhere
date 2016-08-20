@@ -30,6 +30,15 @@ public enum OnlineMapsBufferStatus
 }
 
 /// <summary>
+/// Point at which the camera should look.
+/// </summary>
+public enum OnlineMapsCameraAdjust
+{
+    maxElevationInArea,
+    centerPointElevation
+}
+
+/// <summary>
 /// OnlineMaps events.
 /// </summary>
 public enum OnlineMapsEvents
@@ -99,7 +108,14 @@ public enum OnlineMapsQueryType
     placeDetails,
     ors,
     bingMapsLocation,
-    nominatim
+    nominatim,
+    hereRoutingAPI
+}
+
+public enum OnlineMapsProjectionEnum
+{
+    sphericalMercator,
+    wgs84Mercator
 }
 
 /// <summary>
@@ -170,4 +186,26 @@ public enum OnlineMapsTileStatus
     loadedFromCache,
     error,
     disposed
+}
+
+public enum OnlineMapsTilesetDrawingMode
+{
+    meshes,
+    overlay
+}
+
+/// <summary>
+/// Mode of smooth zoom.
+/// </summary>
+public enum OnlineMapsZoomMode
+{
+    /// <summary>
+    /// Zoom at touch point.
+    /// </summary>
+    target,
+
+    /// <summary>
+    /// Zoom at center of map.
+    /// </summary>
+    center
 }

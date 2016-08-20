@@ -141,31 +141,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowRedraw: 1
   control: {fileID: 0}
-  customProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
+  customProviderURL: http://localhost/{zoom}/{y}/{x}
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
   defaultTileTexture: {fileID: 0}
   dispatchEvents: 1
   drawingElements: []
-  emptyColor:
-    r: 0.49803922
-    g: 0.49803922
-    b: 0.49803922
-    a: 1
+  emptyColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
   height: 0
   labels: 1
-  language: 656e
+  language: en
   lockRedraw: 0
   markers: []
   needGC: 0
   needRedraw: 1
+  notInteractUnderGUI: 1
   provider: 4
   redrawOnPlay: 0
   renderInThread: 1
-  resourcesPath: 4f6e6c696e654d61707354696c65732f7b7a6f6f6d7d2f7b787d2f7b797d
+  resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
   showMarkerTooltip: 0
-  skin: {fileID: 11400000, guid: 4ced77c4c4467874e8782601a87210c2, type: 2}
+  skin: {fileID: 0}
   smartTexture: {fileID: 0}
   source: 0
   target: 0
@@ -185,15 +182,17 @@ MonoBehaviour:
     scale: 1
   traffic: 0
   type: 0
+  useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
   useSmartTexture: 1
-  webplayerProxyURL: 687474703a2f2f736572766963652e696e66696e6974792d636f64652e636f6d2f72656469726563742e7068703f
+  webplayerProxyURL: http://service.infinity-code.com/redirect.php?
   width: 0
   zoomRange:
-    max: 2147483647
-    min: -2147483648
+    max: 0
+    min: 0
   latitude: 33.921390533447266
   longitude: -118.48310089111328
+  _position: {x: 0, y: 0}
   _zoom: 8
 --- !u!212 &142602538
 SpriteRenderer:
@@ -237,10 +236,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1128.7739, y: -78.445496, z: 2528.785}
   m_LocalScale: {x: 100, y: 100, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &142602540
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -347,7 +346,7 @@ Transform:
   m_LocalRotation: {x: 0.0005959296, y: -0.0060688294, z: -0.000093865885, w: -0.9999814}
   m_LocalPosition: {x: -1135.555, y: -79.11246, z: 1970.1229}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

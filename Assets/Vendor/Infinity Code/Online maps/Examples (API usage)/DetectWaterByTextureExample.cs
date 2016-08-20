@@ -5,6 +5,11 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of detection of water by texture.
+    /// This example requires a texture:
+    /// http://infinity-code.com/atlas/online-maps/images/mapForDetectWaterBW4.jpg
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/DetectWaterByTextureExample")]
     public class DetectWaterByTextureExample : MonoBehaviour
     {
@@ -18,28 +23,28 @@ namespace InfinityCode.OnlineMapsExamples
             if (Input.GetKeyUp(KeyCode.P))
             {
                 Vector2 mouseCoords = OnlineMapsControlBase.instance.GetCoords();
-                bool hasWater = HasWater(mouseCoords.y, mouseCoords.x);
+                bool hasWater = HasWater(mouseCoords.x, mouseCoords.y);
                 if (hasWater) Debug.Log("Has Water");
                 else Debug.Log("No Water");
             }
         }
 
-        private bool HasWater(float lat, float lng)
+        private bool HasWater(float lng, float lat)
         {
             // Convert geo coordinates to tile coordinates
-            Vector2 tilef = OnlineMapsUtils.LatLongToTilef(lng, lat, 3);
+            double tx, ty;
+            OnlineMaps.instance.projection.CoordinatesToTile(lng, lat, 3, out tx, out ty);
 
             const int countTileRowCol = 8;
 
             // Convert tile coordinates to texture coordinates (UV)
-            tilef.x /= countTileRowCol;
-            tilef.y /= countTileRowCol;
+            tx /= countTileRowCol;
+            ty /= countTileRowCol;
 
             // Check pixel color
-            Color color = mapForDetectWater.GetPixelBilinear(tilef.x, 1 - tilef.y);
-            Debug.Log(tilef);
-            /*Debug.Log ("pixel color = " + color);
-		    Debug.Log ("water color = " + waterColor);*/
+            Color color = mapForDetectWater.GetPixelBilinear((float)tx, (float)(1 - ty));
+            Debug.Log(tx + "   " + ty);
+
             return color == waterColor;
         }
     }

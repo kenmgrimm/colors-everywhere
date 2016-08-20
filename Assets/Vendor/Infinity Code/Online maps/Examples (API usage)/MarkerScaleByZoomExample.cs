@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of scaling markers when changing zoom.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/MarkerScaleByZoomExample")]
     public class MarkerScaleByZoomExample : MonoBehaviour
     {

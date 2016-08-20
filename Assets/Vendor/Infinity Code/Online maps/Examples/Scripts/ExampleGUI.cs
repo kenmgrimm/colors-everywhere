@@ -5,21 +5,18 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsDemos
 {
-    [AddComponentMenu("")]
-    // ReSharper disable once UnusedMember.Global
+    [AddComponentMenu("Infinity Code/Online Maps/Demos/ExampleGUI")]
     public class ExampleGUI : MonoBehaviour
     {
         private OnlineMaps api;
         private GUIStyle rowStyle;
         private string search = "";
 
-        // ReSharper disable once UnusedMember.Local
         private void OnEnable()
         {
             api = GetComponent<OnlineMaps>();
         }
 
-        // ReSharper disable once UnusedMember.Local
         private void OnGUI()
         {
             if (rowStyle == null)

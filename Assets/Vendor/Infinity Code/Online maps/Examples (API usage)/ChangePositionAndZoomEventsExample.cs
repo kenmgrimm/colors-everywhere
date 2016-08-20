@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to handle change of the position and zoom the map.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ChangePositionAndZoomEventsExample")]
     public class ChangePositionAndZoomEventsExample : MonoBehaviour
     {

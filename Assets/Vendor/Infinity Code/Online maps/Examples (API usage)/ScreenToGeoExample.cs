@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of the conversion of screen coordinates into geographic coordinates.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/ScreenToGeoExample")]
     public class ScreenToGeoExample : MonoBehaviour
     {

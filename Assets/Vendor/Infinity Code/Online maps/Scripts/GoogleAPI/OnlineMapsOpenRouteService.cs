@@ -2,6 +2,7 @@
 /*   http://www.infinity-code.com   */
 
 using System;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,6 @@ using UnityEngine;
 /// You can create a new instance using OnlineMapsOpenRouteService.Find.\n
 /// http://wiki.openstreetmap.org/wiki/OpenRouteService
 /// </summary>
-[Serializable]
 public class OnlineMapsOpenRouteService: OnlineMapsGoogleAPIQuery
 {
     /// <summary>
@@ -23,15 +23,29 @@ public class OnlineMapsOpenRouteService: OnlineMapsGoogleAPIQuery
     private OnlineMapsOpenRouteService(Vector2 start, Vector2 end, string lang, OnlineMapsOpenRouteServicePref pref, bool noMotorways, bool noTollways, Vector2[] via)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://openls.geog.uni-heidelberg.de/testing2015/route?Start={0}&End={1}&Via={2}&lang={3}&distunit=KM&routepref={4}&avoidAreas=&useTMC=false&noMotorways={5}&noTollways={6}&instructions=true";
-        string viaStr = "";
+
+        StringBuilder url = new StringBuilder("http://openls.geog.uni-heidelberg.de/route?");
+        url.Append("start=").Append(start.x).Append(",").Append(start.y);
+        url.Append("&end=").Append(end.x).Append(",").Append(end.y);
+
+        url.Append("&via=");
         if (via != null && via.Length > 0)
         {
-            string[] vias = new string[via.Length];
-            for (int i = 0; i < via.Length; i++) vias[i] = via[i].x + "," + via[i].y;
-            viaStr = string.Join(" ", vias);
+            for (int i = 0; i < via.Length; i++)
+            {
+                url.Append(via[i].x).Append(",").Append(via[i].y);
+                if (i < via.Length - 1) url.Append(" ");
+            }
         }
-        url = string.Format(url, start.x + "," + start.y, end.x + "," + end.y, viaStr, lang, Enum.GetName(typeof(OnlineMapsOpenRouteServicePref), pref), noMotorways, noTollways);
+
+        url.Append("&lang=").Append(lang);
+        url.Append("&distunit=KM&routepref=").Append(Enum.GetName(typeof (OnlineMapsOpenRouteServicePref), pref));
+        url.Append("&weighting=Shortest");
+        url.Append("&avoidAreas=&useTMC=false&noMotorways=").Append(noMotorways);
+        url.Append("&noTollways=").Append(noTollways).Append("&noUnpavedroads=false&noSteps=false&noFerries=false&instructions=true");
+
+        Debug.Log(url.ToString());
+
         www = OnlineMapsUtils.GetWWW(url);
     }
 

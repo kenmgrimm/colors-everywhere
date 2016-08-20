@@ -2,6 +2,7 @@
 /*   http://www.infinity-code.com   */
 
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -20,40 +21,47 @@ public class OnlineMapsGetElevation:OnlineMapsGoogleAPIQuery
     private OnlineMapsGetElevation(Vector2 location, string key, string client, string signature)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&locations=" + location.y + "," + location.x;
-        if (!string.IsNullOrEmpty(key)) url += "&key=" + key;
-        if (!string.IsNullOrEmpty(client)) url += "&client=" + client;
-        if (!string.IsNullOrEmpty(signature)) url += "&signature=" + signature;
+        StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&locations=").Append(location.y).Append(",").Append(location.x);
+        if (!string.IsNullOrEmpty(key)) url.Append("&key=").Append(key);
+        if (!string.IsNullOrEmpty(client)) url.Append("&client=").Append(client);
+        if (!string.IsNullOrEmpty(signature)) url.Append("&signature=").Append(signature);
         www = OnlineMapsUtils.GetWWW(url);
     }
 
     private OnlineMapsGetElevation(Vector2[] locations, string key, string client, string signature)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&locations=";
+        StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&locations=");
 
-        string[] locationsStr = new string[locations.Length];
-        for (int i = 0; i < locations.Length; i++) locationsStr[i] = locations[i].y + "," + locations[i].x;
+        for (int i = 0; i < locations.Length; i++)
+        {
+            url.Append(locations[i].y).Append(",").Append(locations[i].x);
+            if (i < locations.Length - 1) url.Append("|");
+        }
 
-        url += string.Join("|", locationsStr);
-        if (!string.IsNullOrEmpty(key)) url += "&key=" + key;
-        if (!string.IsNullOrEmpty(client)) url += "&client=" + client;
-        if (!string.IsNullOrEmpty(signature)) url += "&signature=" + signature;
+        if (!string.IsNullOrEmpty(key)) url.Append("&key=").Append(key);
+        if (!string.IsNullOrEmpty(client)) url.Append("&client=").Append(client);
+        if (!string.IsNullOrEmpty(signature)) url.Append("&signature=").Append(signature);
         www = OnlineMapsUtils.GetWWW(url);
     }
 
     private OnlineMapsGetElevation(Vector2[] path, int samples, string key, string client, string signature)
     {
         _status = OnlineMapsQueryStatus.downloading;
-        string url = "https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&path={0}&samples={1}";
+        StringBuilder url = new StringBuilder();
+        url.Append("https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&path=");
 
-        string[] pathStr = new string[path.Length];
-        for (int i = 0; i < path.Length; i++) pathStr[i] = path[i].y + "," + path[i].x;
+        for (int i = 0; i < path.Length; i++)
+        {
+            url.Append(path[i].y).Append(",").Append(path[i].x);
+            if (i < path.Length - 1) url.Append("|");
+        }
 
-        url = string.Format(url, string.Join("|", pathStr), samples);
-        if (!string.IsNullOrEmpty(key)) url += "&key=" + key;
-        if (!string.IsNullOrEmpty(client)) url += "&client=" + client;
-        if (!string.IsNullOrEmpty(signature)) url += "&signature=" + signature;
+        url.Append("&samples=").Append(samples);
+
+        if (!string.IsNullOrEmpty(key)) url.Append("&key=").Append(key);
+        if (!string.IsNullOrEmpty(client)) url.Append("&client=").Append(client);
+        if (!string.IsNullOrEmpty(signature)) url.Append("&signature=").Append(signature);
         www = OnlineMapsUtils.GetWWW(url);
     }
 
@@ -148,39 +156,5 @@ public class OnlineMapsGetElevation:OnlineMapsGoogleAPIQuery
         foreach (OnlineMapsXML node in xml.FindAll("result")) rList.Add(new OnlineMapsGetElevationResult(node));
 
         return rList.ToArray();
-    }
-}
-
-/// <summary>
-/// Result of Google Maps Elevation query.
-/// </summary>
-public class OnlineMapsGetElevationResult
-{
-    /// <summary>
-    /// Elevation of the location in meters.
-    /// </summary>
-    public float elevation;
-
-    /// <summary>
-    /// Position for which elevation data is being computed. \n
-    /// Note that for path requests, the set of location elements will contain the sampled points along the path.
-    /// </summary>
-    public Vector2 location;
-
-    /// <summary>
-    /// Maximum distance between data points from which the elevation was interpolated, in meters. \n
-    /// This property will be missing if the resolution is not known. \n
-    /// Note that elevation data becomes more coarse (larger resolution values) when multiple points are passed. \n
-    /// To obtain the most accurate elevation value for a point, it should be queried independently.
-    /// </summary>
-    public float resolution;
-
-    public OnlineMapsGetElevationResult(OnlineMapsXML node)
-    {
-        elevation = node.Get<float>("elevation");
-        resolution = node.Get<float>("resolution");
-
-        OnlineMapsXML locationNode = node["location"];
-        location = new Vector2(locationNode.Get<float>("lng"), locationNode.Get<float>("lat"));
     }
 }
