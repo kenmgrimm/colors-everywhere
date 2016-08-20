@@ -26,7 +26,6 @@ public class StrokeData : ISerializationCallbackReceiver {
   }
   
   public void OnBeforeSerialize() {
-    Debug.Log("OnBeforeSerialize");
     if(points == null) { return; }
 
     serializedPoints = new CondensedVector3[points.Count];
@@ -37,7 +36,6 @@ public class StrokeData : ISerializationCallbackReceiver {
   }
 
   public void OnAfterDeserialize() {
-    Debug.Log("OnAfterDeserialize");
     if(serializedPoints == null) { return; }
 
     points = new List<Vector3>();

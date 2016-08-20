@@ -4,8 +4,8 @@ using UnityEngine;
 using BestHTTP;
 
 public class PaintingPersistence : MonoBehaviour {
-	private static string ROUTE = "http://localhost:3000/paintings";
-	// private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
+	// private static string ROUTE = "http://localhost:3000/paintings";
+	private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
 
 	private Painting painting;
 
