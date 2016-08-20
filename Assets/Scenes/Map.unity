@@ -153,6 +153,143 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+--- !u!1 &279388627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 279388628}
+  - 114: {fileID: 279388629}
+  - 114: {fileID: 279388630}
+  m_Layer: 0
+  m_Name: MapData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &279388628
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 279388627}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+--- !u!114 &279388629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 279388627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38fd17f76407e4dbba2437eaad203d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintingSummaries: []
+--- !u!114 &279388630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 279388627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e6916500b3b49e79a1e97187db5ee9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &432911839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 432911840}
+  m_Layer: 0
+  m_Name: Controls
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &432911840
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 432911839}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children:
+  - {fileID: 733720552}
+  - {fileID: 1200520124}
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+--- !u!1001 &701321678
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0.21782993
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0.44403523
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0.14673132
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.8566521
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000010392931396, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 60
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &733720548
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,8 +376,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1094857381}
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 432911840}
+  m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -375,13 +512,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1200520121}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 432911840}
+  m_RootOrder: 1
 --- !u!1 &1369516166
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,6 +531,7 @@ GameObject:
   - 114: {fileID: 1369516167}
   - 114: {fileID: 1369516171}
   - 114: {fileID: 1369516170}
+  - 114: {fileID: 1369516172}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -414,18 +552,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTexture: {fileID: 0}
   allowAddMarkerByM: 1
-  allowZoom: 1
+  allowZoom: 0
   allowUserControl: 1
   isMapDrag: 0
   invertTouchZoom: 0
   zoomInOnDoubleClick: 1
+  zoomMode: 0
   activeCamera: {fileID: 1603501961}
   allowAddMarker3DByN: 1
   allowDefaultMarkerEvents: 1
   allowCameraControl: 1
+  cameraAdjustTo: 0
   cameraDistance: 1000
   cameraRotation: {x: 0, y: 0}
   cameraSpeed: {x: 1, y: 1}
+  default3DMarker: {fileID: 0}
   marker2DMode: 0
   marker2DSize: 100
   markers3D: []
@@ -434,11 +575,15 @@ MonoBehaviour:
   checkMarker2DVisibility: 0
   colliderType: 1
   drawingsGameObject: {fileID: 0}
+  drawingMode: 0
   drawingShader: {fileID: 4800000, guid: 07fd051d8972c7a4bac96bfa8038d08b, type: 3}
   elevationZoomRange:
     max: 20
     min: 11
+    maxLimit: 20
+    minLimit: 3
   elevationScale: 1
+  lockYScale: 0
   markerMaterial: {fileID: 0}
   markerShader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
   smoothZoom: 0
@@ -446,10 +591,11 @@ MonoBehaviour:
   smoothZoomMaxScale: 3.4028235e+38
   smoothZoomStarted: 0
   originalPosition: {x: 0, y: 0, z: 0}
-  smoothZoomMode: 0
+  originalScale: {x: 0, y: 0, z: 0}
   tileMaterial: {fileID: 0}
   tilesetShader: {fileID: 4800000, guid: f65580aa9bbbd7e42b05adab01e1ca2d, type: 3}
   useElevation: 0
+  yScaleValue: 0
 --- !u!114 &1369516168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,7 +615,6 @@ MonoBehaviour:
     type: 3}
   defaultTileTexture: {fileID: 0}
   dispatchEvents: 1
-  drawingElements: []
   emptyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   height: 0
   labels: 0
@@ -480,38 +625,41 @@ MonoBehaviour:
   needRedraw: 1
   notInteractUnderGUI: 1
   provider: 0
+  mapType: arcgis.worldimagery
   redrawOnPlay: 0
   renderInThread: 1
   resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
   showMarkerTooltip: 0
-  skin: {fileID: 0}
   smartTexture: {fileID: 0}
   source: 0
+  stopPlayingWhenScriptsCompile: 1
   target: 1
   texture: {fileID: 0}
   tilesetWidth: 1024
   tilesetHeight: 1024
-  tilesetSize: {x: 1024, y: 1024}
+  tilesetSize: {x: 2048, y: 2048}
   tooltip: 
-  tooltipDrawingElement:
-    tooltip: 
   tooltipMarker:
     label: 
-    position: {x: 0, y: 0}
     range:
       max: 0
       min: 0
-    scale: 1
+      maxLimit: 20
+      minLimit: 3
+    _enabled: 1
+    latitude: 0
+    longitude: 0
+    _scale: 1
+  tooltipBackgroundTexture: {fileID: 2800000, guid: a8d1734e646100c4e83635fecf978e15,
+    type: 3}
   traffic: 0
   type: 0
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
   useSmartTexture: 1
+  useWebplayerProxy: 1
   webplayerProxyURL: http://service.infinity-code.com/redirect.php?
   width: 0
-  zoomRange:
-    max: 2147483647
-    min: -2147483648
   latitude: 39.54656982421875
   longitude: -104.92449951171875
   _position: {x: 0, y: 0}
@@ -523,12 +671,12 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1369516166}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -534, y: -76.5, z: 1902}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
 --- !u!114 &1369516170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,10 +688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c41933bd764f942a69946e8caf69b0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  markers:
-  - {x: -104.9245, y: 39.54656}
-  - {x: -104.9245, y: 39.54657}
-  - {x: -104.9245, y: 39.54658}
+  markers: []
 --- !u!114 &1369516171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,23 +701,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoStopUpdateOnInput: 1
+  compassThreshold: 8
   createMarkerInUserPosition: 0
-  desiredAccuracy: 10
+  desiredAccuracy: 1
   emulatorCompass: 0
-  emulatorPosition: {x: 0, y: 0}
+  emulatorPosition: {x: -104.9245, y: 39.54656}
+  findLocationByIP: 1
   markerTooltip: 
-  markerType: 0
+  markerType: 1
   marker2DAlign: 4
-  marker2DTexture: {fileID: 0}
-  marker3DPrefab: {fileID: 0}
+  marker2DTexture: {fileID: 2800000, guid: 789b21e628d984bb69c1672e2bafe5c4, type: 3}
+  marker3DPrefab: {fileID: 1000011790908496, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd,
+    type: 2}
   maxPositionCount: 3
   position: {x: 0, y: 0}
   restoreAfter: 10
   trueHeading: 0
-  updateDistance: 10
+  updateDistance: 2
   updatePosition: 1
-  useCompassForMarker: 0
-  useGPSEmulator: 0
+  useCompassForMarker: 1
+  useGPSEmulator: 1
+--- !u!114 &1369516172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1369516166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adcc985175b8f0b409a706d7ae2a6eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1000011790908496, guid: 8a92f3d1d39be4f79a4af964a7b2b0fd, type: 2}
 --- !u!1 &1603501957
 GameObject:
   m_ObjectHideFlags: 0

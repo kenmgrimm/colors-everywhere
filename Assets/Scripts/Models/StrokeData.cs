@@ -5,8 +5,8 @@ using System.Collections.Generic;
 [Serializable]
 public class StrokeData : ISerializationCallbackReceiver {
   [SerializeField] private int brush_type;
-  [SerializeField] public string color;
   [SerializeField] public float brush_width;
+  [SerializeField] public string color;
   
   [SerializeField] CondensedVector3[] serializedPoints;
 
@@ -24,7 +24,7 @@ public class StrokeData : ISerializationCallbackReceiver {
       this.z = Math.Round((Decimal)z, 3).ToString();
     }
   }
-
+  
   public void OnBeforeSerialize() {
     Debug.Log("OnBeforeSerialize");
     if(points == null) { return; }

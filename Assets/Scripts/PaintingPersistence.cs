@@ -3,15 +3,15 @@ using UnityEngine;
 
 using BestHTTP;
 
-public class PersistenceManager : MonoBehaviour {
-	// private static string ROUTE = "http://localhost:3000/paintings";
-	private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
+public class PaintingPersistence : MonoBehaviour {
+	private static string ROUTE = "http://localhost:3000/paintings";
+	// private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
 
 	private Painting painting;
 
 	// Needs auth
 	// https://docs.unity3d.com/ScriptReference/WWWForm-headers.html
-	void Start () {
+	void Awake () {
 		Debug.Log("Starting PM");
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
