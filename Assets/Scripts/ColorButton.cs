@@ -12,5 +12,3 @@ public class ColorButton : EventTrigger {
 		brush.GetComponent<BrushPointer>().ChangeColor();
 	}
 }
-
-
