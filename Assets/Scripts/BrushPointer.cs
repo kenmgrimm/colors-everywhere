@@ -49,8 +49,6 @@ public class BrushPointer : MonoBehaviour {
 		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
 
 		InvokeRepeating("FadeTrail", 0, FADE_FREQUENCY);
-
-		ChangeColor();
 	}
 	
 	public void UpdatePointerTrail() {
@@ -84,13 +82,13 @@ public class BrushPointer : MonoBehaviour {
 		}
 	}
 
-	public void ChangeColor() {
-		color = Color.Lerp(Color.red, Color.blue, transition += transitionRate).ToString();
+	public void ChangeColor(string color) {
+		Debug.Log("BrushPointer.ChangeColor: " + color);
+
+		this.color = color;
 		if (transition > 1) { 
 			transition = 0; 
 		}
-
-		Debug.Log(color);
 	}
 
 	public void Extend(float distance) {

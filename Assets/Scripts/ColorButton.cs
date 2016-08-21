@@ -2,13 +2,15 @@
 using UnityEngine.EventSystems;
 
 public class ColorButton : EventTrigger {
-	private GameObject brush;
+	private ColorWheel colorWheel;
 
-	void Start () {
-		brush = GameObject.Find("Brush");
+	void Awake () {
+		GameObject colorWheelObj = GameObject.Find("Color Wheel");
+		colorWheel = colorWheelObj.GetComponent<ColorWheel>();
+		colorWheelObj.SetActive(false);
 	}
 
 	public override void OnPointerClick( PointerEventData data ) {
-		brush.GetComponent<BrushPointer>().ChangeColor();
+		colorWheel.TogglePalette();
 	}
 }

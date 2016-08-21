@@ -39,7 +39,7 @@ public class PaintingPersistence : MonoBehaviour {
 	}
 
 	public void SavePainting() {
-Debug.Log("PaintingPersistence: SavePainting(): id: " + painting.Id());
+		Debug.Log("PaintingPersistence: SavePainting(): id: " + painting.Id());
 		if(painting.Dirty) {
 			painting.Dirty = false;
 		}
