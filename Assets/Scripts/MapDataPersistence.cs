@@ -4,8 +4,8 @@ using UnityEngine;
 using BestHTTP;
 
 public class MapDataPersistence : MonoBehaviour {
-	// private static string ROUTE = "http://localhost:3000/map_data";
-	private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/map_data";
+	private static string ROUTE = "http://localhost:3000/map_data";
+	// private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/map_data";
 
 	public delegate void LoadHandler(object sender, EventArgs e);
   public event LoadHandler OnLoad;

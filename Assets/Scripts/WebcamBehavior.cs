@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using UnityEngine;
  
 // This should probably eventually be replaced with NatCam or similar ($75)
 // Or re-implement using: 
@@ -37,6 +35,7 @@ public class WebcamBehavior : MonoBehaviour {
 
     Application.RequestUserAuthorization(UserAuthorization.WebCam);
 
+    Debug.Log("Checking Mobile");
     InvokeRepeating("CheckForMobileCamera", 0, 1);
   }
 
@@ -48,16 +47,13 @@ public class WebcamBehavior : MonoBehaviour {
   }
  
   private void CheckForMobileCamera() {
-    Debug.Log("Checking Mobile");
     if(HasCamera()) {
       WebCamDevice newDevice = default(WebCamDevice);
 
       if(RearCamera().name != default(WebCamDevice).name) {
-        Debug.Log("RearCamera");
         newDevice = RearCamera();
       }
       else if(!WebCam().Equals(default(WebCamDevice))) {
-        Debug.Log("WebCam");
         newDevice = WebCam();
       }
 

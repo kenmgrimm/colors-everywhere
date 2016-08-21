@@ -42,12 +42,11 @@ Debug.Log(jsonData);
 		strokes.Clear();
 		paintingData.Load(jsonData);
 
-Debug.Log(paintingData.strokeDatas);
+Debug.Log("Found: " + paintingData.strokeDatas.Count + " strokes");
 		foreach(StrokeData data in paintingData.strokeDatas) {
 			Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
 			stroke.transform.parent = transform;
-Debug.Log("color:");			
-Debug.Log(data.Points());
+
 			stroke.Initialize(data);
 			strokes.Add(stroke);
 		}

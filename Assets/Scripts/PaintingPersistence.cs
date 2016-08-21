@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Text;
 using UnityEngine;
 
 using BestHTTP;
 
 public class PaintingPersistence : MonoBehaviour {
-	// private static string ROUTE = "http://localhost:3000/paintings";
-	private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
+	private static string ROUTE = "http://localhost:3000/paintings";
+	// private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
 
 	private Painting painting;
 
@@ -16,7 +17,7 @@ public class PaintingPersistence : MonoBehaviour {
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
 
-		LoadPaintingData(1);
+		LoadPaintingData(   28   );
 	}
 
 	public void OnDestroy() {
@@ -45,14 +46,18 @@ public class PaintingPersistence : MonoBehaviour {
 	}
 
 	private void SavePainting() {
-Debug.Log(painting.Id());
-Debug.Log(painting.paintingData.Id());
+Debug.Log("PaintingPersistence: SavePainting(): id: " + painting.Id());
 		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id());
 
 		string paintingJsonStr = painting.ToJsonStr();
 
+		byte[] compressed = Compress.Zip(paintingJsonStr);
+
 		HTTPRequest request = new HTTPRequest(updateRoute, HTTPMethods.Post, OnUpdateRequestFinished);
-		request.AddField("painting", paintingJsonStr);
+
+		string compressedBase64 = System.Convert.ToBase64String(compressed);
+
+		request.AddField("painting", compressedBase64);
 
 		request.Send();
 	}
