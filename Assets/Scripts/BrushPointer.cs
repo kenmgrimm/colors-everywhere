@@ -16,14 +16,11 @@ public class BrushPointer : MonoBehaviour {
 	public Queue<Vector3> pointerTrailPoints;
 	private Vector3 lastPoint;
 
-	private string color = "FFFFDD00";
+	private Color color = Color.magenta;
 	private int brushType = 3;
 	private float brushWidth = 2.5f;
 	
 	private Camera paintingCamera;
-
-	private float transitionRate = 0.1f;
-	private float transition = 0f;
 
 	LineRenderer pointerTrail;
 
@@ -43,6 +40,8 @@ public class BrushPointer : MonoBehaviour {
 		pointerTrail = Util.LoadAndCreatePrefab("Pointer Trail", painting.transform).GetComponent<LineRenderer>();
 
 		pointerTrail.SetVertexCount(0);
+
+		pointerTrail.SetColors(color, color);
 
 		pointerTrailPoints = new Queue<Vector3>();
 
@@ -82,13 +81,11 @@ public class BrushPointer : MonoBehaviour {
 		}
 	}
 
-	public void ChangeColor(string color) {
+	public void ChangeColor(Color color) {
 		Debug.Log("BrushPointer.ChangeColor: " + color);
 
 		this.color = color;
-		if (transition > 1) { 
-			transition = 0; 
-		}
+		pointerTrail.SetColors(color, color);
 	}
 
 	public void Extend(float distance) {

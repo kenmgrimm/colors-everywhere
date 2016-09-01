@@ -13,6 +13,10 @@ public class StrokeRenderer : MonoBehaviour {
 
 		strokePoints = new List<Vector3>();
 	}
+
+	public void ChangeColor(Color color) {
+		lineRenderer.SetColors(color, color);
+	}
 	
   public void AddPoint(Vector3 point) {
 		strokePoints.Add(point);

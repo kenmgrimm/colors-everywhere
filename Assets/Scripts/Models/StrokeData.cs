@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class StrokeData : ISerializationCallbackReceiver {
   [SerializeField] private int brush_type;
   [SerializeField] public float brush_width;
-  [SerializeField] public string color;
+  [SerializeField] public Color color;
   
   [SerializeField] CondensedVector3[] serializedPoints;
 
@@ -46,7 +46,7 @@ public class StrokeData : ISerializationCallbackReceiver {
     }
   }
 
-  public StrokeData(string color, int brushType, float brushWidth) {
+  public StrokeData(Color color, int brushType, float brushWidth) {
     this.brush_type = brushType;
     this.color = color;
     this.brush_width = brushWidth;

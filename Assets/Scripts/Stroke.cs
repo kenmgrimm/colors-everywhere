@@ -5,8 +5,9 @@ public class Stroke : MonoBehaviour {
 
 	void Start () {}
 
-  public void Initialize(string color, int brushType, float brushWidth) {
+  public void Initialize(Color color, int brushType, float brushWidth) {
     strokeData = new StrokeData(color, brushType, brushWidth);
+    StrokeRenderer().ChangeColor(color);
   }
 
   public void Initialize(StrokeData strokeData) {

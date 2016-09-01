@@ -21,7 +21,7 @@ public class Painting : MonoBehaviour {
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 	}
 	
-	public void StartStroke(string color, int brushType, float brushWidth) {
+	public void StartStroke(Color color, int brushType, float brushWidth) {
 		Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
 		stroke.transform.parent = transform;
 
@@ -50,6 +50,10 @@ Debug.Log("Found: " + paintingData.strokeDatas.Count + " strokes");
 			stroke.Initialize(data);
 			strokes.Add(stroke);
 		}
+	}
+
+	public void SetColor(Color color) {
+		GameObject.Find("Brush").GetComponent<BrushPointer>().ChangeColor(color);
 	}
 
 	public void AddPoint(Vector3 point) {
