@@ -12,6 +12,7 @@ public class Stroke : MonoBehaviour {
 
   public void Initialize(StrokeData strokeData) {
     this.strokeData = strokeData;
+    StrokeRenderer().ChangeColor(strokeData.color);
 
     foreach(Vector3 point in strokeData.Points()) {
       StrokeRenderer().AddPoint(point);

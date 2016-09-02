@@ -52,7 +52,11 @@ Debug.Log("Found: " + paintingData.strokeDatas.Count + " strokes");
 		}
 	}
 
-	public void SetColor(Color color) {
+	// public void OnColorPickerValueChange(Color color) {
+
+	// }
+
+	public void OnColorPickerValueChange(Color color) {
 		GameObject.Find("Brush").GetComponent<BrushPointer>().ChangeColor(color);
 	}
 

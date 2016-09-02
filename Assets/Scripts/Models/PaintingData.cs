@@ -31,7 +31,6 @@ public class PaintingData {
   public void Load(string jsonData) {
     strokeDatas = null;
     JsonUtility.FromJsonOverwrite(jsonData, this);
-		Debug.Log(strokeDatas[0].color);
   }
 
   public string ToJsonStr() {

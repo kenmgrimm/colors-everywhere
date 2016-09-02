@@ -16,7 +16,7 @@ public class PaintingPersistence : MonoBehaviour {
 
 		painting = GameObject.Find("Painting").GetComponent<Painting>();
 
-		LoadPaintingData(   4   );
+		LoadPaintingData(5);
 	}
 
 	private void OnLoadRequestFinished(HTTPRequest request, HTTPResponse response) {
