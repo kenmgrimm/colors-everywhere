@@ -52,18 +52,22 @@ public class BrushPointer : MonoBehaviour {
 	
 	public void UpdatePointerTrail() {
 		Vector3 point = Location();
-
-		if(lastPoint == null || pointerTrailPoints.Count < 5) {
-			pointerTrailPoints.Clear();
-
-			pointerTrailPoints.Enqueue(point);
-			pointerTrailPoints.Enqueue(point + new Vector3(0.001f, 0.001f, 0.0f));
-			pointerTrailPoints.Enqueue(point + new Vector3(-0.002f, -0.003f, -0.001f));
-			pointerTrailPoints.Enqueue(point + new Vector3(0.001f, 0.001f, 0.002f));
-			pointerTrailPoints.Enqueue(point + new Vector3(0.002f, -0.001f, -0.002f));
-
+		
+		if(lastPoint == null) {
 			lastPoint = point;
 		}
+
+		// if(lastPoint == null || pointerTrailPoints.Count < 5) {
+		// 	pointerTrailPoints.Clear();
+
+		// 	pointerTrailPoints.Enqueue(point);
+		// 	pointerTrailPoints.Enqueue(point + new Vector3(0.001f, 0.001f, 0.0f));
+		// 	pointerTrailPoints.Enqueue(point + new Vector3(-0.002f, -0.003f, -0.001f));
+		// 	pointerTrailPoints.Enqueue(point + new Vector3(0.001f, 0.001f, 0.002f));
+		// 	pointerTrailPoints.Enqueue(point + new Vector3(0.002f, -0.001f, -0.002f));
+
+		// 	lastPoint = point;
+		// }
 
 		// only queue if cursor moved
 		if(lastPoint != point) {
@@ -76,7 +80,7 @@ public class BrushPointer : MonoBehaviour {
 	}
 
 	private void FadeTrail() {
-		if(pointerTrailPoints.Count > 4) {
+		if(pointerTrailPoints.Count > 2) {
 			pointerTrailPoints.Dequeue();
 		}
 	}

@@ -11,8 +11,8 @@ public class ChangeColor : MonoBehaviour {
 	}
 
 	void OnChange () {
-		uint colorInt = (uint)GetComponent<Slider>().value;
-		Debug.Log(colorInt);
+		int colorInt = (int)GetComponent<Slider>().value;
+
 		string colorHex = colorInt.ToString("X6");
 		string rHex = colorHex.Substring(0, 2);
 		string gHex = colorHex.Substring(2, 2);
