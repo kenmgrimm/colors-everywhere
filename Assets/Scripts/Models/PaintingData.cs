@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// API for communication with Server
-
 [System.Serializable]
 public class PaintingData {
   [SerializeField] private int id = -1;
@@ -16,6 +14,8 @@ public class PaintingData {
     this.latitude = latitude;
     this.longitude = longitude;
     this.direction_degrees = directionDegrees;
+
+    Debug.Log("Created PaintingData: " + latitude + ", " + longitude + ", " + direction_degrees);
 
     strokeDatas = new List<StrokeData>();
   }

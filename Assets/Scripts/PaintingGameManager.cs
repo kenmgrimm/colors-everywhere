@@ -1,18 +1,45 @@
 ﻿using UnityEngine;
 
 public class PaintingGameManager : MonoBehaviour {
-	public static PaintingGameManager instance = null; //Static instance of GameManager which allows it to be accessed by any other script.
+	public static PaintingGameManager instance = null;
 
-	private Painting painting;
+	private GameObject paintingPrefab;
 
 	void Awake() {
 		SetupSingletion();
 
-		InitGame();
+		paintingPrefab = Util.LoadPrefab("Painting");
 	}
 
-	public void InitGame() {
-		painting = GameObject.Find("Painting").GetComponent<Painting>();
+	public Painting Painting() {
+		GameObject paintingObj = GameObject.FindWithTag("Painting");
+		if(!paintingObj) {
+			return null;
+		} 
+		
+		return paintingObj.GetComponent<Painting>();
+	}
+
+	public void CreatePainting(float latitude, float longitude, int directionDegrees) {
+		Painting painting = InstantiatePainting();
+
+		painting.Initialize(latitude, longitude, directionDegrees);
+	}
+
+	public void LoadPainting(int paintingId) {
+		Painting painting = InstantiatePainting();
+		painting.Load(paintingId);
+	}
+
+	private Painting InstantiatePainting() {
+		if(Painting()) {
+			Destroy(Painting().gameObject);
+		}
+
+		Painting painting = Instantiate(paintingPrefab).GetComponent<Painting>();
+		DontDestroyOnLoad(painting);
+
+		return painting;
 	}
 
 	private void SetupSingletion() {
@@ -25,11 +52,6 @@ public class PaintingGameManager : MonoBehaviour {
 			Destroy(gameObject);    
 		}
 
-		//Sets this to not be destroyed when reloading scene
 		DontDestroyOnLoad(gameObject);
-	}
-
-	public Painting Painting() {
-		return painting;
 	}
 }

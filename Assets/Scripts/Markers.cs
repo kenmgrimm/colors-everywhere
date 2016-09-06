@@ -32,6 +32,10 @@ public class Markers : MonoBehaviour {
   private void OnMarkerClick(OnlineMapsMarkerBase marker) {
     Debug.Log(marker.label);
     
+    int paintingId = int.Parse(marker.label);
+
+    PaintingGameManager.instance.LoadPainting(paintingId);
+    
     SceneManager.LoadScene("Graffiti");
   }
 }

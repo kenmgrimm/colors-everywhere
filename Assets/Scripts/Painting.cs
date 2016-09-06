@@ -12,15 +12,34 @@ public class Painting : MonoBehaviour {
 
 	private GameObject strokePrefab;
 
-	void Start () {
-		strokes = new List<Stroke>();
-
-		// lat, long, direction hard-coded
-		paintingData = new PaintingData(latitude: 2.1f, longitude: 2.1f, directionDegrees: 10);
-
+	void Awake () {
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
+		strokes = new List<Stroke>();
+	}
+
+	public void Load(int paintingId) {
+		Debug.Log("Loading painting: " + paintingId);
+		GetComponent<PaintingPersistence>().LoadPaintingData(paintingId);
 	}
 	
+	public void Initialize(string jsonData) {
+		strokes.Clear();
+		paintingData.Load(jsonData);
+
+		foreach(StrokeData data in paintingData.strokeDatas) {
+			Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
+			stroke.transform.parent = transform;
+
+			stroke.Initialize(data);
+			strokes.Add(stroke);
+		}
+	}
+
+	public void Initialize(float latitude, float longitude, int directionDegrees) {
+		strokes.Clear();
+		paintingData = new PaintingData(latitude, longitude, directionDegrees);
+	}
+
 	public void StartStroke(Color color, int brushType, float brushWidth) {
 		Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
 		stroke.transform.parent = transform;
@@ -35,21 +54,6 @@ public class Painting : MonoBehaviour {
 
 	public Stroke CurrentStroke() {
 		return strokes[strokes.Count - 1];
-	}
-
-	public void Load(string jsonData) {
-Debug.Log(jsonData);
-		strokes.Clear();
-		paintingData.Load(jsonData);
-
-Debug.Log("Found: " + paintingData.strokeDatas.Count + " strokes");
-		foreach(StrokeData data in paintingData.strokeDatas) {
-			Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
-			stroke.transform.parent = transform;
-
-			stroke.Initialize(data);
-			strokes.Add(stroke);
-		}
 	}
 
 	public void ChangeColor(Color color) {

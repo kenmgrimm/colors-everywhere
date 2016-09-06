@@ -7,27 +7,24 @@ public class PaintingPersistence : MonoBehaviour {
 	// private static string ROUTE = "http://localhost:3000/paintings";
 	private static string ROUTE = "https://kenmgrimm-graffiti.herokuapp.com/paintings";
 
+	// bad design
 	private Painting painting;
 
-	// Needs auth
-	// https://docs.unity3d.com/ScriptReference/WWWForm-headers.html
 	void Awake () {
-		Debug.Log("Starting PM");
+		Debug.Log("PaintingPersistence Awake");
 
-		painting = GameObject.Find("Painting").GetComponent<Painting>();
-
-		LoadPaintingData(5);
+		painting = GetComponent<Painting>();
 	}
 
 	private void OnLoadRequestFinished(HTTPRequest request, HTTPResponse response) {
 		Debug.Log("Load Request Finished! Text received: " + response.DataAsText);
 
-		painting.Load(response.DataAsText);
-		Debug.Log(painting.paintingData);
+		painting.Initialize(response.DataAsText);
+
 		Debug.Log(painting.paintingData.Id());
 	}
 
-	private void LoadPaintingData(int paintingId) {
+	public void LoadPaintingData(int paintingId) {
 		HTTPRequest request = 
 			new HTTPRequest(new Uri(ROUTE + "/" + paintingId + ".json"), OnLoadRequestFinished);
 		request.Send();
@@ -39,13 +36,11 @@ public class PaintingPersistence : MonoBehaviour {
 	}
 
 	public void SavePainting() {
+		if(!painting.Dirty) return;
+
 		Debug.Log("PaintingPersistence: SavePainting(): id: " + painting.Id());
-		if(painting.Dirty) {
-			painting.Dirty = false;
-		}
-		else {
-			return;
-		}
+		
+		painting.Dirty = false;
 
 		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id());
 

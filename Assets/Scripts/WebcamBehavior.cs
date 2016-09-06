@@ -8,14 +8,14 @@ public class WebcamBehavior : MonoBehaviour {
  
   private GameObject videoScreen;
   private WebCamTexture webCamTexture = null;
-  private Camera physicalCamera;
+  private Camera webcam;
 
   private int deviceWidth = 2000;  // (or Screen.width) but I think it clamps it
   private int deviceHeight = 2000;  // (or Screen.height) but I think it clamps it
 
   private WebCamDevice currentDevice;
 
-  void Start() {
+  void Awake() {
     videoScreen = GameObject.Find("Video Screen");
     if(SystemInfo.deviceType == DeviceType.Handheld) {
       Debug.Log("Device Type Handheld");
@@ -31,7 +31,7 @@ public class WebcamBehavior : MonoBehaviour {
       }
     #endif
     
-    physicalCamera = GameObject.Find("Physical Camera").GetComponent<Camera>();
+    webcam = GameObject.Find("Webcam").GetComponent<Camera>();
 
     Application.RequestUserAuthorization(UserAuthorization.WebCam);
 
@@ -79,7 +79,7 @@ public class WebcamBehavior : MonoBehaviour {
     webCamTexture.filterMode = FilterMode.Trilinear;
     webCamTexture.Play();
 
-    physicalCamera.targetTexture = (RenderTexture)cameraMaterial.mainTexture;
+    webcam.targetTexture = (RenderTexture)cameraMaterial.mainTexture;
     
     cameraMaterial.mainTexture = webCamTexture; 
   }
