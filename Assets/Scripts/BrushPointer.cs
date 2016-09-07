@@ -33,7 +33,7 @@ public class BrushPointer : MonoBehaviour {
 		float sliderValue = GameObject.Find("Extension Slider").GetComponent<Slider>().value;
 		Extend(sliderValue);
 
-		painting = PaintingGameManager.instance.Painting();
+		painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
 		
 		paintingCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 

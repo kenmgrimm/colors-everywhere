@@ -42,7 +42,7 @@ public class PaintingPersistence : MonoBehaviour {
 		
 		painting.Dirty = false;
 
-		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id());
+		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id() + ".json");
 
 		string paintingJsonStr = painting.ToJsonStr();
 
