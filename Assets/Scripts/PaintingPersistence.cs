@@ -31,8 +31,7 @@ public class PaintingPersistence : MonoBehaviour {
 	}
 
 	private void OnUpdateRequestFinished(HTTPRequest request, HTTPResponse response) {
-		Debug.Log("Update Request Finished! Text received: ");
-		Debug.Log(response.DataAsText);
+		Debug.Log("Update Painting POST Complete. Status: " + response.StatusCode);
 	}
 
 	public void SavePainting() {
@@ -44,20 +43,22 @@ public class PaintingPersistence : MonoBehaviour {
 
 		Uri updateRoute = new Uri(IsNew() ? ROUTE : ROUTE + "/" + painting.Id() + ".json");
 
-		string paintingJsonStr = painting.ToJsonStr();
-
-		byte[] compressed = Compress.Zip(paintingJsonStr);
-
 		HTTPRequest request = new HTTPRequest(updateRoute, HTTPMethods.Post, OnUpdateRequestFinished);
 
-		string compressedBase64 = System.Convert.ToBase64String(compressed);
-
-		request.AddField("painting", compressedBase64);
+		request.AddField("painting", CompressedPaintingData());
 
 		request.Send();
 	}
 
 	private bool IsNew() {
 		return painting.Id() < 0;
+	}
+
+	private string CompressedPaintingData() {
+		string paintingJsonStr = painting.ToJsonStr();
+
+		byte[] compressed = Compress.Zip(paintingJsonStr);
+
+		return System.Convert.ToBase64String(compressed);
 	}
 }
