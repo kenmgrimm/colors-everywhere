@@ -768,7 +768,7 @@ MonoBehaviour:
   updateDistance: 2
   updatePosition: 1
   useCompassForMarker: 1
-  useGPSEmulator: 0
+  useGPSEmulator: 1
 --- !u!114 &1369516172
 MonoBehaviour:
   m_ObjectHideFlags: 0

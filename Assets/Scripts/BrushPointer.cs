@@ -47,7 +47,7 @@ public class BrushPointer : MonoBehaviour {
 
 		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
 
-		InvokeRepeating("FadeTrail", 0, FADE_FREQUENCY);
+		// InvokeRepeating("FadeTrail", 0, FADE_FREQUENCY);
 	}
 	
 	public void UpdatePointerTrail() {
@@ -72,6 +72,8 @@ public class BrushPointer : MonoBehaviour {
 		// only queue if cursor moved
 		if(lastPoint != point) {
 			pointerTrailPoints.Enqueue(point);
+			pointerTrailPoints.Dequeue();
+
 			lastPoint = point;
 		}
 

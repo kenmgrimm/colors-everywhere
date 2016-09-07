@@ -9,6 +9,11 @@ public class PaintingGameManager : MonoBehaviour {
 		SetupSingletion();
 
 		paintingPrefab = Util.LoadPrefab("Painting");
+
+		if(!Painting()) {
+			// In dev mode we may start in painting scene and need to create one on the fly
+			InstantiatePainting();
+		}
 	}
 
 	public Painting Painting() {
