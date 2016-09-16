@@ -15,13 +15,13 @@ public class PaintButton : EventTrigger {
 
 	void Paint() {
 		if(isPainting) {
-			brush.GetComponent<BrushPointer>().AddPoint();
+			brush.GetComponent<Brush>().AddPoint();
 		}
 	}
 
 	// Event Handlers
 	public override void OnPointerDown(PointerEventData data) {
-		brush.GetComponent<BrushPointer>().StartStroke();
+		brush.GetComponent<Brush>().StartStroke();
 		isPainting = true;
 	}
 
@@ -29,4 +29,17 @@ public class PaintButton : EventTrigger {
 		isPainting = false;
 	}
 	
+	public override void OnPointerClick(PointerEventData data) {
+		// OnPoin
+	}
+
+	public override void OnPointerEnter(PointerEventData eventData) { 
+		if (Input.GetMouseButton(0)) {
+			isPainting = true;
+		} 
+	}
+
+	public override void OnPointerExit(PointerEventData data) {
+		isPainting = false;
+	}
 }

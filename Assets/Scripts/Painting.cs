@@ -57,7 +57,7 @@ public class Painting : MonoBehaviour {
 	}
 
 	public void ChangeColor(Color color) {
-		GameObject.Find("Brush").GetComponent<BrushPointer>().ChangeColor(color);
+		GameObject.Find("Brush").GetComponent<Brush>().ChangeColor(color);
 	}
 
 	public void AddPoint(Vector3 point) {

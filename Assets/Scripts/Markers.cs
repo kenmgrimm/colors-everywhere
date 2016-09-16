@@ -36,6 +36,6 @@ public class Markers : MonoBehaviour {
 
     PaintingGameManager.instance.LoadPainting(paintingId);
     
-    SceneManager.LoadScene("Graffiti");
+    SceneManager.LoadScene("Painting");
   }
 }

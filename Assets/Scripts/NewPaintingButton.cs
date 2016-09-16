@@ -17,6 +17,6 @@ public class NewPaintingButton : EventTrigger {
 		
 		PaintingGameManager.instance.CreatePainting(latitude, longitude, compassDirection);
 
-		SceneManager.LoadScene("Graffiti");
+		SceneManager.LoadScene("Painting");
 	}
 }

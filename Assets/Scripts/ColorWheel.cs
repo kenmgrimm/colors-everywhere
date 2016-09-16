@@ -64,7 +64,7 @@ public class ColorWheel : EventTrigger {
 	// 	Debug.Log(wheelTexture.GetPixel(v3Pixel.x, v3Pixel.y));
 		
 	// 	string color  = "AAAAAA";
-	// 	brush.GetComponent<BrushPointer>().ChangeColor(color);
+	// 	brush.GetComponent<Brush>().ChangeColor(color);
 
 	// 	gameObject.SetActive(false);
 	// }
