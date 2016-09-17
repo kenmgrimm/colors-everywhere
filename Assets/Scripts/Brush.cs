@@ -42,6 +42,13 @@ public class Brush : MonoBehaviour {
 		return ray.origin + ray.direction * pointerLength;
 	}
 
+	private Vector3 LocationOnGround() {
+		Vector3 groundLocation = Location();
+		groundLocation.y = 0;
+
+		return groundLocation;
+	}
+
 	// Probably should be optimized
 	void Update() {
 		// Necesary because painting is now instantiated...  Gotta fix this...
@@ -49,7 +56,7 @@ public class Brush : MonoBehaviour {
 			painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
 		}
 		
-		model.transform.position = Location();
+		model.transform.position = LocationOnGround();
 	}
 
 	public void ChangeColor(Color c) {}
