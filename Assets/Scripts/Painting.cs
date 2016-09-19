@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 public class Painting : MonoBehaviour {
+	private static string MODEL_PREFAB = "Model";
 	private static string STROKE_PREFAB = "Stroke";
 	
 	public bool Dirty { get; set; }
@@ -12,9 +13,15 @@ public class Painting : MonoBehaviour {
 
 	public PaintingData paintingData;
 
+	private GameObject modelPrefab;
+
 	private GameObject strokePrefab;
 
 	void Awake () {
+		models = new List<Model>();
+		
+		modelPrefab = Util.LoadPrefab(MODEL_PREFAB);
+
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 		strokes = new List<Stroke>();
 	}
@@ -40,6 +47,10 @@ public class Painting : MonoBehaviour {
 	public void Initialize(float latitude, float longitude, int directionDegrees) {
 		strokes.Clear();
 		paintingData = new PaintingData(latitude, longitude, directionDegrees);
+	}
+
+	public void AddModel(Model model) {
+		models.Add(model);
 	}
 
 	public void StartStroke(Color color, int brushType, float brushWidth) {

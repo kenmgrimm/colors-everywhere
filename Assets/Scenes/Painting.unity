@@ -3123,6 +3123,7 @@ GameObject:
   - 222: {fileID: 206273699}
   - 114: {fileID: 206273698}
   - 114: {fileID: 206273700}
+  - 114: {fileID: 206273701}
   m_Layer: 5
   m_Name: Paint Button
   m_TagString: Untagged
@@ -3187,9 +3188,22 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 206273696}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6febc3e4b97b74f37a891bf1c52118cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+  delegates: []
+--- !u!114 &206273701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 206273696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b4a5cbbb9488479dbcfb08310b2bbae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates: []

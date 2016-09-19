@@ -7,20 +7,18 @@ public class ModelBrush : Brush {
 
 	private float pointerLength;
 
-	private Color color = Color.magenta;
-	private int brushType = 3;
-	private float brushWidth = 2.5f;
-	
+	private Color color = Color.yellow;
+
 	private Camera paintingCamera;
 
-	private GameObject model;
+	private GameObject modelPointer;
 
 	private Painting painting;
 
 
 	void Awake() {
 		paintingCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
-		model = GameObject.Find("a model");
+		modelPointer = GameObject.Find("a model");
 		
 		// Need to set starting pointerLength using extension slider.  Refactor and de-couple some of this stuff
 		// DE-COUPLE
@@ -54,16 +52,14 @@ public class ModelBrush : Brush {
 			painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
 		}
 		
-		model.transform.position = LocationOnGround();
+		modelPointer.transform.position = LocationOnGround();
 	}
 
 	public override void ChangeColor(Color c) {}
 
-	public void StartStroke() {
-		painting.StartStroke(color, brushType, brushWidth);
-	}
-
-	public void AddPoint() {
-		painting.AddPoint(Location());
+	public void OnButtonPress() {
+		Debug.Log("OnButtonPress");
+		Model model = GameObject.Instantiate(modelPointer).GetComponent<Model>();
+		painting.AddModel(model);
 	}
 }
