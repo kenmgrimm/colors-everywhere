@@ -15,13 +15,13 @@ public class PaintButton : EventTrigger {
 
 	void Paint() {
 		if(isPainting) {
-			brush.GetComponent<Brush>().AddPoint();
+			brush.GetComponent<PaintBrush>().AddPoint();
 		}
 	}
 
 	// Event Handlers
 	public override void OnPointerDown(PointerEventData data) {
-		brush.GetComponent<Brush>().StartStroke();
+		brush.GetComponent<PaintBrush>().StartStroke();
 		isPainting = true;
 	}
 

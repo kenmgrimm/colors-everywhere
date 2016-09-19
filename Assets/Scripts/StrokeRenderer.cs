@@ -24,5 +24,4 @@ public class StrokeRenderer : MonoBehaviour {
 		lineRenderer.SetVertexCount(strokePoints.Count);
 		lineRenderer.SetPosition(strokePoints.Count - 1, point);
 	}
-
 }

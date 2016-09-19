@@ -6,6 +6,8 @@ public class Painting : MonoBehaviour {
 	
 	public bool Dirty { get; set; }
 
+	private List<Model> models;
+
 	private List<Stroke> strokes;
 
 	public PaintingData paintingData;

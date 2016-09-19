@@ -8,30 +8,17 @@ public class StrokeData : ISerializationCallbackReceiver {
   [SerializeField] public float brush_width;
   [SerializeField] public Color color;
   
-  [SerializeField] CondensedVector3[] serializedPoints;
+  [SerializeField] CompressedVector3[] serializedPoints;
 
   private List<Vector3> points = new List<Vector3>();
 
-  [Serializable]
-  public struct CondensedVector3 {
-    public string x;
-    public string y;
-    public string z;
-
-    public CondensedVector3(float x, float y, float z) {
-      this.x = Math.Round((Decimal)x, 3).ToString();
-      this.y = Math.Round((Decimal)y, 3).ToString();
-      this.z = Math.Round((Decimal)z, 3).ToString();
-    }
-  }
-  
   public void OnBeforeSerialize() {
     if(points == null) { return; }
 
-    serializedPoints = new CondensedVector3[points.Count];
+    serializedPoints = new CompressedVector3[points.Count];
 
     for(int i = 0; i < points.Count; i++) {
-      serializedPoints[i] = new CondensedVector3(points[i].x, points[i].y, points[i].z);
+      serializedPoints[i] = new CompressedVector3(points[i].x, points[i].y, points[i].z);
     }
   }
 
@@ -41,7 +28,7 @@ public class StrokeData : ISerializationCallbackReceiver {
     points = new List<Vector3>();
 
     for(int i = 0; i < serializedPoints.Length; i++) {
-      CondensedVector3 point = serializedPoints[i];
+      CompressedVector3 point = serializedPoints[i];
       points.Add(new Vector3(float.Parse(point.x), float.Parse(point.y), float.Parse(point.z)));
     }
   }
