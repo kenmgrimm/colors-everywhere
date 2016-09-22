@@ -2,15 +2,28 @@ using UnityEngine;
 
 public class Model : MonoBehaviour {
   private ModelData modelData;
-  private GameObject modelPrefab;
 
-	void Start () {}
+  void Start() {}
+  
+  public void Initialize(int modelType, Vector3 position, Quaternion orientation, Color color) {
+    modelData = new ModelData(modelType, position, orientation, color);
+    SetPosition(position);
+    SetRotation(orientation);
+    SetColor(color);
+  }
 
-  public Model(int modelType, Vector3 position, Quaternion orientation, Color color) {
-    modelData = new ModelData(modelType, orientation, color, position);
+  public void SetPosition(Vector3 position) {
+    Debug.Log("SetPosition: " + position);
+    transform.position = position;
+    modelData.position = position;
+  }
 
-    modelPrefab = Util.LoadPrefab("tree_04_05");
+  public void SetRotation(Quaternion rotation) {
+    transform.rotation = rotation;
+    modelData.orientation = rotation;
+  }
 
-    GameObject.Instantiate(modelPrefab);
+  public void SetColor(Color color) {
+    modelData.color = color;
   }
 }

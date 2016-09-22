@@ -13,17 +13,13 @@ public class Painting : MonoBehaviour {
 
 	public PaintingData paintingData;
 
-	private GameObject modelPrefab;
-
 	private GameObject strokePrefab;
 
 	void Awake () {
 		models = new List<Model>();
-		
-		modelPrefab = Util.LoadPrefab(MODEL_PREFAB);
-
-		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 		strokes = new List<Stroke>();
+		
+		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
 	}
 
 	public void Load(int paintingId) {

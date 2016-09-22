@@ -8,11 +8,11 @@ public class ModelData : ISerializationCallbackReceiver {
   [SerializeField] public Color color;
   [SerializeField] public Vector3 position;
   
-  public ModelData(int modelType, Quaternion orientation, Color color, Vector3 position) {
+  public ModelData(int modelType, Vector3 position, Quaternion orientation, Color color) {
     this.model_type = modelType;
+    this.position = position;
     this.orientation = orientation;
     this.color = color;
-    this.position = position;
   }
 
   public void OnBeforeSerialize() {
