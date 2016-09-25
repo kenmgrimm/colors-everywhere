@@ -34,7 +34,7 @@ PlayerSettings:
   iosAllowHTTPDownload: 1
   allowedAutorotateToPortrait: 0
   allowedAutorotateToPortraitUpsideDown: 0
-  allowedAutorotateToLandscapeRight: 0
+  allowedAutorotateToLandscapeRight: 1
   allowedAutorotateToLandscapeLeft: 1
   useOSAutorotation: 0
   use32BitDisplayBuffer: 1
@@ -347,7 +347,7 @@ PlayerSettings:
   psmSplashimage: {fileID: 0}
   spritePackerPolicy: 
   scriptingDefineSymbols:
-    4: VUFORIA_IOS_SETTINGS
+    4: 
     7: VUFORIA_ANDROID_SETTINGS
   metroPackageName: graffiti
   metroPackageVersion: 

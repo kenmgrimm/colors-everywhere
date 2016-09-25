@@ -27,6 +27,7 @@ public class GyroCamera : MonoBehaviour {
     Transform currentParent = transform.parent;
     // instantiate a new transform
     camParent = new GameObject ("camParent");
+  Debug.Log("camParent");
     // match the transform to the camera position
     camParent.transform.position = transform.position;
     // make the new transform the parent of the camera transform
@@ -41,27 +42,34 @@ public class GyroCamera : MonoBehaviour {
     camGrandparent.transform.parent = currentParent;
     
     Input.gyro.enabled = true;
+
+
+
+    // Force LandscapeRight
+    // Screen.orientation = ScreenOrientation.LandscapeRight;
     
-    InvokeRepeating("InitializeGyro", 0, 1);
+    InvokeRepeating("InitializeGyro", 4, 1);
   }
 
   void InitializeGyro() {
-    if(HasGyro()) {
-      #if UNITY_IPHONE
-        // camParent.transform.eulerAngles = new Vector3(90,90,0);
+    if(!HasGyro()) {
+      return;
+    }
+    #if UNITY_IPHONE
+      camParent.transform.eulerAngles = new Vector3(90,90,0);
 
-        if (Screen.orientation == ScreenOrientation.LandscapeLeft) {
-            quatMult = new Quaternion(0,0,0.7071f,0.7071f);
-        } else if (Screen.orientation == ScreenOrientation.LandscapeRight) {
-            quatMult = new Quaternion(0,0,-0.7071f,0.7071f);
-        } else if (Screen.orientation == ScreenOrientation.Portrait) {
-            quatMult = new Quaternion(0,0,1,0);
-        } else if (Screen.orientation == ScreenOrientation.PortraitUpsideDown) {
-            quatMult = new Quaternion(0,0,0,1);
-        }
+      if (Screen.orientation == ScreenOrientation.LandscapeLeft) {
+          quatMult = new Quaternion(0,0,0.7071f,0.7071f);
+      } else if (Screen.orientation == ScreenOrientation.LandscapeRight) {
+          quatMult = new Quaternion(0,0,-0.7071f,0.7071f);
+      } else if (Screen.orientation == ScreenOrientation.Portrait) {
+          quatMult = new Quaternion(0,0,1,0);
+      } else if (Screen.orientation == ScreenOrientation.PortraitUpsideDown) {
+          quatMult = new Quaternion(0,0,0,1);
+      }
     #endif
     #if UNITY_ANDROID
-        // camParent.transform.eulerAngles = Vector3(-90,0,0);
+        camParent.transform.eulerAngles = Vector3(-90,0,0);
 
         if (Screen.orientation == ScreenOrientation.LandscapeLeft) {
             quatMult = Quaternion(0,0,0.7071,-0.7071);
@@ -78,23 +86,13 @@ public class GyroCamera : MonoBehaviour {
     Debug.Log(Input.gyro.attitude.eulerAngles);
     Debug.Log(camParent.transform.rotation.eulerAngles);
     
-    camParent.transform.rotation = 
+    #if !UNITY_EDITOR
+      camParent.transform.rotation = 
       Quaternion.Euler(Input.gyro.attitude.eulerAngles + new Vector3(90, 0, 0));
+    #endif
     
-    // camGrandparent.transform.Rotate(90, 0, 0);
-
-Debug.Log(camParent.transform.rotation.eulerAngles);
-      // Debug.Log("Setting initial rotation");
-      // Debug.Log(Input.gyro.attitude);
-      // gyroInitialRotation = Input.gyro.attitude;
-      // // initialRotation = transform.rotation;
-      // transform.rotation = gyroInitialRotation;
-      // lastGyroRotation = gyroInitialRotation;
-      // // lastRotation = initialRotation;
-
-      gyroInitialized = true;
-      CancelInvoke("InitializeGyro");
-    }
+    gyroInitialized = true;
+    CancelInvoke("InitializeGyro");
   }
 
   void Update() {
@@ -107,10 +105,10 @@ Debug.Log(camParent.transform.rotation.eulerAngles);
         #endif
         transform.localRotation = quatMap * quatMult;
 
-      // Quaternion offsetRotation = ConvertRotation(Quaternion.Inverse(lastGyroRotation) * Input.gyro.attitude);
-      // transform.rotation = transform.rotation * offsetRotation;
+      Quaternion offsetRotation = ConvertRotation(Quaternion.Inverse(lastGyroRotation) * Input.gyro.attitude);
+      transform.rotation = transform.rotation * offsetRotation;
 
-      // lastGyroRotation = Input.gyro.attitude;
+      lastGyroRotation = Input.gyro.attitude;
     }
     else {
       transform.Rotate(Input.GetAxis("Mouse Y") * mouseSpeed, Input.GetAxis("Mouse X") * mouseSpeed, 0);

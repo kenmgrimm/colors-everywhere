@@ -62,7 +62,7 @@ public class ModelBrush : Brush {
 		
 		// Should only do when this this transform changes
 		modelBrush.SetPosition(LocationOnGround());
-		Debug.Log(LocationOnGround());
+		// Debug.Log(LocationOnGround());
 
 		modelBrush.SetRotation(Quaternion.identity);
 		// modelBrush.SetRotation(transform.rotation);
