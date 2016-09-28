@@ -5440,7 +5440,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 503135202}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 290e16c6fab44440fa4ad0e8fcd5f016, type: 3}
   m_Name: 
@@ -10154,7 +10154,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 40
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -15909,7 +15909,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1663796866}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f422aba9a199c47c9976b5ddd07ec61a, type: 3}
   m_Name: 
@@ -15921,12 +15921,11 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1663796866}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b1935fda126e4c928aa53900304a818, type: 3}
+  m_Script: {fileID: 11500000, guid: 91fc1d3ea88284eec95c66d4e125664e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  touchRotatesHeading: 1
 --- !u!1001 &1675419948
 Prefab:
   m_ObjectHideFlags: 0
