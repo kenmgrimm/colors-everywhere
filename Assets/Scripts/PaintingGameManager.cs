@@ -12,7 +12,15 @@ public class PaintingGameManager : MonoBehaviour {
 
 		if(!Painting()) {
 			// FIX THIS In dev mode we may start in painting scene and need to create one on the fly
-			InstantiatePainting();
+			// InstantiatePainting();
+
+
+
+			// Let's always load an existing painting
+			PaintingGameManager.instance.LoadPainting(8);
+
+
+			Painting().paintingData.id = 8;
 		}
 	}
 
@@ -42,6 +50,7 @@ public class PaintingGameManager : MonoBehaviour {
 		}
 
 		Painting painting = Instantiate(paintingPrefab).GetComponent<Painting>();
+		
 		DontDestroyOnLoad(painting);
 
 		return painting;

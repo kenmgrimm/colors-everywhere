@@ -3580,12 +3580,21 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 271271021}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f422aba9a199c47c9976b5ddd07ec61a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialRotation: {x: 0, y: 0, z: 0, w: 0}
+  gyroInitialRotation: {x: 0, y: 0, z: 0, w: 0}
+  lastGyroRotation: {x: 0, y: 0, z: 0, w: 0}
+  gyroInitialized: 0
   mouseSpeed: 1
+  camParent: {fileID: 0}
+  camGrandparent: {fileID: 0}
+  quatMap: {x: 0, y: 0, z: 0, w: 0}
+  quatMult: {x: 0, y: 0, z: 0, w: 0}
+  firstTime: 1
 --- !u!1001 &278697461
 Prefab:
   m_ObjectHideFlags: 0
@@ -15879,7 +15888,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1663796867}
-  - 114: {fileID: 1663796868}
   - 114: {fileID: 1663796869}
   m_Layer: 0
   m_Name: Painting Camera Pivot
@@ -15903,18 +15911,6 @@ Transform:
   - {fileID: 1022857129}
   m_Father: {fileID: 62071145}
   m_RootOrder: 1
---- !u!114 &1663796868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1663796866}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f422aba9a199c47c9976b5ddd07ec61a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouseSpeed: 1
 --- !u!114 &1663796869
 MonoBehaviour:
   m_ObjectHideFlags: 0

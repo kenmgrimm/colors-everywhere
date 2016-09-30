@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ModelType {
@@ -19,6 +20,15 @@ public class ModelType {
 
     modelViewPrefab = Util.LoadPrefab("models/" + modelFile);
   }
+
+  public static ModelType FindById(int id) {
+    return new ModelType(0, "Wobbly Tree", "tree_04_05", "None Yet"); 
+  }
+
+  public GameObject CreateInstance(ModelData modelData) {
+    return CreateInstance(modelData.position, modelData.orientation, modelData.color, null);
+  }
+
 
   public GameObject CreateInstance(Vector3 position, Quaternion orientation, Color color, Transform parent) {
     GameObject model = (GameObject)GameObject.Instantiate(modelPrefab, parent);

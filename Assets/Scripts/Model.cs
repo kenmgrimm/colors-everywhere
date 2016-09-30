@@ -12,6 +12,12 @@ public class Model : MonoBehaviour {
     SetColor(color);
   }
 
+  public ModelData ModelData() {
+    Debug.Log("ModelData() : " + modelData.position);
+    
+    return modelData;
+  }
+
   public void SetPosition(Vector3 position) {
     // Debug.Log("SetPosition: " + position);
     transform.position = position;

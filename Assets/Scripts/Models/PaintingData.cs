@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class PaintingData {
-  [SerializeField] private int id = -1;
+  [SerializeField] public int id = -1;
   [SerializeField] private float latitude;
   [SerializeField] private float longitude;
   [SerializeField] private float direction_degrees;
 
   [SerializeField] public List<StrokeData> strokeDatas;
+  [SerializeField] public List<ModelData> modelDatas;
   
   public PaintingData(float latitude, float longitude, float directionDegrees) {
     this.latitude = latitude;
@@ -22,6 +23,10 @@ public class PaintingData {
 
   public void StartStroke(Stroke stroke) {
     strokeDatas.Add(stroke.StrokeData());
+  }
+
+  public void AddModel(Model model) {
+    modelDatas.Add(model.ModelData());
   }
 
   public void AddPoint(Vector3 point) {

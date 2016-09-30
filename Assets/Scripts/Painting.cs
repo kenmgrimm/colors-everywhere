@@ -38,6 +38,23 @@ public class Painting : MonoBehaviour {
 			stroke.Initialize(data);
 			strokes.Add(stroke);
 		}
+
+		Debug.Log("Initialize: " + jsonData); 
+		List<ModelData> modelDatasClone = new List<ModelData>(paintingData.modelDatas);
+
+		foreach(ModelData data in modelDatasClone) {
+			Debug.Log("Beginning of loop");
+			ModelType modelType = ModelType.FindById(0);
+
+			Debug.Log(modelType);
+			GameObject model = modelType.CreateInstance(data);
+			
+			Debug.Log(model);
+
+			AddModel(model.GetComponent<Model>());
+
+			Debug.Log("after AddModel");
+		}
 	}
 
 	public void Initialize(float latitude, float longitude, int directionDegrees) {
@@ -46,7 +63,11 @@ public class Painting : MonoBehaviour {
 	}
 
 	public void AddModel(Model model) {
-		models.Add(model);
+		models.Add(model);  // Remove
+		paintingData.AddModel(model);
+
+
+		Dirty = true;
 	}
 
 	public void StartStroke(Color color, int brushType, float brushWidth) {

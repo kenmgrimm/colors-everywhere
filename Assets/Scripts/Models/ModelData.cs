@@ -1,9 +1,10 @@
 using UnityEngine;
 using System;
 
+// Should be using compressed vector
 [Serializable]
 public class ModelData : ISerializationCallbackReceiver {
-  [SerializeField] private int model_type;
+  [SerializeField] public int model_type;
   [SerializeField] public Quaternion orientation;
   [SerializeField] public Color color;
   [SerializeField] public Vector3 position;
