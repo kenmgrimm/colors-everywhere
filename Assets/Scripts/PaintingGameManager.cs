@@ -12,7 +12,7 @@ public class PaintingGameManager : MonoBehaviour {
 
 		if(!Painting()) {
 			// FIX THIS In dev mode we may start in painting scene and need to create one on the fly
-			// InstantiatePainting();
+			InstantiatePainting();
 
 
 
@@ -20,7 +20,7 @@ public class PaintingGameManager : MonoBehaviour {
 			PaintingGameManager.instance.LoadPainting(8);
 
 
-			Painting().paintingData.id = 8;
+			// Painting().paintingData.id = 8;
 		}
 	}
 
