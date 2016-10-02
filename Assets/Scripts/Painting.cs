@@ -44,7 +44,7 @@ public class Painting : MonoBehaviour {
 
 		foreach(ModelData data in modelDatasClone) {
 			Debug.Log("Beginning of loop");
-			ModelType modelType = ModelType.FindById(0);
+			ModelType modelType = ModelType.FindById(data.model_type);
 
 			Debug.Log(modelType);
 			GameObject model = modelType.CreateInstance(data);

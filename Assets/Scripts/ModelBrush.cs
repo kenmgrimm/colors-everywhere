@@ -9,18 +9,18 @@ public class ModelBrush : Brush {
 
 	private Camera paintingCamera;
 
-	private ModelType defaultModelType;
 	private Model modelBrush;
 
 	private Painting painting;
+
+	private int brushNum = 0;
 
 
 	void Awake() {
 		paintingCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 
 		// Should not be created here, should exist and be looked up after selection on the brush palette
-		defaultModelType = new ModelType(0, "Wobbly Tree", "tree_04_05", "None Yet"); 
-		CreateNewBrushModel(defaultModelType);
+		LoadNewBrushModel(ModelType.Default());
 
 		// Need to set starting pointerLength using extension slider.  Refactor and de-couple some of this stuff
 		// DE-COUPLE
@@ -29,8 +29,11 @@ public class ModelBrush : Brush {
 		Extend(sliderValue);
 	}
 
-	public void CreateNewBrushModel(ModelType modelType) {
+	public void LoadNewBrushModel(ModelType modelType) {
 		Debug.Log("CreateNewBrushModel");
+		if(modelBrush) {
+			Destroy(modelBrush);
+		}
 		modelBrush = modelType.CreateInstance(LocationOnGround(), Quaternion.identity, Color.blue, transform).GetComponent<Model>();		
 	}
 
@@ -78,6 +81,13 @@ public class ModelBrush : Brush {
 		modelBrush.transform.parent = null;
 		painting.AddModel(modelBrush);
 		
-		CreateNewBrushModel(defaultModelType);
+		LoadNextBrushModel();
+	}
+
+	public void LoadNextBrushModel() {
+		if(brushNum++ > 42) {
+			brushNum = 0;
+		}
+		LoadNewBrushModel(ModelType.FindById(brushNum));
 	}
 }
