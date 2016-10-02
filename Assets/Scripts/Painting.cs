@@ -47,7 +47,7 @@ public class Painting : MonoBehaviour {
 			ModelType modelType = ModelType.FindById(data.model_type);
 
 			Debug.Log(modelType);
-			GameObject model = modelType.CreateInstance(data);
+			GameObject model = Model.CreateInstance(data);
 			
 			Debug.Log(model);
 
@@ -65,7 +65,6 @@ public class Painting : MonoBehaviour {
 	public void AddModel(Model model) {
 		models.Add(model);  // Remove
 		paintingData.AddModel(model);
-
 
 		Dirty = true;
 	}

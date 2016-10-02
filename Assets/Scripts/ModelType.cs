@@ -1,13 +1,8 @@
-using UnityEngine;
-
 public class ModelType {
-  private int id;
-  private string typeName;
-  private string modelFile;
-  private string iconFile;
-
-  private GameObject modelPrefab;
-  private GameObject modelViewPrefab;
+  public int id;
+  public string typeName;
+  public string modelFile;
+  public string iconFile;
 
   private static ModelType[] modelTypes;
 
@@ -16,12 +11,6 @@ public class ModelType {
     this.typeName = typeName;
     this.modelFile = modelFile;
     this.iconFile = iconFile;
-
-    modelPrefab = Util.LoadPrefab("Model");
-
-    modelViewPrefab = Util.LoadPrefab("Models/" + modelFile);
-
-    Debug.Log("here");
   }
 
   public static ModelType FindById(int id) {
@@ -32,30 +21,13 @@ public class ModelType {
     return modelTypes[0];
   }
 
-  public GameObject CreateInstance(ModelData modelData) {
-    return CreateInstance(modelData.position, modelData.orientation, modelData.color, null);
-  }
-
-  public GameObject CreateInstance(Vector3 position, Quaternion orientation, Color color, Transform parent) {
-    GameObject model = (GameObject)GameObject.Instantiate(modelPrefab, null);
-    model.GetComponent<Model>().Initialize(id, position, orientation, color);
-
-    GameObject modelView = (GameObject)GameObject.Instantiate(modelViewPrefab, model.transform);
-    
-    // Why is this necessary?  The prefab should have these already at zero?
-    modelView.transform.localPosition = Vector3.zero;
-    modelView.transform.localRotation = Quaternion.identity;
-
-    return model;
-  }
-
 static ModelType() {
     modelTypes = new ModelType[42] { 
       new ModelType(0, "cactus_01_01", "cactus_01_01", "None Yet"),
       new ModelType(1, "cactus_02_01", "cactus_02_01", "None Yet"),
       new ModelType(2, "cactus_03_01", "cactus_03_01", "None Yet"),
       new ModelType(3, "cactus_04_01", "cactus_04_01", "None Yet"),
-      new ModelType(4, "cliff_01", "cliff_01", "None Yet"),
+      new ModelType(4, "plant_10_01", "plant_10_01", "None Yet"),
       new ModelType(5, "plant_08_01", "plant_08_01", "None Yet"),
       new ModelType(6, "plant_08_02", "plant_08_02", "None Yet"),
       new ModelType(7, "plant_08_03", "plant_08_03", "None Yet"),

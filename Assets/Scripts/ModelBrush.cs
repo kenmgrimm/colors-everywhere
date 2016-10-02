@@ -32,9 +32,10 @@ public class ModelBrush : Brush {
 	public void LoadNewBrushModel(ModelType modelType) {
 		Debug.Log("CreateNewBrushModel");
 		if(modelBrush) {
-			Destroy(modelBrush);
+			// if the model was not used in the scene (painted), destroy it
+			Destroy(modelBrush.gameObject);
 		}
-		modelBrush = modelType.CreateInstance(LocationOnGround(), Quaternion.identity, Color.blue, transform).GetComponent<Model>();		
+		modelBrush = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Color.blue, transform).GetComponent<Model>();		
 	}
 
 	public override void Extend(float distance) {
@@ -65,10 +66,7 @@ public class ModelBrush : Brush {
 		
 		// Should only do when this this transform changes
 		modelBrush.SetPosition(LocationOnGround());
-		// Debug.Log(LocationOnGround());
-
 		modelBrush.SetRotation(Quaternion.identity);
-		// modelBrush.SetRotation(transform.rotation);
 	}
 
 	public override void ChangeColor(Color color) {
@@ -78,10 +76,12 @@ public class ModelBrush : Brush {
 	public void OnButtonPress() {
 		Debug.Log("OnButtonPress");
 
-		modelBrush.transform.parent = null;
 		painting.AddModel(modelBrush);
+
+		// Unlink model from brush pointer
+		modelBrush = null;
 		
-		LoadNextBrushModel();
+		LoadNewBrushModel(ModelType.FindById(brushNum));
 	}
 
 	public void LoadNextBrushModel() {
