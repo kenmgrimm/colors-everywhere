@@ -4,6 +4,11 @@ using UnityEngine.UI;
 public class ModelBrush : Brush {
 	private static float MIN_EXTENSION = 0.01f;  // I think should be >= near clipping plane 
 	private static float EXTENSION_FACTOR = 0.5f;
+	
+	private static float SCALE_UP_FACTOR = 1.5f;
+	private static float SCALE_DOWN_FACTOR = 1.0f / SCALE_UP_FACTOR;
+	private static float MAX_SCALE = 20f;
+	private static float MIN_SCALE = 0.2f;
 
 	private float pointerLength;
 
@@ -14,6 +19,7 @@ public class ModelBrush : Brush {
 	private Painting painting;
 
 	private int brushNum = 0;
+	private float scale = 1.0f;
 
 
 	void Awake() {
@@ -35,7 +41,7 @@ public class ModelBrush : Brush {
 			// if the model was not used in the scene (painted), destroy it
 			Destroy(modelBrush.gameObject);
 		}
-		modelBrush = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Vector3.one, Color.blue, transform).GetComponent<Model>();		
+		modelBrush = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Vector3.one * scale, Color.blue, transform).GetComponent<Model>();		
 	}
 
 	public override void Extend(float distance) {
@@ -95,10 +101,23 @@ public class ModelBrush : Brush {
 		LoadNewBrushModel(ModelType.FindById(brushNum));
 	}
 
-	public void ScaleUp() {
-		modelBrush.ScaleUp();
-	}
-	public void ScaleDown() {
-		modelBrush.ScaleDown();
-	}
+  public void ScaleUp() {
+    AdjustScale(SCALE_UP_FACTOR);
+  }
+
+  public void ScaleDown() {
+    AdjustScale(SCALE_DOWN_FACTOR);
+  }
+
+  private void AdjustScale(float scaleFactor) {
+    scale *= scaleFactor;
+
+    if(scale > MAX_SCALE) {
+      scale = MAX_SCALE;
+    } else if(scale < MIN_SCALE) {
+      scale = MIN_SCALE;
+    }
+
+    modelBrush.SetScale(scale);
+  }
 }

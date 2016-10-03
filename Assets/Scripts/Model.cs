@@ -1,13 +1,6 @@
 using UnityEngine;
 
 public class Model : MonoBehaviour {
-	private static float SCALE_UP_FACTOR = 1.5f;
-	private static float SCALE_DOWN_FACTOR = 1.0f / SCALE_UP_FACTOR;
-	private static float MAX_SCALE = 20f;
-	private static float MIN_SCALE = 0.2f;
-
-  private float scale = 1.0f;
-
   private static GameObject modelPrefab;
 
   public ModelData modelData;
@@ -70,24 +63,7 @@ public class Model : MonoBehaviour {
     modelData.color = color;
   }
 
-  public void ScaleUp() {
-    AdjustScale(SCALE_UP_FACTOR);
-  }
-
-  public void ScaleDown() {
-    AdjustScale(SCALE_DOWN_FACTOR);
-  }
-
-  private void AdjustScale(float scaleFactor) {
-    scale *= scaleFactor;
-
-    if(scale > MAX_SCALE) {
-      scale = MAX_SCALE;
-    } else if(scale < MIN_SCALE) {
-      scale = MIN_SCALE;
-    }
-
+  public void SetScale(float scale) {
     transform.localScale = Vector3.one * scale;
-    modelData.scale = transform.localScale;
   }
 }
