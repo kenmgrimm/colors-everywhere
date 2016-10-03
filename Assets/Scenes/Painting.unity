@@ -16005,26 +16005,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 39
       objectReference: {fileID: 0}
-    - target: {fileID: 453026, guid: 2dba52ef9352aa243ac13fd2319fa924, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 1.5335356
-      objectReference: {fileID: 0}
-    - target: {fileID: 453026, guid: 2dba52ef9352aa243ac13fd2319fa924, type: 2}
-      propertyPath: m_LocalScale.y
-      value: 1.5335343
-      objectReference: {fileID: 0}
-    - target: {fileID: 453026, guid: 2dba52ef9352aa243ac13fd2319fa924, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 1.5335343
-      objectReference: {fileID: 0}
-    - target: {fileID: 168132, guid: 2dba52ef9352aa243ac13fd2319fa924, type: 2}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 453026, guid: 2dba52ef9352aa243ac13fd2319fa924, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -69.137
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2dba52ef9352aa243ac13fd2319fa924, type: 2}
   m_IsPrefabParent: 0
@@ -17479,9 +17459,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 112881422}
   m_Direction: 2
   m_MinValue: 4
-  m_MaxValue: 50
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 12
+  m_Value: 4
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

@@ -7,8 +7,6 @@ public class Painting : MonoBehaviour {
 	
 	public bool Dirty { get; set; }
 
-	private List<Model> models;
-
 	private List<Stroke> strokes;
 
 	public PaintingData paintingData;
@@ -16,7 +14,6 @@ public class Painting : MonoBehaviour {
 	private GameObject strokePrefab;
 
 	void Awake () {
-		models = new List<Model>();
 		strokes = new List<Stroke>();
 		
 		strokePrefab = Util.LoadPrefab(STROKE_PREFAB);
@@ -63,7 +60,6 @@ public class Painting : MonoBehaviour {
 	}
 
 	public void AddModel(Model model) {
-		models.Add(model);  // Remove
 		paintingData.AddModel(model);
 
 		Dirty = true;

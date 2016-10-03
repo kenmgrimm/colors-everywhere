@@ -35,7 +35,7 @@ public class ModelBrush : Brush {
 			// if the model was not used in the scene (painted), destroy it
 			Destroy(modelBrush.gameObject);
 		}
-		modelBrush = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Color.blue, transform).GetComponent<Model>();		
+		modelBrush = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Vector3.one, Color.blue, transform).GetComponent<Model>();		
 	}
 
 	public override void Extend(float distance) {
@@ -86,7 +86,7 @@ public class ModelBrush : Brush {
 
 	public void LoadNextBrushModel(int direction) {
 		brushNum += direction;
-Debug.Log(brushNum);
+
 		if(brushNum > 41) {
 			brushNum = 0;
 		} else if(brushNum < 0) {
@@ -96,10 +96,9 @@ Debug.Log(brushNum);
 	}
 
 	public void ScaleUp() {
-
+		modelBrush.ScaleUp();
 	}
 	public void ScaleDown() {
-
+		modelBrush.ScaleDown();
 	}
-
 }

@@ -26,6 +26,7 @@ public class PaintingData {
   }
 
   public void AddModel(Model model) {
+    Debug.Log(model.ModelData().scale);
     modelDatas.Add(model.ModelData());
   }
 
@@ -39,6 +40,8 @@ public class PaintingData {
   }
 
   public string ToJsonStr() {
+    Debug.Log(JsonUtility.ToJson(this));
+
     return JsonUtility.ToJson(this);
   }
 
