@@ -50,7 +50,6 @@ public class Model : MonoBehaviour {
   }
 
   public void SetPosition(Vector3 position) {
-    // Debug.Log("SetPosition: " + position);
     transform.position = position;
     modelData.position = position;
   }

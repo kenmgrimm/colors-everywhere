@@ -84,10 +84,22 @@ public class ModelBrush : Brush {
 		LoadNewBrushModel(ModelType.FindById(brushNum));
 	}
 
-	public void LoadNextBrushModel() {
-		if(brushNum++ > 42) {
+	public void LoadNextBrushModel(int direction) {
+		brushNum += direction;
+Debug.Log(brushNum);
+		if(brushNum > 41) {
 			brushNum = 0;
+		} else if(brushNum < 0) {
+			brushNum = 41;
 		}
 		LoadNewBrushModel(ModelType.FindById(brushNum));
 	}
+
+	public void ScaleUp() {
+
+	}
+	public void ScaleDown() {
+
+	}
+
 }
