@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.03
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 1, g: 0.98039216, b: 0.8235294, a: 1}
+  m_AmbientSkyColor: {r: 0.97794116, g: 0.9571073, b: 0.841317, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 0.11
@@ -34,10 +34,10 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 1
+  m_ReflectionIntensity: 0.191
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.061410822, g: 0.04334957, b: 0.06828029, a: 1}
+  m_IndirectSpecularColor: {r: 0.012441541, g: 0.008301261, b: 0.014276931, a: 0.191}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -793,7 +793,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &59718020
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9017,7 +9017,7 @@ RectTransform:
   m_RootOrder: 7
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 585, y: -688}
+  m_AnchoredPosition: {x: 372.9, y: -688}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &843915610
@@ -11747,7 +11747,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 2}
@@ -17459,7 +17459,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 112881422}
   m_Direction: 2
   m_MinValue: 4
-  m_MaxValue: 100
+  m_MaxValue: 80
   m_WholeNumbers: 0
   m_Value: 4
   m_OnValueChanged:
@@ -19418,7 +19418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1838597412
 RectTransform:
   m_ObjectHideFlags: 0
