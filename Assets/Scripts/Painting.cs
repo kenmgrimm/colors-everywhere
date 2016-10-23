@@ -21,7 +21,7 @@ public class Painting : MonoBehaviour {
 
 	public void Load(int paintingId) {
 		Debug.Log("Loading painting: " + paintingId);
-		GetComponent<PaintingPersistence>().LoadPaintingData(paintingId);
+		// GetComponent<PaintingPersistence>().LoadPaintingData(paintingId);
 	}
 	
 	public void Initialize(string jsonData) {
