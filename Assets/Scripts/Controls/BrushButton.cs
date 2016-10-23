@@ -2,10 +2,7 @@
 using UnityEngine.EventSystems;
 
 public class BrushButton : MonoBehaviour, IPointerClickHandler {
-	private static int LEFT = 0;
-	private static int RIGHT = 1;
-	private static int UP = 2;
-	private static int DOWN = 3;
+	private static int LEFT = 0, RIGHT = 1, UP = 2, DOWN = 3;
 	
 	public int direction;
 
@@ -13,7 +10,7 @@ public class BrushButton : MonoBehaviour, IPointerClickHandler {
 	private int brushNum = 0;
 
 	void Awake () {
-		brush = GameObject.Find("Brush").GetComponent<ModelBrush>();
+		brush = GameObject.Find("ModelBrush").GetComponent<ModelBrush>();
 	}
 
 	public void OnPointerClick( PointerEventData data ) {

@@ -16,7 +16,7 @@ public class PaintBrush : Brush {
 	public Queue<Vector3> pointerTrailPoints;
 	private Vector3 lastPoint;
 
-	private Color color = Color.magenta;
+	private Color color = Color.green;
 	private int brushType = 3;
 	private float brushWidth = 2.5f;
 	
@@ -77,6 +77,10 @@ public class PaintBrush : Brush {
 			lastPoint = point;
 		}
 
+		if(pointerTrail == null) {
+			painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
+			pointerTrail = Util.LoadAndCreatePrefab("Pointer Trail", painting.transform).GetComponent<LineRenderer>();
+		}
 		pointerTrail.SetVertexCount(pointerTrailPoints.Count);
 		pointerTrail.SetPositions(pointerTrailPoints.ToArray());
 	}

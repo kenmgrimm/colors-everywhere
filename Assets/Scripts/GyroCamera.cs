@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
 public class GyroCamera : MonoBehaviour {
-  private static float JOYSTICK_ROTATION_MULTIPLIER = 4.0f;
-  private static float JOYSTICK_MOVE_MULTIPLIER = 0.5f;
+  private static float JOYSTICK_ROTATION_MULTIPLIER = 5.0f;
+  private static float JOYSTICK_MOVE_MULTIPLIER = 0.4f;
 
   private float initialYAngle = 0f;
   private float appliedGyroYAngle = 0f;

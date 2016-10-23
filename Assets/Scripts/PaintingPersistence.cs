@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 using BestHTTP;
@@ -17,7 +18,17 @@ public class PaintingPersistence : MonoBehaviour {
 	}
 
 	private void OnLoadRequestFinished(HTTPRequest request, HTTPResponse response) {
-		Debug.Log("Load Request Finished! Text received: " + response.DataAsText);
+		if (request.Exception != null) {
+			Util.LogException(request.Exception);
+			return;
+		}
+
+		Debug.Log("Load Request Finished! Text received. Size(Uncompressed): " + response.Data.Length +
+		  "\nBody Text: " + response.DataAsText);
+
+		// foreach(KeyValuePair<string, List<string>> entry in response.Headers) {
+		// 	Debug.Log(entry.Key + ": " + entry.Value[0]);
+		// }
 
 		painting.Initialize(response.DataAsText);
 
@@ -31,6 +42,10 @@ public class PaintingPersistence : MonoBehaviour {
 	}
 
 	private void OnUpdateRequestFinished(HTTPRequest request, HTTPResponse response) {
+		if (request.Exception != null) {
+			Util.LogException(request.Exception);
+			return;
+		}
 		Debug.Log("Update Painting POST Complete. Status: " + response.StatusCode);
 	}
 
@@ -45,7 +60,10 @@ public class PaintingPersistence : MonoBehaviour {
 
 		HTTPRequest request = new HTTPRequest(updateRoute, HTTPMethods.Post, OnUpdateRequestFinished);
 
-		request.AddField("painting", CompressedPaintingData());
+		string data = CompressedPaintingData();
+		Debug.Log("POSTing data, size(compressed): " + data.Length);
+		
+		request.AddField("painting", data);
 
 		request.Send();
 	}
