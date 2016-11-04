@@ -9,7 +9,7 @@ public class NewPaintingButton : EventTrigger {
 		locationMarker = GameObject.Find("Map").GetComponent<LocationMarker>();
 	}
 
-	public override void OnPointerClick( PointerEventData data ) {
+	public override void OnPointerClick(PointerEventData data) {
 		float latitude = locationMarker.GPSCoords().x;
 		float longitude = locationMarker.GPSCoords().y;
 		

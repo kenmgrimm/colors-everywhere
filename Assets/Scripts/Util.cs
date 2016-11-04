@@ -12,6 +12,10 @@ public static class Util {
 		return (GameObject)Resources.Load("Prefabs/" + path);
 	}
 
+	public static GameObject Instantiate(string path, Transform parent = null) {
+		return GameObject.Instantiate(LoadPrefab(path));
+	}
+
 	public static GameObject LoadAndCreatePrefab(string path, Transform parent = null) {
 		GameObject newObject = GameObject.Instantiate(LoadPrefab(path));
 		

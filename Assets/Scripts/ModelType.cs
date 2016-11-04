@@ -1,16 +1,22 @@
-public class ModelType {
+using System.Collections.Generic;
+
+public class ModelType : ItemType {
   public int id;
-  public string typeName;
+  public string name;
   public string modelFile;
   public string iconFile;
 
   private static ModelType[] modelTypes;
 
-  public ModelType (int id, string typeName, string modelFile, string iconFile) {
+  public ModelType (int id, string name, string modelFile, string iconFile) {
     this.id = id;
-    this.typeName = typeName;
+    this.name = name;
     this.modelFile = modelFile;
     this.iconFile = iconFile;
+  }
+
+  public string Name() { 
+    return name;
   }
 
   public static ModelType FindById(int id) {
@@ -21,7 +27,19 @@ public class ModelType {
     return modelTypes[0];
   }
 
-static ModelType() {
+  public static List<ModelType> ModelTypes() {
+    return new List<ModelType>(modelTypes);
+  }
+  
+  public static List<ItemType> ItemTypes() {
+    return ModelTypes().ConvertAll<ItemType>(
+			delegate(ModelType modelType) {
+				return (ItemType)modelType;
+			}
+		);
+  }
+
+  static ModelType() {
     modelTypes = new ModelType[42] { 
       new ModelType(0, "cactus_01_01", "cactus_01_01", "None Yet"),
       new ModelType(1, "cactus_02_01", "cactus_02_01", "None Yet"),
