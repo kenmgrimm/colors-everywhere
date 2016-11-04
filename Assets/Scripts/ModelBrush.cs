@@ -36,7 +36,7 @@ public class ModelBrush : Brush {
 	}
 
 	public void LoadNewBrushModel(ModelType modelType) {
-Debug.Log("LoadNewBrushModel: " + modelType.id);
+Debug.Log("LoadNewBrushModel: " + modelType.Name());
 		if(modelBrush) {
 			// if the model was not used in the scene (painted), destroy it
 			Destroy(modelBrush.gameObject);

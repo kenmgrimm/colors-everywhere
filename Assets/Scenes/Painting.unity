@@ -10907,7 +10907,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &921049256
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16172,7 +16172,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1337753212}
-  - 114: {fileID: 1337753213}
   m_Layer: 5
   m_Name: Item Choosers
   m_TagString: Untagged
@@ -16195,17 +16194,6 @@ Transform:
   - {fileID: 1789951264}
   m_Father: {fileID: 849162284}
   m_RootOrder: 3
---- !u!114 &1337753213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1337753211}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277fb423f4ff04aca8a271dfb6c7667d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1340194136
 Prefab:
   m_ObjectHideFlags: 0
@@ -23845,7 +23833,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2018644527
 Transform:
   m_ObjectHideFlags: 0

@@ -7,9 +7,12 @@ public class ItemChooser : MonoBehaviour {
 
   public void Initialize(List<ItemType> itemTypes) {
     var grid = GameObject.Find("Item Chooser Grid");
+Debug.Log("Initialize: Grid: " + grid.name);
+    var slotFab = Util.LoadPrefab("UI/Item Chooser Slot");
+Debug.Log("Initialize: slotFab: " + slotFab.name);
 
     foreach(ItemType itemType in itemTypes) {
-      var slotGameObject = Util.LoadAndCreatePrefab("UI/Item Chooser Slot", grid.transform);
+      var slotGameObject = (GameObject)Instantiate(slotFab,  grid.transform);
       
       var button = slotGameObject.GetComponent<SelectItemButton>();
       button.Initialize(itemType);
