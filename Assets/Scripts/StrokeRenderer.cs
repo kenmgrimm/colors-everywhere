@@ -17,6 +17,20 @@ public class StrokeRenderer : MonoBehaviour {
 	public void SetRenderer(LineRenderer lineRenderer) {
 		GameObject line = Util.LoadAndCreatePrefab("Brushes/Glow Volumetric Alpha", transform);
 		GetComponent<LineRenderer>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 	}
 
 	public void ChangeColor(Color color) {

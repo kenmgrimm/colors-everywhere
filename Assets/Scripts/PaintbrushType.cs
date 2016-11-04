@@ -18,8 +18,8 @@ public class PaintbrushType : ItemType {
 
   public string Name() { return name; }
 
-  public void Instantiate() {
-    // return Util.Instantiate(sda)
+  public static void NewInstance() {
+    
   }
 
   public static PaintbrushType FindById(int id) {

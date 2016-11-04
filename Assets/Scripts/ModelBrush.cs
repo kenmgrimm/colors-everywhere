@@ -36,7 +36,7 @@ public class ModelBrush : Brush {
 	}
 
 	public void LoadNewBrushModel(ModelType modelType) {
-		Debug.Log("CreateNewBrushModel");
+Debug.Log("LoadNewBrushModel: " + modelType.id);
 		if(modelBrush) {
 			// if the model was not used in the scene (painted), destroy it
 			Destroy(modelBrush.gameObject);
@@ -80,7 +80,7 @@ public class ModelBrush : Brush {
 	}
 
 	public void OnButtonPress() {
-		Debug.Log("OnButtonPress");
+Debug.Log("OnButtonPress - Loading model brushNum: " + brushNum);
 
 		painting.AddModel(modelBrush);
 
