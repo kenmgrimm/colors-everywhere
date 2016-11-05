@@ -27,6 +27,8 @@ Debug.Log("Initialize: Grid: " + grid.name);
 Debug.Log("Initialize: slotFab: " + slotFab.name);
 
     foreach(ItemType itemType in itemTypes) {
+      Debug.Log("itemType: " + itemType.Name());
+
       var slotGameObject = (GameObject)Instantiate(slotFab,  grid.transform);
       
       var button = slotGameObject.GetComponent<SelectItemButton>();

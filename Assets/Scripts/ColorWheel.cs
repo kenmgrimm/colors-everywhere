@@ -13,7 +13,7 @@ public class ColorWheel : EventTrigger {
 	private Color pickedColor;
 
 	void Awake () {
-		brush = GameObject.Find("Brush");
+		brush = GameObject.Find("Paint Brush");
 
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		pickerPixels = spriteRenderer.sprite.texture.GetPixels();

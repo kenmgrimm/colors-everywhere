@@ -11,16 +11,17 @@ public class PaintbrushChooser : MonoBehaviour {
 		itemChooser = Util.LoadAndCreatePrefab(ITEM_CHOOSER_PREFAB, transform)
 			.GetComponent<ItemChooser>();
 
-		itemChooser.Initialize(ModelType.ItemTypes());
-		itemChooser.OnItemChange += ChangeItem;
+		itemChooser.Initialize(PaintbrushType.ItemTypes());
+		itemChooser.OnItemChange += ChangeBrushType;
 		
 		chooserButton.GetComponent<ChooserButton>().OnClick += itemChooser.ToggleActive;
 
 		itemChooser.gameObject.SetActive(false);
   }
 
-	public void ChangeItem(ItemType itemType) {
-		// GameObject.Find("Brush").GetComponent<ModelBrush>().LoadNewBrushModel(itemType);
+	public void ChangeBrushType(ItemType itemType) {
+		//TODO Delegate this
+		GameObject.Find("Paint Brush").GetComponent<PaintBrush>().ChangeRenderer((PaintbrushType)itemType);
 
 		itemChooser.ToggleActive();
 	}

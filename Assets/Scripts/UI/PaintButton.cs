@@ -8,7 +8,7 @@ public class PaintButton : EventTrigger {
 	private bool isPainting = false;
 
 	void Start () {
-		brush = GameObject.Find("Brush");
+		brush = GameObject.Find("Paint Brush");
 
 		InvokeRepeating("Paint", 0, 1f / PAINT_DROP_PER_SECOND);
 	}

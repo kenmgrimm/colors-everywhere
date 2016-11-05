@@ -6,7 +6,7 @@ public class ModelButton : EventTrigger {
 	private bool isPressed = false;
 
 	void Start () {
-		brush = GameObject.Find("Brush");
+		brush = GameObject.Find("Model Brush");
 	}
 
 	// Event Handlers

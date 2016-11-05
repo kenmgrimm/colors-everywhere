@@ -42,20 +42,12 @@ public class PaintBrush : Brush {
 		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
 	}
 
-	private void ChangeRenderer(PaintbrushType paintbrushType) {
+	public void ChangeRenderer(PaintbrushType paintbrushType) {
 
+		// var brush = paintbrushType.NewInstance();
+		var brush = (GameObject)GameObject.Instantiate(paintbrushType.prefab, painting.transform);
 
-
-
-
-
-
-
-
-
-
-		
-		pointerTrail = Util.LoadAndCreatePrefab("Pointer Trail", painting.transform).GetComponent<LineRenderer>();
+		pointerTrail = brush.GetComponent<LineRenderer>();
 
 		pointerTrail.SetVertexCount(0);
 
@@ -95,7 +87,7 @@ public class PaintBrush : Brush {
 
 		if(pointerTrail == null) {
 			painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
-			pointerTrail = Util.LoadAndCreatePrefab("Pointer Trail", painting.transform).GetComponent<LineRenderer>();
+			pointerTrail = Util.LoadAndCreatePrefab("Brushes/Fire Smoke", painting.transform).GetComponent<LineRenderer>();
 		}
 		pointerTrail.SetVertexCount(pointerTrailPoints.Count);
 		pointerTrail.SetPositions(pointerTrailPoints.ToArray());

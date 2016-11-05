@@ -7,7 +7,7 @@ public class PaintbrushType : ItemType {
   private int id;
   private string name;
 
-  private GameObject prefab;
+  public GameObject prefab;
 
   private PaintbrushType (int id, string name) {
     this.id = id;
@@ -18,8 +18,8 @@ public class PaintbrushType : ItemType {
 
   public string Name() { return name; }
 
-  public static void NewInstance() {
-    
+  public PaintbrushType NewInstance() {
+    return GameObject.Instantiate(prefab).GetComponent<PaintbrushType>();
   }
 
   public static PaintbrushType FindById(int id) {
@@ -43,15 +43,17 @@ public class PaintbrushType : ItemType {
   }
 
 static PaintbrushType() {
-    var paintbrushTypesArr = new PaintbrushType[8] { 
-      new PaintbrushType(0, "Cartoon Outline 1"),
-      new PaintbrushType(0, "Four Stroke Solid"), 
-      new PaintbrushType(0, "Glow Dot Add"),
-      new PaintbrushType(0, "Glow Volumetric Alpha"),
-      new PaintbrushType(0, "Ribbon Alpha"),
-      new PaintbrushType(0, "Sparks Add .3"),
-      new PaintbrushType(0, "Sparks Add Grow"),
-      new PaintbrushType(0, "Thick Stroke Whispy")
+    var paintbrushTypesArr = new PaintbrushType[2] {
+      new PaintbrushType(0, "Brushes/Fire Smoke"),
+      new PaintbrushType(1, "Brushes/Full Color")
+      // new PaintbrushType(2, "Cartoon Outline 1"),
+      // new PaintbrushType(3, "Four Stroke Solid"), 
+      // new PaintbrushType(4, "Glow Dot Add"),
+      // new PaintbrushType(5, "Glow Volumetric Alpha"),
+      // new PaintbrushType(6, "Ribbon Alpha"),
+      // new PaintbrushType(7, "Sparks Add .3"),
+      // new PaintbrushType(8, "Sparks Add Grow"),
+      // new PaintbrushType(9, "Thick Stroke Whispy")
     };
 
     paintbrushTypes = new List<PaintbrushType>(paintbrushTypesArr);
