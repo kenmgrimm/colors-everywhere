@@ -14,11 +14,10 @@ public class ModelBrush : Brush {
 
 	private Camera paintingCamera;
 
-	private Model modelBrush;
+	private Model model;
 
 	private Painting painting;
 
-	private int brushNum = 0;
 	private float scale = 1.0f;
 
 
@@ -36,12 +35,12 @@ public class ModelBrush : Brush {
 	}
 
 	public void LoadNewBrushModel(ModelType modelType) {
-		Debug.Log("CreateNewBrushModel");
-		if(modelBrush) {
-			// if the model was not used in the scene (painted), destroy it
-			Destroy(modelBrush.gameObject);
+Debug.Log("LoadNewBrushModel: " + modelType.Name());
+		if(model) {
+			// if the model was not used in the scene (painted), destroy it.  Why is this necessary?
+			Destroy(model.gameObject);
 		}
-		modelBrush = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Vector3.one * scale, Color.blue, transform).GetComponent<Model>();		
+		model = Model.CreateInstance(modelType, LocationOnGround(), Quaternion.identity, Vector3.one * scale, Color.blue, transform).GetComponent<Model>();		
 	}
 
 	public override void Extend(float distance) {
@@ -71,35 +70,44 @@ public class ModelBrush : Brush {
 		}
 		
 		// Should only do when this this transform changes
-		modelBrush.SetPosition(LocationOnGround());
-		modelBrush.SetRotation(Quaternion.identity);
+		model.SetPosition(LocationOnGround());
+		model.SetRotation(Quaternion.identity);
 	}
 
 	public override void ChangeColor(Color color) {
-		modelBrush.SetColor(color);
+		model.SetColor(color);
 	}
 
 	public void OnButtonPress() {
-		Debug.Log("OnButtonPress");
 
-		painting.AddModel(modelBrush);
 
-		// Unlink model from brush pointer
-		modelBrush = null;
+
+		Debug.Log("OnButtonPress - Re-Loading model brushNum: " + model.modelType);
+
+
+
+
+
+
+		painting.AddModel(model);
+		var prevModelType = model.modelType;
+
+		// // Unlink model from brush pointer
+		model = null;
 		
-		LoadNewBrushModel(ModelType.FindById(brushNum));
+		LoadNewBrushModel(prevModelType);
 	}
 
-	public void LoadNextBrushModel(int direction) {
-		brushNum += direction;
+	// public void LoadNextBrushModel(int direction) {
+	// 	brushNum += direction;
 
-		if(brushNum > 41) {
-			brushNum = 0;
-		} else if(brushNum < 0) {
-			brushNum = 41;
-		}
-		LoadNewBrushModel(ModelType.FindById(brushNum));
-	}
+	// 	if(brushNum > 41) {
+	// 		brushNum = 0;
+	// 	} else if(brushNum < 0) {
+	// 		brushNum = 41;
+	// 	}
+	// 	LoadNewBrushModel(ModelType.FindById(brushNum));
+	// }
 
   public void ScaleUp() {
     AdjustScale(SCALE_UP_FACTOR);
@@ -118,6 +126,6 @@ public class ModelBrush : Brush {
       scale = MIN_SCALE;
     }
 
-    modelBrush.SetScale(scale);
+    model.SetScale(scale);
   }
 }

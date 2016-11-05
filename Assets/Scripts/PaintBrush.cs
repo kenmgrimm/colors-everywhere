@@ -37,6 +37,24 @@ public class PaintBrush : Brush {
 		
 		paintingCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 
+		ChangeRenderer(PaintbrushType.Default());
+
+		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
+	}
+
+	private void ChangeRenderer(PaintbrushType paintbrushType) {
+
+
+
+
+
+
+
+
+
+
+
+		
 		pointerTrail = Util.LoadAndCreatePrefab("Pointer Trail", painting.transform).GetComponent<LineRenderer>();
 
 		pointerTrail.SetVertexCount(0);
@@ -44,8 +62,6 @@ public class PaintBrush : Brush {
 		pointerTrail.SetColors(color, color);
 
 		pointerTrailPoints = new Queue<Vector3>();
-
-		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
 	}
 	
 	public void UpdatePointerTrail() {

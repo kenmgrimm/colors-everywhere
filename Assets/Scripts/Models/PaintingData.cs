@@ -26,7 +26,6 @@ public class PaintingData {
   }
 
   public void AddModel(Model model) {
-    Debug.Log(model.ModelData().scale);
     modelDatas.Add(model.ModelData());
   }
 

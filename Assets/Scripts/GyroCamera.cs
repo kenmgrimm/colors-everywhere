@@ -34,8 +34,8 @@ public class GyroCamera : MonoBehaviour {
   }
 
 	public void MoveSpeed(Vector2 move){
-    Debug.Log("MoveSpeed");
-    Debug.Log(move);
+    // Debug.Log("MoveSpeed");
+    // Debug.Log(move);
 
     joystickYRotation += move.x * JOYSTICK_ROTATION_MULTIPLIER;
 		

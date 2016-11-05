@@ -3,19 +3,20 @@ using UnityEngine;
 public class Model : MonoBehaviour {
   private static GameObject modelPrefab;
 
+  public ModelType modelType;
   public ModelData modelData;
   private GameObject modelView;
 
   void Awake() { }
 
-  public static GameObject CreateInstance(ModelData modelData) {
+  public static GameObject CreateInstance(ModelData modelData, Transform parent = null) {
     ModelType modelType = ModelType.FindById(modelData.model_type);
 
-    return CreateInstance(modelType, modelData.position, modelData.orientation, modelData.scale, modelData.color, null);
+    return CreateInstance(modelType, modelData.position, modelData.orientation, modelData.scale, modelData.color, parent);
   }
 
-  public static GameObject CreateInstance(ModelType modelType, Vector3 position, Quaternion orientation, Vector3 scale, Color color, Transform parent) {
-    GameObject model = (GameObject)GameObject.Instantiate(ModelPrefab(), null);
+  public static GameObject CreateInstance(ModelType modelType, Vector3 position, Quaternion orientation, Vector3 scale, Color color, Transform parent = null) {
+    GameObject model = (GameObject)GameObject.Instantiate(ModelPrefab(), parent);
 
     model.GetComponent<Model>().Initialize(modelType, position, orientation, scale, color);
 
@@ -23,6 +24,7 @@ public class Model : MonoBehaviour {
   }
 
   public void Initialize(ModelType modelType, Vector3 position, Quaternion orientation, Vector3 scale, Color color) {
+    this.modelType = modelType;
     modelData = new ModelData(modelType.id, position, orientation, scale, color);
 
     GameObject modelViewPrefab = Util.LoadPrefab("Models/" + modelType.modelFile);

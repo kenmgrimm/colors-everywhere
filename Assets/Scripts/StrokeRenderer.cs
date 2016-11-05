@@ -8,10 +8,30 @@ public class StrokeRenderer : MonoBehaviour {
 	private Dictionary<Vector3, bool> pointerTrailDict;
 
 	void Awake () {
-		GameObject line = Util.LoadAndCreatePrefab("Line Fire", transform);
+		GameObject line = Util.LoadAndCreatePrefab("Brushes/Stripes", transform);
 		lineRenderer = line.GetComponent<LineRenderer>(); 
 
 		strokePoints = new List<Vector3>();
+	}
+
+	public void SetRenderer(LineRenderer lineRenderer) {
+		GameObject line = Util.LoadAndCreatePrefab("Brushes/Stripes", transform);
+		GetComponent<LineRenderer>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
 	}
 
 	public void ChangeColor(Color color) {
