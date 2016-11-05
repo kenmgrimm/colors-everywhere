@@ -17,8 +17,9 @@ public class PaintBrush : Brush {
 	private Vector3 lastPoint;
 
 	private Color color = Color.green;
-	private int brushType = 3;
-	private float brushWidth = 2.5f;
+	//@TODO this should be a BrushType
+	private PaintbrushType brushType;
+	private float brushWidth = .1f;
 	
 	private Camera paintingCamera;
 
@@ -37,17 +38,24 @@ public class PaintBrush : Brush {
 		
 		paintingCamera = GameObject.Find("Painting Camera").GetComponent<Camera>();
 
-		ChangeRenderer(PaintbrushType.Default());
+		brushType = PaintbrushType.Default();
+
+		ChangeRenderer(brushType, color, brushWidth);
 
 		InvokeRepeating("UpdatePointerTrail", 0, DRAW_FREQUENCY);
 	}
-
 	public void ChangeRenderer(PaintbrushType paintbrushType) {
+		ChangeRenderer(paintbrushType, color, brushWidth);
+	}
 
-		// var brush = paintbrushType.NewInstance();
-		var brush = (GameObject)GameObject.Instantiate(paintbrushType.prefab, painting.transform);
+	public void ChangeRenderer(PaintbrushType paintbrushType, Color color, float width) {
+		this.color = color;
+		brushType = paintbrushType;
+		brushWidth = width;
 
-		pointerTrail = brush.GetComponent<LineRenderer>();
+		Debug.Log("brush now: " + brushType + ", " + brushWidth + ", " + color);
+
+		pointerTrail = paintbrushType.CreateRendererInstance(painting.transform);
 
 		pointerTrail.SetVertexCount(0);
 
@@ -87,7 +95,10 @@ public class PaintBrush : Brush {
 
 		if(pointerTrail == null) {
 			painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
-			pointerTrail = Util.LoadAndCreatePrefab("Brushes/Fire Smoke", painting.transform).GetComponent<LineRenderer>();
+			
+			pointerTrail = PaintbrushType.Default()
+				.CreateRendererInstance(painting.transform).GetComponent<LineRenderer>();
+			// Util.LoadAndCreatePrefab("Brushes/Fire Smoke", painting.transform).GetComponent<LineRenderer>();
 		}
 		pointerTrail.SetVertexCount(pointerTrailPoints.Count);
 		pointerTrail.SetPositions(pointerTrailPoints.ToArray());
@@ -120,6 +131,7 @@ public class PaintBrush : Brush {
 	void Update() {}
 
 	public void StartStroke() {
+		Debug.Log("StartStroke:  brush now: " + brushType + ", " + brushWidth + ", " + color);
 		painting.StartStroke(color, brushType, brushWidth);
 	}
 

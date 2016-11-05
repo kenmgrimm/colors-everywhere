@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 [Serializable]
 public class StrokeData : ISerializationCallbackReceiver {
-  [SerializeField] private int brush_type;
+  [SerializeField] public int brush_type;
   [SerializeField] public float brush_width;
   [SerializeField] public Color color;
   

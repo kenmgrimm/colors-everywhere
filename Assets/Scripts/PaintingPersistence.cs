@@ -32,7 +32,7 @@ public class PaintingPersistence : MonoBehaviour {
 
 		painting.Initialize(response.DataAsText);
 
-		Debug.Log(painting.paintingData.Id());
+		Debug.Log(painting.PaintingData().Id());
 	}
 
 	public void LoadPaintingData(int paintingId) {

@@ -21,7 +21,9 @@ public class PaintbrushChooser : MonoBehaviour {
 
 	public void ChangeBrushType(ItemType itemType) {
 		//TODO Delegate this
-		GameObject.Find("Paint Brush").GetComponent<PaintBrush>().ChangeRenderer((PaintbrushType)itemType);
+		
+		GameObject.Find("Paint Brush").GetComponent<PaintBrush>()
+			.ChangeRenderer((PaintbrushType)itemType);
 
 		itemChooser.ToggleActive();
 	}

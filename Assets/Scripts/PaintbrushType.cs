@@ -7,19 +7,24 @@ public class PaintbrushType : ItemType {
   private int id;
   private string name;
 
-  public GameObject prefab;
+  public GameObject lineRendererPrefab;
 
-  private PaintbrushType (int id, string name) {
+  private PaintbrushType (int id, string name, string rendererPath) {
     this.id = id;
     this.name = name;
 
-    this.prefab = Util.LoadPrefab(name);
+    this.lineRendererPrefab = Util.LoadPrefab(rendererPath);
+  }
+
+  public int BrushType() {
+    return id;
   }
 
   public string Name() { return name; }
 
-  public PaintbrushType NewInstance() {
-    return GameObject.Instantiate(prefab).GetComponent<PaintbrushType>();
+  public LineRenderer CreateRendererInstance(Transform parent = null) {
+    return ((GameObject)GameObject.Instantiate(lineRendererPrefab, parent))
+      .GetComponent<LineRenderer>();
   }
 
   public static PaintbrushType FindById(int id) {
@@ -39,13 +44,16 @@ public class PaintbrushType : ItemType {
   }
 
   public static PaintbrushType Default() {
-    return paintbrushTypes[0];
+    return paintbrushTypes[2];
   }
 
 static PaintbrushType() {
-    var paintbrushTypesArr = new PaintbrushType[2] {
-      new PaintbrushType(0, "Brushes/Fire Smoke"),
-      new PaintbrushType(1, "Brushes/Full Color")
+    var paintbrushTypesArr = new PaintbrushType[5] {
+      new PaintbrushType(0, "Full Metal", "Brushes/Full Metal"),
+      new PaintbrushType(1, "Fire Smoke", "Brushes/Fire Smoke"),
+      new PaintbrushType(2, "Full Color", "Brushes/Full Color"),
+      new PaintbrushType(3, "Colora Palette", "Brushes/Color Palette"),
+      new PaintbrushType(4, "Red Blurry Dot", "Brushes/Red Blurry Dot")
       // new PaintbrushType(2, "Cartoon Outline 1"),
       // new PaintbrushType(3, "Four Stroke Solid"), 
       // new PaintbrushType(4, "Glow Dot Add"),
