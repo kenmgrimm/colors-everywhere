@@ -21,7 +21,7 @@ public class Painting : MonoBehaviour {
 
 	public void Load(int paintingId) {
 		Debug.Log("Loading painting: " + paintingId);
-		// GetComponent<PaintingPersistence>().LoadPaintingData(paintingId);
+		GetComponent<PaintingPersistence>().LoadPaintingData(paintingId);
 	}
 	
 	public void Initialize(string jsonData) {
@@ -40,17 +40,11 @@ public class Painting : MonoBehaviour {
 		List<ModelData> modelDatasClone = new List<ModelData>(paintingData.modelDatas);
 
 		foreach(ModelData data in modelDatasClone) {
-			Debug.Log("Beginning of loop");
 			ModelType modelType = ModelType.FindById(data.model_type);
 
-			Debug.Log(modelType);
-			GameObject model = Model.CreateInstance(data);
-			
-			Debug.Log(model);
+			GameObject model = Model.CreateInstance(data, transform);
 
 			AddModel(model.GetComponent<Model>());
-
-			Debug.Log("after AddModel");
 		}
 	}
 
@@ -61,6 +55,7 @@ public class Painting : MonoBehaviour {
 
 	public void AddModel(Model model) {
 		paintingData.AddModel(model);
+		model.transform.parent = transform;
 
 		Dirty = true;
 	}

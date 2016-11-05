@@ -6,7 +6,22 @@ public class ItemChooser : MonoBehaviour {
   public event ItemChangeHandler OnItemChange;
 
   public void Initialize(List<ItemType> itemTypes) {
+
+
+
+
+
+
+
+
+
     var grid = GameObject.Find("Item Chooser Grid");
+
+
+
+
+
+
 Debug.Log("Initialize: Grid: " + grid.name);
     var slotFab = Util.LoadPrefab("UI/Item Chooser Slot");
 Debug.Log("Initialize: slotFab: " + slotFab.name);
