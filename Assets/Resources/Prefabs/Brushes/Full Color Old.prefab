@@ -21,7 +21,7 @@ GameObject:
   - 4: {fileID: 4000013242114988}
   - 120: {fileID: 120000010273633370}
   m_Layer: 8
-  m_Name: Full Color
+  m_Name: Full Color Old
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ LineRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 1704d5ce859fb4dbba27592a26421487, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
