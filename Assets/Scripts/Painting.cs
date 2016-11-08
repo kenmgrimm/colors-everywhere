@@ -9,7 +9,7 @@ public class Painting : MonoBehaviour {
 
 	private List<Stroke> strokes;
 
-	public PaintingData paintingData;
+	private PaintingData paintingData;
 
 	private GameObject strokePrefab;
 
@@ -26,6 +26,8 @@ public class Painting : MonoBehaviour {
 	
 	public void Initialize(string jsonData) {
 		strokes.Clear();
+		//@TODO fix this need for a temporary object to load itself 
+		paintingData = new PaintingData(1f, 1f, 30);
 		paintingData.Load(jsonData);
 
 		foreach(StrokeData data in paintingData.strokeDatas) {
@@ -60,11 +62,11 @@ public class Painting : MonoBehaviour {
 		Dirty = true;
 	}
 
-	public void StartStroke(Color color, int brushType, float brushWidth) {
+	public void StartStroke(Color color, PaintbrushType brushType, float brushWidth) {
 		Stroke stroke = Instantiate(strokePrefab).GetComponent<Stroke>();
 		stroke.transform.parent = transform;
 
-		stroke.Initialize(color, brushType, brushWidth);
+		stroke.Initialize(brushType, color, brushWidth);
 		strokes.Add(stroke);
 
 		paintingData.StartStroke(stroke);
@@ -77,7 +79,7 @@ public class Painting : MonoBehaviour {
 	}
 
 	public void ChangeColor(Color color) {
-		GameObject.Find("Brush").GetComponent<Brush>().ChangeColor(color);
+		GameObject.Find("Paint Brush").GetComponent<Brush>().ChangeColor(color);
 	}
 
 	public void AddPoint(Vector3 point) {

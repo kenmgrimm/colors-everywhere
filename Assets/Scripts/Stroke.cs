@@ -5,14 +5,23 @@ public class Stroke : MonoBehaviour {
 
 	void Start () {}
 
-  public void Initialize(Color color, int brushType, float brushWidth) {
-    strokeData = new StrokeData(color, brushType, brushWidth);
+  public void Initialize(PaintbrushType brushType, Color color, float width) {
+    //@TODO  represent 
+    strokeData = new StrokeData(color, brushType.BrushType(), width);
+
+    StrokeRenderer().SetRenderer(brushType.CreateRendererInstance());
     StrokeRenderer().ChangeColor(color);
+    StrokeRenderer().SetWidth(width);
   }
 
   public void Initialize(StrokeData strokeData) {
     this.strokeData = strokeData;
+    
+    PaintbrushType paintbrushType = PaintbrushType.FindById(strokeData.brush_type); 
+    
+    StrokeRenderer().SetRenderer(paintbrushType.CreateRendererInstance());
     StrokeRenderer().ChangeColor(strokeData.color);
+    StrokeRenderer().SetWidth(strokeData.brush_width);
 
     foreach(Vector3 point in strokeData.Points()) {
       StrokeRenderer().AddPoint(point);

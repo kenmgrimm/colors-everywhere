@@ -8,7 +8,7 @@ public class Extension : MonoBehaviour {
 	private float lastValue;
 
 	void Start() {
-		brush = GameObject.Find("Painting Camera/Brush").GetComponent<Brush>();
+		brush = GameObject.Find("Painting Camera/Paint Brush").GetComponent<Brush>();
 
 		slider = GetComponent<Slider>();
 		lastValue = slider.value;

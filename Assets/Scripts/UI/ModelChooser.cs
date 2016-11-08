@@ -30,7 +30,7 @@ Debug.Log("ChangeItem: " + itemType.Name());
 
 
 		// Delegate this
-		GameObject.Find("Brush").GetComponent<ModelBrush>()
+		GameObject.Find("Model Brush").GetComponent<ModelBrush>()
 			.LoadNewBrushModel((ModelType)itemType);
 
 		itemChooser.ToggleActive();

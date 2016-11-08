@@ -31,6 +31,6 @@ public class ChangeColor : MonoBehaviour {
 
 		Color color = new Color(r, g, b);
 		Debug.Log(color);
-		GameObject.Find("Brush").GetComponent<PaintBrush>().ChangeColor(color);
+		GameObject.Find("Paint Brush").GetComponent<PaintBrush>().ChangeColor(color);
 	}
 }

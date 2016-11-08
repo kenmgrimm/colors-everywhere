@@ -8,7 +8,7 @@ public class ObjectPointer : MonoBehaviour {
 	private float pointerLength;
 
 	private Color color = Color.magenta;
-	private int brushType = 3;
+	private PaintbrushType brushType = PaintbrushType.FindById(3);
 	private float brushWidth = 2.5f;
 	
 	private Camera paintingCamera;
