@@ -6,7 +6,7 @@ public class Stroke : MonoBehaviour {
 	void Start () {}
 
   public void Initialize(PaintbrushType brushType, Color color, float width) {
-    //@TODO  represent 
+    //@TODO  represent everything as PaintbrushTypes
     strokeData = new StrokeData(color, brushType.BrushType(), width);
 
     StrokeRenderer().SetRenderer(brushType.CreateRendererInstance());

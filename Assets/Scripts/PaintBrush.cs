@@ -53,13 +53,14 @@ public class PaintBrush : Brush {
 		brushType = paintbrushType;
 		brushWidth = width;
 
-		Debug.Log("brush now: " + brushType + ", " + brushWidth + ", " + color);
+		Debug.Log("ChangeRenderer:  brush now: " + brushType + ", " + brushWidth + ", " + color);
 
 		pointerTrail = paintbrushType.CreateRendererInstance(painting.transform);
 
 		pointerTrail.SetVertexCount(0);
 
 		pointerTrail.SetColors(color, color);
+		pointerTrail.material.color = color;
 
 		pointerTrailPoints = new Queue<Vector3>();
 	}
@@ -100,6 +101,7 @@ public class PaintBrush : Brush {
 				.CreateRendererInstance(painting.transform).GetComponent<LineRenderer>();
 			// Util.LoadAndCreatePrefab("Brushes/Fire Smoke", painting.transform).GetComponent<LineRenderer>();
 		}
+
 		pointerTrail.SetVertexCount(pointerTrailPoints.Count);
 		pointerTrail.SetPositions(pointerTrailPoints.ToArray());
 	}
@@ -115,6 +117,7 @@ public class PaintBrush : Brush {
 
 		this.color = color;
 		pointerTrail.SetColors(color, color);
+		pointerTrail.material.color = color;
 	}
 
 	public override void Extend(float distance) {

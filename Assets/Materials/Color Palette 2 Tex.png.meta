@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: f3d951749f657439782c267752b93f62
-timeCreated: 1477244007
+guid: 60882a9fd3cb04ffda8d3ef13e55ef3d
+timeCreated: 1478554073
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -48,7 +48,12 @@ TextureImporter:
   alphaIsTransparency: 0
   spriteTessellationDetail: -1
   textureType: 5
-  buildTargetSettings: []
+  buildTargetSettings:
+  - buildTarget: iPhone
+    maxTextureSize: 2048
+    textureFormat: 4
+    compressionQuality: 50
+    allowsAlphaSplitting: 0
   spriteSheet:
     serializedVersion: 2
     sprites: []
