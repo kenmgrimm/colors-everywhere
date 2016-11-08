@@ -25,6 +25,7 @@ public class StrokeRenderer : MonoBehaviour {
 
 	public void ChangeColor(Color color) {
 		lineRenderer.SetColors(color, color);
+		lineRenderer.material.color = color;
 	}
 	
   public void AddPoint(Vector3 point) {

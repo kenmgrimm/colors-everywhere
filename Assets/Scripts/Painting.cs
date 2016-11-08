@@ -79,6 +79,7 @@ public class Painting : MonoBehaviour {
 	}
 
 	public void ChangeColor(Color color) {
+		//@TODO - needs to work for models as well
 		GameObject.Find("Paint Brush").GetComponent<Brush>().ChangeColor(color);
 	}
 

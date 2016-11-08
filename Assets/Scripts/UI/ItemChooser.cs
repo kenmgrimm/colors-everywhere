@@ -38,7 +38,7 @@ Debug.Log("Initialize: slotFab: " + slotFab.name);
     }
   }
 
-  public void  ItemSelected(ItemType itemType) {
+  public void ItemSelected(ItemType itemType) {
 Debug.Log("ItemSelected: " + itemType.Name());
     OnItemChange(itemType);
   }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class PaintbrushChooser : MonoBehaviour {
-	private static string ITEM_CHOOSER_PREFAB = "Canvas - Item Chooser Overlay";
+	private static string ITEM_CHOOSER_PREFAB = "UI/Canvas - Item Chooser Overlay";
 	
 	ItemChooser itemChooser;
 
