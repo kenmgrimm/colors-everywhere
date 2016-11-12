@@ -33,10 +33,6 @@ namespace Gvr.Internal {
       Input.gyro.enabled = true;
     }
 
-    public override bool SupportsNativeDistortionCorrection(List<string> diagnostics) {
-      return false;  // No need for diagnostic message.
-    }
-
     public override bool SupportsNativeUILayer(List<string> diagnostics) {
       return false;  // No need for diagnostic message.
     }
@@ -44,13 +40,11 @@ namespace Gvr.Internal {
     // Since we can check all these settings by asking Gvr.Instance, no need
     // to keep a separate copy here.
     public override void SetVRModeEnabled(bool enabled) {}
-    public override void SetDistortionCorrectionEnabled(bool enabled) {}
     public override void SetNeckModelScale(float scale) {}
-    public override void SetElectronicDisplayStabilizationEnabled(bool enabled) {}
 
     private Quaternion initialRotation = Quaternion.identity;
 
-    private bool remoteCommunicating = true;
+    private bool remoteCommunicating = false;
     private bool RemoteCommunicating {
       get {
         if (!remoteCommunicating) {
@@ -62,7 +56,7 @@ namespace Gvr.Internal {
 
     public override void UpdateState() {
       Quaternion rot;
-      if ( /* GvrViewer.Instance.UseUnityRemoteInput && */ RemoteCommunicating) {
+      if (GvrViewer.Instance.UseUnityRemoteInput && RemoteCommunicating) {
         var att = Input.gyro.attitude * initialRotation;
         att = new Quaternion(att.x, att.y, -att.z, -att.w);
         rot = Quaternion.Euler(90, 0, 0) * att;
@@ -91,12 +85,7 @@ namespace Gvr.Internal {
       var neck = (rot * neckOffset - neckOffset.y * Vector3.up) * GvrViewer.Instance.NeckModelScale;
       headPose.Set(neck, rot);
 
-      triggered = Input.GetMouseButtonDown(0);
       tilted = Input.GetKeyUp(KeyCode.Escape);
-    }
-
-    public override void PostRender(RenderTexture stereoScreen) {
-      // Do nothing.
     }
 
     public override void UpdateScreenData() {
