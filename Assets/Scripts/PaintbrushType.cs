@@ -23,6 +23,10 @@ public class PaintbrushType : ItemType {
   public string Name() { return name; }
 
   public LineRenderer CreateRendererInstance(Transform parent = null) {
+    if (!parent) {
+      parent = PaintingGameManager.instance.Painting().transform;
+    }
+    
     return ((GameObject)GameObject.Instantiate(lineRendererPrefab, parent))
       .GetComponent<LineRenderer>();
   }

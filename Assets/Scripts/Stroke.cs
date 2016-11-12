@@ -10,6 +10,7 @@ public class Stroke : MonoBehaviour {
     strokeData = new StrokeData(color, brushType.BrushType(), width);
 
     StrokeRenderer().SetRenderer(brushType.CreateRendererInstance());
+    
     StrokeRenderer().ChangeColor(color);
     StrokeRenderer().SetWidth(width);
   }
