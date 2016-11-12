@@ -1023,7 +1023,7 @@ Transform:
   - {fileID: 853513813}
   - {fileID: 1663796867}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!1 &65628822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1754,7 +1754,7 @@ GameObject:
   - 4: {fileID: 134199181}
   m_Layer: 8
   m_Name: Desert Scene
-  m_TagString: Untagged
+  m_TagString: Persist Between Scenes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2989,64 +2989,6 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 483540, guid: 49f2feeee7fe6af46872222b8778cb58, type: 2}
   m_PrefabInternal: {fileID: 177145472}
---- !u!1001 &177869791
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: orientation
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: colorPicker
-      value: 
-      objectReference: {fileID: 2800000, guid: 7b700f637eca44b4498c8f5614e2301f, type: 3}
-    - target: {fileID: 11400000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: receiver
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: da76e6634a3aadc44ada6d2b7ac63e37, type: 2}
-  m_IsPrefabParent: 0
 --- !u!4 &181441437 stripped
 Transform:
   m_PrefabParentObject: {fileID: 489754, guid: 36195d936eb59734da072d58b46c22af, type: 2}
@@ -5096,7 +5038,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!1001 &412038801
 Prefab:
   m_ObjectHideFlags: 0
@@ -5933,7 +5875,7 @@ GameObject:
   - 108: {fileID: 505900078}
   m_Layer: 0
   m_Name: Directional Light
-  m_TagString: Untagged
+  m_TagString: Persist Between Scenes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9740,7 +9682,7 @@ Transform:
   - {fileID: 1337753212}
   - {fileID: 1130557630}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!1 &853513812
 GameObject:
   m_ObjectHideFlags: 0
@@ -12563,6 +12505,10 @@ Prefab:
     - target: {fileID: 100000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 2}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 2}
+      propertyPath: m_TagString
+      value: Persist Between Scenes
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 2}
@@ -20796,7 +20742,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1838597412
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20812,7 +20758,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 457, y: -683}
+  m_AnchoredPosition: {x: 710, y: -663}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1838597413

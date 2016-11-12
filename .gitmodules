@@ -1,0 +1,3 @@
+[submodule "gvr-unity-sdk"]
+	path = gvr-unity-sdk
+	url = git@github.com:googlevr/gvr-unity-sdk.git
