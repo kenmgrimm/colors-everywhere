@@ -1,20 +1,22 @@
 ﻿using UnityEngine;
 
 public class ColorPaletteChooser : MonoBehaviour {
+
 	void Awake() {
     GameObject chooserButton = GameObject.Find("Color Palette Button");
 
-		// itemChooser = Util.LoadAndCreatePrefab(ITEM_CHOOSER_PREFAB, transform)
-		// 	.GetComponent<ItemChooser>();
+		Util.LoadAndCreatePrefab("UI/Canvas - Color Palette Overlay", transform);
 
-		// itemChooser.Initialize(PaintbrushType.ItemTypes());
-		// itemChooser.OnItemChange += ChangeBrushType;
 		ColorPalette colorPalette = GameObject.Find("Color Palette").GetComponent<ColorPalette>();
 		colorPalette.OnColorPicked += ChangeColor;
 		colorPalette.OnSelectionFinished += Close;
 		
 		chooserButton.GetComponent<ChooserButton>().OnClick += ToggleActive;
+
+		Close();
   }
+
+	void Start() {}
 
 	public void ChangeColor(Color color) {
 		//TODO Delegate this

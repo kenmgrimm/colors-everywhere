@@ -63,7 +63,7 @@ Debug.Log("LoadNewBrushModel: " + modelType.Name());
 
 	// Probably should be optimized
 	void Update() {
-		// Necesary because painting is now instantiated and may not have been at this point...  
+		//@TODO Necesary because painting is now instantiated and may not have been at this point...  
 		// Gotta fix this...
 		if(!painting) {
 			painting = GameObject.FindGameObjectWithTag("Painting").GetComponent<Painting>();
@@ -79,35 +79,16 @@ Debug.Log("LoadNewBrushModel: " + modelType.Name());
 	}
 
 	public void OnButtonPress() {
-
-
-
 		Debug.Log("OnButtonPress - Re-Loading model brushNum: " + model.modelType);
-
-
-
-
-
 
 		painting.AddModel(model);
 		var prevModelType = model.modelType;
 
-		// // Unlink model from brush pointer
+		// Unlink model from brush pointer
 		model = null;
 		
 		LoadNewBrushModel(prevModelType);
 	}
-
-	// public void LoadNextBrushModel(int direction) {
-	// 	brushNum += direction;
-
-	// 	if(brushNum > 41) {
-	// 		brushNum = 0;
-	// 	} else if(brushNum < 0) {
-	// 		brushNum = 41;
-	// 	}
-	// 	LoadNewBrushModel(ModelType.FindById(brushNum));
-	// }
 
   public void ScaleUp() {
     AdjustScale(SCALE_UP_FACTOR);

@@ -18,7 +18,7 @@ public static class Util {
 
 	public static GameObject LoadAndCreatePrefab(string path, Transform parent = null) {
 		GameObject newObject = GameObject.Instantiate(LoadPrefab(path));
-		
+		Debug.Log("newObject: " + newObject);
 		if(parent != null) {
 			newObject.transform.parent = parent;
 		}

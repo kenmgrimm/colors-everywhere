@@ -126,9 +126,25 @@ public class PaintBrush : Brush {
 	}
 
 	private Vector3 Location() {
-		Ray ray = paintingCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+		bool dummy = false;
+		return Location(out dummy);
+	}
 
-		return ray.origin + ray.direction * pointerLength;
+	private Vector3 Location(out bool onSurface) {
+		onSurface = false;
+
+		Ray ray = paintingCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+		Vector3 location = ray.origin + ray.direction * pointerLength;
+
+		if(SurfacePainting()) {
+			RaycastHit hit;
+			if(Physics.Raycast(ray.origin, ray.direction, out hit, pointerLength)) {
+				onSurface = true;
+				location = hit.point;
+			}
+		}
+
+		return location;
 	}
 
 	void Update() {}
@@ -140,5 +156,9 @@ public class PaintBrush : Brush {
 
 	public void AddPoint() {
 		painting.AddPoint(Location());
+	}
+
+	private bool SurfacePainting() {
+		return false;
 	}
 }
