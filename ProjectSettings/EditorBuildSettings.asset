@@ -14,6 +14,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Graffiti.unity
   - enabled: 0
-    path: Assets/GoogleVR/DemoScenes/HeadsetDemo/DemoScene.unity
+    path: Assets/Vendor/GoogleVR/DemoScenes/HeadsetDemo/DemoScene.unity
   - enabled: 0
     path: Assets/Scenes/Location.unity
