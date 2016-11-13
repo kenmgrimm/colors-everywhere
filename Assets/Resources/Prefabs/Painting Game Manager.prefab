@@ -21,7 +21,7 @@ GameObject:
   - 4: {fileID: 4000013723648690}
   - 114: {fileID: 114000012853382650}
   m_Layer: 0
-  m_Name: Game
+  m_Name: Painting Game Manager
   m_TagString: Persist Between Scenes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

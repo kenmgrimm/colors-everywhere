@@ -5,16 +5,22 @@ public class PaintingGameManager : MonoBehaviour {
 
 	private GameObject paintingPrefab;
 
-	void Awake() {
-		SetupSingletion();
-
+	private void LoadInitialPrefabs() {
 		paintingPrefab = Util.LoadPrefab("Painting");
 
+		Util.LoadAndCreatePrefab("Environment");
+	}
+
+	void Awake() {
+		GameObject.Find("Environment - Dev only").SetActive(false);
+
 		if(!Painting()) {
+			SetupSingletion();
+
+			LoadInitialPrefabs();
+
 			// FIX THIS In dev mode we may start in painting scene and need to create one on the fly
 			InstantiatePainting();
-
-
 
 			// Let's always load an existing painting
 			// PaintingGameManager.instance.LoadPainting(8);
