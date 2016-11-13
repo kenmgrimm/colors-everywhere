@@ -22,7 +22,8 @@ public class Stroke : MonoBehaviour {
     
     StrokeRenderer().SetRenderer(paintbrushType.CreateRendererInstance());
     StrokeRenderer().ChangeColor(strokeData.color);
-    StrokeRenderer().SetWidth(strokeData.brush_width);
+    // StrokeRenderer().SetWidth(strokeData.brush_width);
+    StrokeRenderer().SetWidth(0.05f);
 
     foreach(Vector3 point in strokeData.Points()) {
       StrokeRenderer().AddPoint(point);

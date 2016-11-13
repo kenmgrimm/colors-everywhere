@@ -17,8 +17,8 @@ public class PaintingGameManager : MonoBehaviour {
 
 
 			// Let's always load an existing painting
-			PaintingGameManager.instance.LoadPainting(8);
-			// PaintingGameManager.instance.CreatePainting(1, 1, 1);
+			// PaintingGameManager.instance.LoadPainting(8);
+			PaintingGameManager.instance.CreatePainting(1, 1, 1);
 
 
 			// Painting().paintingData.id = 8;
