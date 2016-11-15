@@ -12,12 +12,12 @@ public class MagnetButton : MonoBehaviour {
 	void Update() {
 		// sensor.MagUpdate(Input.acceleration, Input.compass.rawVector);
 		// Debug.Log("Click: " + Input.acceleration + ", " + Input.compass.rawVector + ", " + sensor.Clicked());
-		Debug.Log(Input.compass.rawVector.x + ", " + Input.compass.rawVector.y + ", " + Input.compass.rawVector.z);
+		// Debug.Log(Input.compass.rawVector.x + ", " + Input.compass.rawVector.y + ", " + Input.compass.rawVector.z);
 	}
 
 	void Awake() {
 		// sensor = new CardboardMagnetSensor();
-		Debug.Log("Input.compass.rawVector");
+		// Debug.Log("Input.compass.rawVector");
 
 		// OnButtonClick += LogClick;
 

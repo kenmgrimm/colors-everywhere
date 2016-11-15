@@ -49,10 +49,14 @@ public class ColorPalette : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 		
 		pickedColorImage.color = pickedColor;
 
-		OnColorPicked(pickedColor);
+		if(OnColorPicked != null) {
+			OnColorPicked(pickedColor);
+		}
 	}
 
 	public void OnPointerUp(PointerEventData data) {
+		if(OnSelectionFinished == null) { return; }
+
 		OnSelectionFinished();
 	}
 

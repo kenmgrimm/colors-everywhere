@@ -12,6 +12,8 @@ public class SelectItemButton : MonoBehaviour, IPointerClickHandler {
 	} 
 
 	public void OnPointerClick(PointerEventData data) {
-		OnClick(buttonType);
+		if(OnClick != null) {
+			OnClick(buttonType);
+		}
 	}
 }
