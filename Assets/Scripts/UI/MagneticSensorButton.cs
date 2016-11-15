@@ -1,10 +1,13 @@
 using UnityEngine;
   
-public class CardboardMagnetSensor : MonoBehaviour {
+public class MagneticSensorButton : MonoBehaviour {
   private Vector3 lastCompass;
  
-  public float COMPASS_CHANGE_THRESHOLD = 30.0f;
+  public float COMPASS_CHANGE_THRESHOLD = 100.0f;
   public Vector3 compass;
+
+  public delegate void ButtonPressedHandler();
+	public event ButtonPressedHandler OnButtonPressed;
 
   private Vector3 Compass() {
     #if UNITY_EDITOR
@@ -18,6 +21,9 @@ public class CardboardMagnetSensor : MonoBehaviour {
     Vector3 current = Compass();
     if(LargeChange(lastCompass, current)) {
       Debug.Log("Button Pressed: " + lastCompass + ", " + current);
+      if(OnButtonPressed != null) {
+        OnButtonPressed();
+      }
     }
 
     lastCompass = current;
@@ -27,8 +33,6 @@ public class CardboardMagnetSensor : MonoBehaviour {
     Input.compass.enabled = true;
 
     lastCompass = Compass();
-
-    // tiltedMagn = Input.acceleration.magnitude;
   }
  
   private bool LargeChange(Vector3 prev, Vector3 current) {

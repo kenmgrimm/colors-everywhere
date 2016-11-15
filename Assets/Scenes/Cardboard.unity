@@ -1196,7 +1196,7 @@ GameObject:
   - 114: {fileID: 189493246}
   - 114: {fileID: 189493247}
   m_Layer: 0
-  m_Name: Magnet Button
+  m_Name: Magnetic Sensor Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15560,7 +15560,7 @@ GameObject:
   - 4: {fileID: 1634974144}
   - 114: {fileID: 1634974143}
   m_Layer: 0
-  m_Name: Teleport Reticle
+  m_Name: Teleport Ray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15574,7 +15574,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1634974142}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6293302e4d47f45e8a79d481e0eda3ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 26da01694918f4abd892acf81c61e2ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1634974144
