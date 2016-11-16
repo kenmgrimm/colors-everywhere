@@ -647,7 +647,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.278}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.272}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -728,7 +728,7 @@ MonoBehaviour:
   followRotationDamping: 5
   followHeightDamping: 5
   pointId: -1
-  enableKeySimulation: 1
+  enableKeySimulation: 0
   allowSimulationStandalone: 1
   visibleOnStandalone: 1
   dPadAxisCount: 0
@@ -737,7 +737,7 @@ MonoBehaviour:
   isSwipeIn: 0
   isSwipeOut: 0
   showPSInspector: 1
-  showSpriteInspector: 0
+  showSpriteInspector: 1
   showEventInspector: 0
   showBehaviourInspector: 1
   showAxesInspector: 0
@@ -807,13 +807,13 @@ MonoBehaviour:
     gravity: 9.81
     currentGravity: 0
     isJump: 0
-    unityAxis: 4a756d70
+    unityAxis: Fire1
     showGeneralInspector: 1
     showDirectInspector: 1
     showInertiaInspector: 0
-    showSimulatinInspector: 0
+    showSimulatinInspector: 1
   normalSprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 0.272}
   pressedSprite: {fileID: 21300008, guid: becfdeef1534456438d787466a94d207, type: 3}
   pressedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &271271021
@@ -4942,7 +4942,7 @@ MonoBehaviour:
   followRotationDamping: 5
   followHeightDamping: 5
   pointId: -1
-  enableKeySimulation: 1
+  enableKeySimulation: 0
   allowSimulationStandalone: 1
   visibleOnStandalone: 1
   dPadAxisCount: 0
@@ -4951,7 +4951,7 @@ MonoBehaviour:
   isSwipeIn: 0
   isSwipeOut: 0
   showPSInspector: 1
-  showSpriteInspector: 0
+  showSpriteInspector: 1
   showEventInspector: 0
   showBehaviourInspector: 1
   showAxesInspector: 0
@@ -5021,13 +5021,13 @@ MonoBehaviour:
     gravity: 9.81
     currentGravity: 0
     isJump: 0
-    unityAxis: 4a756d70
+    unityAxis: Fire1
     showGeneralInspector: 1
     showDirectInspector: 1
     showInertiaInspector: 0
-    showSimulatinInspector: 0
+    showSimulatinInspector: 1
   normalSprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 0.27058825}
   pressedSprite: {fileID: 21300008, guid: becfdeef1534456438d787466a94d207, type: 3}
   pressedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1779943393
@@ -5042,7 +5042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.278}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.27058825}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
