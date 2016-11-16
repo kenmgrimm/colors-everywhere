@@ -165,12 +165,15 @@ MonoBehaviour:
   _activated: 1
   enableCamera: 1
   cameraMode: 1
+  camTargetTag: Player
   autoLinkTagCam: 1
   autoCamTag: 4d61696e43616d657261
   cameraTransform: {fileID: 0}
   cameraTargetMode: 1
   enableWallDetection: 0
-  wallLayer: {}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
   cameraLookAt: {fileID: 0}
   followOffset: {x: 0, y: 6, z: -6}
   followDistance: 3.5
@@ -180,6 +183,7 @@ MonoBehaviour:
   pointId: -1
   enableKeySimulation: 1
   allowSimulationStandalone: 0
+  visibleOnStandalone: 1
   dPadAxisCount: 0
   useFixedUpdate: 0
   isOnDrag: 0
@@ -197,62 +201,77 @@ MonoBehaviour:
   onMoveStart:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e4d6f7665537461727448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnMoveStartHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   onMove:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e4d6f766548616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnMoveHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   onMoveSpeed:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e4d6f7665537065656448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnMoveSpeedHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   onMoveEnd:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e4d6f7665456e6448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnMoveEndHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   onTouchStart:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e546f756368537461727448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnTouchStartHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   onTouchUp:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e546f756368557048616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnTouchUpHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnDownUp:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e557048616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownUpHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnDownDown:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e446f776e48616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnDownLeft:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e4c65667448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownLeftHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnDownRight:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e526967687448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownRightHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   OnPressUp:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e557048616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownUpHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnPressDown:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e446f776e48616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnPressLeft:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e4c65667448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownLeftHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   OnPressRight:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 4554434a6f79737469636b2b4f6e446f776e526967687448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCJoystick+OnDownRightHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   joystickType: 1
   allowJoystickOverTouchPad: 0
   radiusBase: 0
+  radiusBaseValue: 0
   axisX:
     name: 486f72697a6f6e74616c
     autoLinkTagPlayer: 1
@@ -264,6 +283,7 @@ MonoBehaviour:
     deadValue: 0.1
     valueMethod: 0
     curveValue:
+      serializedVersion: 2
       m_Curve:
       - time: 0
         value: 0
@@ -277,6 +297,7 @@ MonoBehaviour:
         tangentMode: 0
       m_PreInfinity: 0
       m_PostInfinity: 0
+      m_RotationOrder: 4
     isEnertia: 0
     inertia: 0
     inertiaThreshold: 0.08
@@ -319,6 +340,7 @@ MonoBehaviour:
     deadValue: 0.1
     valueMethod: 0
     curveValue:
+      serializedVersion: 2
       m_Curve:
       - time: 0
         value: 0
@@ -332,6 +354,7 @@ MonoBehaviour:
         tangentMode: 0
       m_PreInfinity: 0
       m_PostInfinity: 0
+      m_RotationOrder: 4
     isEnertia: 0
     inertia: 0
     inertiaThreshold: 0.08
@@ -370,6 +393,7 @@ MonoBehaviour:
   tmSpeed: 10
   tmAdditionnalRotation: 0
   tmMoveCurve:
+    serializedVersion: 2
     m_Curve:
     - time: 0
       value: 0
@@ -383,6 +407,7 @@ MonoBehaviour:
       tangentMode: 0
     m_PreInfinity: 0
     m_PostInfinity: 0
+    m_RotationOrder: 4
   tmLockInJump: 0
   isNoReturnThumb: 0
   isNoOffsetThumb: 0
@@ -447,12 +472,15 @@ MonoBehaviour:
   _activated: 1
   enableCamera: 0
   cameraMode: 0
+  camTargetTag: Player
   autoLinkTagCam: 1
   autoCamTag: 4d61696e43616d657261
   cameraTransform: {fileID: 0}
   cameraTargetMode: 0
   enableWallDetection: 0
-  wallLayer: {}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
   cameraLookAt: {fileID: 0}
   followOffset: {x: 0, y: 6, z: -6}
   followDistance: 10
@@ -462,6 +490,7 @@ MonoBehaviour:
   pointId: -1
   enableKeySimulation: 1
   allowSimulationStandalone: 0
+  visibleOnStandalone: 1
   dPadAxisCount: 0
   useFixedUpdate: 0
   isOnDrag: 0
@@ -479,21 +508,25 @@ MonoBehaviour:
   onDown:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 455443427574746f6e2b4f6e446f776e48616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCButton+OnDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   onPressed:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 455443427574746f6e2b4f6e5072657373656448616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCButton+OnPressedHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   onPressedValue:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 455443427574746f6e2b4f6e5072657373656456616c7565616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCButton+OnPressedValueandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   onUp:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: 455443427574746f6e2b4f6e555048616e646c65722c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c
+    m_TypeName: ETCButton+OnUPHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   axis:
-    name: 427574746f6e206a756d70
+    name: Button jump
     autoLinkTagPlayer: 1
     autoTag: 506c61796572
     player: {fileID: 0}
@@ -503,9 +536,11 @@ MonoBehaviour:
     deadValue: 0.1
     valueMethod: 0
     curveValue:
+      serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
+      m_RotationOrder: 4
     isEnertia: 0
     inertia: 0
     inertiaThreshold: 0.08
@@ -538,17 +573,9 @@ MonoBehaviour:
     showInertiaInspector: 0
     showSimulatinInspector: 0
   normalSprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
-  normalColor:
-    r: 1
-    g: 1
-    b: 1
-    a: 1
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
   pressedSprite: {fileID: 21300008, guid: becfdeef1534456438d787466a94d207, type: 3}
-  pressedColor:
-    r: 1
-    g: 1
-    b: 1
-    a: 1
+  pressedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!222 &22227112
 CanvasRenderer:
   m_ObjectHideFlags: 1

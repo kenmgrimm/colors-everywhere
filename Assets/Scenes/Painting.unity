@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.409}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -607,10 +607,11 @@ GameObject:
   - 224: {fileID: 206273697}
   - 222: {fileID: 206273699}
   - 114: {fileID: 206273698}
+  - 114: {fileID: 206273702}
   - 114: {fileID: 206273700}
   - 114: {fileID: 206273701}
   m_Layer: 5
-  m_Name: Paint Button
+  m_Name: Paint Button Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -622,18 +623,18 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 206273696}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.75, y: 1.75, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
-  m_Father: {fileID: 456367222}
-  m_RootOrder: 5
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -308, y: -634}
+  m_Father: {fileID: 781470298}
+  m_RootOrder: 4
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -350, y: 150}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &206273698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -646,14 +647,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.653}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.278}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: cb45ac75b75b44c86b53da08542f6a73, type: 3}
+  m_Sprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -693,6 +694,128 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Delegates: []
   delegates: []
+--- !u!114 &206273702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 206273696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba60450c5a1202b41869d8ee7136c85f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isUnregisterAtDisable: 0
+  _anchor: 3
+  _anchorOffet: {x: 300, y: 100}
+  _visible: 1
+  _activated: 1
+  enableCamera: 0
+  cameraMode: 0
+  camTargetTag: Player
+  autoLinkTagCam: 1
+  autoCamTag: 4d61696e43616d657261
+  cameraTransform: {fileID: 0}
+  cameraTargetMode: 0
+  enableWallDetection: 0
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  cameraLookAt: {fileID: 0}
+  followOffset: {x: 0, y: 6, z: -6}
+  followDistance: 10
+  followHeight: 5
+  followRotationDamping: 5
+  followHeightDamping: 5
+  pointId: -1
+  enableKeySimulation: 1
+  allowSimulationStandalone: 1
+  visibleOnStandalone: 1
+  dPadAxisCount: 0
+  useFixedUpdate: 0
+  isOnDrag: 0
+  isSwipeIn: 0
+  isSwipeOut: 0
+  showPSInspector: 1
+  showSpriteInspector: 0
+  showEventInspector: 0
+  showBehaviourInspector: 1
+  showAxesInspector: 0
+  showTouchEventInspector: 0
+  showDownEventInspector: 0
+  showPressEventInspector: 0
+  showCameraInspector: 0
+  onDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  onPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnPressedHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  onPressedValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnPressedValueandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnUPHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  axis:
+    name: Paint Button Right
+    autoLinkTagPlayer: 0
+    autoTag: ETC Button
+    player: {fileID: 0}
+    enable: 1
+    invertedAxis: 0
+    speed: 6
+    deadValue: 0.1
+    valueMethod: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    isEnertia: 0
+    inertia: 0
+    inertiaThreshold: 0.08
+    isAutoStab: 0
+    autoStabThreshold: 0.01
+    autoStabSpeed: 10
+    isClampRotation: 0
+    maxAngle: 90
+    minAngle: 90
+    isValueOverTime: 0
+    overTimeStep: 1
+    maxOverTimeValue: 1
+    axisValue: 0
+    axisSpeedValue: 0
+    axisThreshold: 0.5
+    isLockinJump: 0
+    axisState: 0
+    _directTransform: {fileID: 0}
+    directAction: 9
+    axisInfluenced: 0
+    actionOn: 0
+    directCharacterController: {fileID: 0}
+    directRigidBody: {fileID: 0}
+    gravity: 9.81
+    currentGravity: 0
+    isJump: 0
+    unityAxis: 4a756d70
+    showGeneralInspector: 1
+    showDirectInspector: 1
+    showInertiaInspector: 0
+    showSimulatinInspector: 0
+  normalSprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  pressedSprite: {fileID: 21300008, guid: becfdeef1534456438d787466a94d207, type: 3}
+  pressedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &271271021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1080,7 +1203,6 @@ RectTransform:
   - {fileID: 1417833210}
   - {fileID: 1838597412}
   - {fileID: 843915609}
-  - {fileID: 206273697}
   - {fileID: 1464170246}
   m_Father: {fileID: 849162284}
   m_RootOrder: 0
@@ -1318,7 +1440,7 @@ GameObject:
   - 222: {fileID: 547966646}
   - 114: {fileID: 547966645}
   m_Layer: 0
-  m_Name: Joystick
+  m_Name: Joystick Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1355,7 +1477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.516}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1884,7 +2006,10 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 547966644}
+  - {fileID: 1465184535}
   - {fileID: 2072211468}
+  - {fileID: 1779943389}
+  - {fileID: 206273697}
   m_Father: {fileID: 849162284}
   m_RootOrder: 2
   m_AnchorMin: {x: 0, y: 0}
@@ -1965,7 +2090,7 @@ RectTransform:
   m_RootOrder: 4
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -109, y: 85}
+  m_AnchoredPosition: {x: 134, y: 687}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &843915610
@@ -2193,7 +2318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.659}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2423,7 +2548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.659}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2665,7 +2790,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 65
+  field of view: 60
   orthographic: 0
   orthographic size: 4.05
   m_Depth: -1
@@ -3595,7 +3720,7 @@ RectTransform:
   - {fileID: 1270041371}
   - {fileID: 158665623}
   m_Father: {fileID: 456367222}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -3669,6 +3794,363 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1464755663}
+--- !u!1 &1465184534
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1465184535}
+  - 114: {fileID: 1465184539}
+  - 225: {fileID: 1465184538}
+  - 222: {fileID: 1465184537}
+  - 114: {fileID: 1465184536}
+  m_Layer: 0
+  m_Name: Joystick Right
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1465184535
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465184534}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children:
+  - {fileID: 1948115724}
+  m_Father: {fileID: 781470298}
+  m_RootOrder: 1
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 1118, y: 179}
+  m_SizeDelta: {x: 488, y: 487}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1465184536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465184534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.516}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: becfdeef1534456438d787466a94d207, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+--- !u!222 &1465184537
+CanvasRenderer:
+  m_ObjectHideFlags: 2
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465184534}
+--- !u!225 &1465184538
+CanvasGroup:
+  m_ObjectHideFlags: 2
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465184534}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1465184539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465184534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c26c7a0dcd8138d4194e0a4435a4740c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isUnregisterAtDisable: 0
+  _anchor: 0
+  _anchorOffet: {x: 0, y: 0}
+  _visible: 1
+  _activated: 1
+  enableCamera: 0
+  cameraMode: 0
+  camTargetTag: Player
+  autoLinkTagCam: 1
+  autoCamTag: MainCamera
+  cameraTransform: {fileID: 0}
+  cameraTargetMode: 0
+  enableWallDetection: 0
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  cameraLookAt: {fileID: 0}
+  followOffset: {x: 0, y: 6, z: -6}
+  followDistance: 10
+  followHeight: 5
+  followRotationDamping: 5
+  followHeightDamping: 5
+  pointId: -1
+  enableKeySimulation: 1
+  allowSimulationStandalone: 0
+  visibleOnStandalone: 1
+  dPadAxisCount: 0
+  useFixedUpdate: 0
+  isOnDrag: 0
+  isSwipeIn: 0
+  isSwipeOut: 0
+  showPSInspector: 0
+  showSpriteInspector: 0
+  showEventInspector: 0
+  showBehaviourInspector: 0
+  showAxesInspector: 0
+  showTouchEventInspector: 0
+  showDownEventInspector: 0
+  showPressEventInspector: 0
+  showCameraInspector: 0
+  onMoveStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnMoveStartHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onMove:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnMoveHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  onMoveSpeed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1663796869}
+        m_MethodName: MoveSpeed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ETCJoystick+OnMoveSpeedHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onMoveEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnMoveEndHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  onTouchStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnTouchStartHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onTouchUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnTouchUpHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnDownUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownUpHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnDownDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnDownLeft:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownLeftHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnDownRight:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownRightHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnPressUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownUpHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnPressDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnPressLeft:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownLeftHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnPressRight:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCJoystick+OnDownRightHandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  joystickType: 1
+  allowJoystickOverTouchPad: 0
+  radiusBase: 0
+  radiusBaseValue: 0
+  axisX:
+    name: Horizontal
+    autoLinkTagPlayer: 0
+    autoTag: Player
+    player: {fileID: 0}
+    enable: 1
+    invertedAxis: 0
+    speed: 15
+    deadValue: 0.1
+    valueMethod: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 4
+    isEnertia: 0
+    inertia: 0
+    inertiaThreshold: 0.08
+    isAutoStab: 0
+    autoStabThreshold: 0.01
+    autoStabSpeed: 10
+    isClampRotation: 0
+    maxAngle: 90
+    minAngle: 90
+    isValueOverTime: 0
+    overTimeStep: 1
+    maxOverTimeValue: 1
+    axisValue: 0
+    axisSpeedValue: 0
+    axisThreshold: 0.5
+    isLockinJump: 0
+    axisState: 0
+    _directTransform: {fileID: 0}
+    directAction: 0
+    axisInfluenced: 0
+    actionOn: 1
+    directCharacterController: {fileID: 0}
+    directRigidBody: {fileID: 0}
+    gravity: 0
+    currentGravity: 0
+    isJump: 0
+    unityAxis: Horizontal
+    showGeneralInspector: 0
+    showDirectInspector: 0
+    showInertiaInspector: 0
+    showSimulatinInspector: 0
+  axisY:
+    name: Vertical
+    autoLinkTagPlayer: 0
+    autoTag: Player
+    player: {fileID: 0}
+    enable: 1
+    invertedAxis: 0
+    speed: 15
+    deadValue: 0.1
+    valueMethod: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 4
+    isEnertia: 0
+    inertia: 0
+    inertiaThreshold: 0.08
+    isAutoStab: 0
+    autoStabThreshold: 0.01
+    autoStabSpeed: 10
+    isClampRotation: 0
+    maxAngle: 90
+    minAngle: 90
+    isValueOverTime: 0
+    overTimeStep: 1
+    maxOverTimeValue: 1
+    axisValue: 0
+    axisSpeedValue: 0
+    axisThreshold: 0.5
+    isLockinJump: 0
+    axisState: 0
+    _directTransform: {fileID: 0}
+    directAction: 0
+    axisInfluenced: 0
+    actionOn: 1
+    directCharacterController: {fileID: 0}
+    directRigidBody: {fileID: 0}
+    gravity: 0
+    currentGravity: 0
+    isJump: 0
+    unityAxis: Vertical
+    showGeneralInspector: 0
+    showDirectInspector: 0
+    showInertiaInspector: 0
+    showSimulatinInspector: 0
+  thumb: {fileID: 1948115724}
+  joystickArea: 1
+  userArea: {fileID: 0}
+  isTurnAndMove: 0
+  tmSpeed: 10
+  tmAdditionnalRotation: 0
+  tmMoveCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 0
+    m_PostInfinity: 0
+    m_RotationOrder: 4
+  tmLockInJump: 0
+  isNoReturnThumb: 0
+  isNoOffsetThumb: 0
 --- !u!1 &1492658097
 GameObject:
   m_ObjectHideFlags: 0
@@ -3830,7 +4312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.659}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4116,7 +4598,7 @@ RectTransform:
   m_GameObject: {fileID: 1686489899}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_LocalScale: {x: 2.285831, y: 2.285831, z: 2.285831}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 294472682}
@@ -4126,7 +4608,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -110, y: -21}
+  m_AnchoredPosition: {x: -85, y: 157}
   m_SizeDelta: {x: 20, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1686489901
@@ -4362,6 +4844,225 @@ RectTransform:
   m_AnchoredPosition: {x: -442.90442, y: 150.05371}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1779943388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1779943389}
+  - 222: {fileID: 1779943394}
+  - 114: {fileID: 1779943393}
+  - 114: {fileID: 1779943392}
+  - 114: {fileID: 1779943391}
+  - 114: {fileID: 1779943390}
+  m_Layer: 5
+  m_Name: Paint Button Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1779943389
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1779943388}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 781470298}
+  m_RootOrder: 3
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 350, y: 150}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1779943390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1779943388}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b4a5cbbb9488479dbcfb08310b2bbae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+  delegates: []
+--- !u!114 &1779943391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1779943388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6febc3e4b97b74f37a891bf1c52118cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+  delegates: []
+--- !u!114 &1779943392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1779943388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba60450c5a1202b41869d8ee7136c85f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isUnregisterAtDisable: 0
+  _anchor: 1
+  _anchorOffet: {x: 300, y: 100}
+  _visible: 1
+  _activated: 1
+  enableCamera: 0
+  cameraMode: 0
+  camTargetTag: Player
+  autoLinkTagCam: 1
+  autoCamTag: 4d61696e43616d657261
+  cameraTransform: {fileID: 0}
+  cameraTargetMode: 0
+  enableWallDetection: 0
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  cameraLookAt: {fileID: 0}
+  followOffset: {x: 0, y: 6, z: -6}
+  followDistance: 10
+  followHeight: 5
+  followRotationDamping: 5
+  followHeightDamping: 5
+  pointId: -1
+  enableKeySimulation: 1
+  allowSimulationStandalone: 1
+  visibleOnStandalone: 1
+  dPadAxisCount: 0
+  useFixedUpdate: 0
+  isOnDrag: 0
+  isSwipeIn: 0
+  isSwipeOut: 0
+  showPSInspector: 1
+  showSpriteInspector: 0
+  showEventInspector: 0
+  showBehaviourInspector: 1
+  showAxesInspector: 0
+  showTouchEventInspector: 0
+  showDownEventInspector: 0
+  showPressEventInspector: 0
+  showCameraInspector: 0
+  onDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnDownHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  onPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnPressedHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  onPressedValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnPressedValueandler, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ETCButton+OnUPHandler, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  axis:
+    name: Paint Button Left
+    autoLinkTagPlayer: 0
+    autoTag: ETC Button
+    player: {fileID: 0}
+    enable: 1
+    invertedAxis: 0
+    speed: 6
+    deadValue: 0.1
+    valueMethod: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    isEnertia: 0
+    inertia: 0
+    inertiaThreshold: 0.08
+    isAutoStab: 0
+    autoStabThreshold: 0.01
+    autoStabSpeed: 10
+    isClampRotation: 0
+    maxAngle: 90
+    minAngle: 90
+    isValueOverTime: 0
+    overTimeStep: 1
+    maxOverTimeValue: 1
+    axisValue: 0
+    axisSpeedValue: 0
+    axisThreshold: 0.5
+    isLockinJump: 0
+    axisState: 0
+    _directTransform: {fileID: 0}
+    directAction: 9
+    axisInfluenced: 0
+    actionOn: 0
+    directCharacterController: {fileID: 0}
+    directRigidBody: {fileID: 0}
+    gravity: 9.81
+    currentGravity: 0
+    isJump: 0
+    unityAxis: 4a756d70
+    showGeneralInspector: 1
+    showDirectInspector: 1
+    showInertiaInspector: 0
+    showSimulatinInspector: 0
+  normalSprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  pressedSprite: {fileID: 21300008, guid: becfdeef1534456438d787466a94d207, type: 3}
+  pressedColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!114 &1779943393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1779943388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.278}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300006, guid: becfdeef1534456438d787466a94d207, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+--- !u!222 &1779943394
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1779943388}
 --- !u!1 &1789951263
 GameObject:
   m_ObjectHideFlags: 0
@@ -4476,7 +5177,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 710, y: -663}
+  m_AnchoredPosition: {x: 954, y: -61}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1838597413
@@ -4673,6 +5374,74 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1884894921}
+--- !u!1 &1948115723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1948115724}
+  - 222: {fileID: 1948115726}
+  - 114: {fileID: 1948115725}
+  m_Layer: 0
+  m_Name: Thumb
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1948115724
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1948115723}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 1465184535}
+  m_RootOrder: 0
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 256, y: 255}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1948115725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1948115723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.409}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300002, guid: becfdeef1534456438d787466a94d207, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+--- !u!222 &1948115726
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1948115723}
 --- !u!1 &2001284503
 GameObject:
   m_ObjectHideFlags: 0
@@ -4945,7 +5714,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 781470298}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!1 &2113695182
 GameObject:
   m_ObjectHideFlags: 0

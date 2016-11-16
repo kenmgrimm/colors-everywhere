@@ -6,7 +6,6 @@ public class ColorPalette : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 	public PointerEventData pointerEvent;
 	public Texture2D paletteTexture;
 	private Color pickedColor;
-	private Image pickedColorImage;
 
 	public delegate void ColorPickedHandler(Color color);
 	public event ColorPickedHandler OnColorPicked;
@@ -15,7 +14,6 @@ public class ColorPalette : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 	public event SelectionFinishedHandler OnSelectionFinished;
 
 	void Awake() {	
-		pickedColorImage = GameObject.Find("Picked Color").GetComponent<Image>();
 		Rect rect = GetComponent<RectTransform>().rect;
 
 		pickedColor = Color.white;
@@ -46,8 +44,6 @@ public class ColorPalette : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 		Debug.Log("converted x, y: " + convertedX + ", " + convertedY);
 		
 		pickedColor = paletteTexture.GetPixel(convertedX, convertedY);
-		
-		pickedColorImage.color = pickedColor;
 
 		if(OnColorPicked != null) {
 			OnColorPicked(pickedColor);
