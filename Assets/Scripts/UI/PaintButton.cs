@@ -29,15 +29,7 @@ public class PaintButton : EventTrigger {
 		isPainting = false;
 	}
 	
-	public override void OnPointerClick(PointerEventData data) {
-		// OnPoin
-	}
-
-	public override void OnPointerEnter(PointerEventData eventData) { 
-		if (Input.GetMouseButton(0)) {
-			isPainting = true;
-		} 
-	}
+	public override void OnPointerClick(PointerEventData data) { }
 
 	public override void OnPointerExit(PointerEventData data) {
 		isPainting = false;

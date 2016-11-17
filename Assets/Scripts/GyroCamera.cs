@@ -2,7 +2,7 @@
 
 public class GyroCamera : MonoBehaviour {
   private static float JOYSTICK_ROTATION_MULTIPLIER = 5.0f;
-  private static float JOYSTICK_MOVE_MULTIPLIER = 0.4f;
+  private static float JOYSTICK_MOVE_MULTIPLIER = 0.5f;
 
   private float initialYAngle = 0f;
   private float appliedGyroYAngle = 0f;
@@ -18,31 +18,11 @@ public class GyroCamera : MonoBehaviour {
 
   void Update() {
     ApplyGyroRotation();
-    // ApplyCalibration();
   }
-
-  // void OnGUI()
-  // {
-  //     if( GUILayout.Button( "Calibrate", GUILayout.Width( 300 ), GUILayout.Height( 100 ) ) )
-  //     {
-  //         CalibrateYAngle();
-  //     }
-  // }
 
   public void CalibrateYAngle() {
     calibrationYAngle = appliedGyroYAngle - initialYAngle; // Offsets the y angle in case it wasn't 0 at edit time.
   }
-
-	public void MoveSpeed(Vector2 move){
-    // Debug.Log("MoveSpeed");
-    // Debug.Log(move);
-
-    joystickYRotation += move.x * JOYSTICK_ROTATION_MULTIPLIER;
-		
-    Vector3 velocity = transform.forward * move.y * JOYSTICK_MOVE_MULTIPLIER;
-
-		transform.position += new Vector3(velocity.x, 0, velocity.z);
-	}
 
   void ApplyGyroRotation() {
     transform.rotation = Input.gyro.attitude;
@@ -62,5 +42,19 @@ public class GyroCamera : MonoBehaviour {
 
   void ApplyCalibration() {
     transform.Rotate(0f, -calibrationYAngle, 0f, Space.World ); // Rotates y angle back however much it deviated when calibrationYAngle was saved.
+  }
+
+
+  // Move this into another class
+	public void ApplyLeftJoystickVelocity(Vector2 move){
+    Vector3 forwardVelocity = transform.forward * move.y;
+    Vector3 strafeRightVelocity = transform.right * move.x;
+
+    Vector3 velocity = (forwardVelocity + strafeRightVelocity) * JOYSTICK_MOVE_MULTIPLIER;
+    transform.position += new Vector3(velocity.x, 0, velocity.z);
+	}
+
+  public void ApplyRightJoystickRotation(Vector2 move){
+    joystickYRotation += move.x * JOYSTICK_ROTATION_MULTIPLIER;
   }
 }
