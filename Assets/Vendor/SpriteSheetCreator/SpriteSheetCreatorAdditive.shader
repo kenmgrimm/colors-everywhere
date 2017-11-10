@@ -1,4 +1,6 @@
-﻿Shader "Particles/Sprite Sheet Creator Additive"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Particles/Sprite Sheet Creator Additive"
 {
 	Properties
 	{
@@ -57,7 +59,7 @@
 				v2f vert(appdata_t v)
 				{
 					v2f o;
-					o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+					o.vertex = UnityObjectToClipPos(v.vertex);
 
 #ifdef SOFTPARTICLES_ON
 
